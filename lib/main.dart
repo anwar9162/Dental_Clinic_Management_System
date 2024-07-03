@@ -7,7 +7,7 @@ import 'screens/billing/billing_list_screen.dart';
 import 'screens/appointment/add_appointment_screen.dart';
 import 'screens/appointment/appointment_detail_screen.dart';
 import 'screens/appointment/appointment_calendar_screen.dart';
-import './models/appointment_model.dart';
+import 'models/appointment_model.dart'; // Ensure this import is correct
 
 void main() {
   runApp(MyApp());

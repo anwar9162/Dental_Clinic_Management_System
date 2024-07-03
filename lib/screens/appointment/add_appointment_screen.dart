@@ -9,22 +9,19 @@ class AddAppointmentScreen extends StatefulWidget {
 class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
   final _patientNameController = TextEditingController();
-  final _doctorNameController = TextEditingController();
-  final _dateController = TextEditingController();
-  final _timeController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _doctorNameController = TextEditingController();
+  DateTime _selectedDate = DateTime.now();
 
-  void _submitForm() {
+  void _saveForm() {
     if (_formKey.currentState!.validate()) {
       final newAppointment = Appointment(
         id: DateTime.now().toString(),
         patientName: _patientNameController.text,
-        doctorName: _doctorNameController.text,
-        date: DateTime.parse(_dateController.text),
-        time: _timeController.text,
+        date: _selectedDate,
         description: _descriptionController.text,
+        doctorName: _doctorNameController.text,
       );
-
       Navigator.pop(context, newAppointment);
     }
   }
@@ -36,7 +33,7 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
         title: Text('Add Appointment'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -46,37 +43,7 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
                 decoration: InputDecoration(labelText: 'Patient Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter patient name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _doctorNameController,
-                decoration: InputDecoration(labelText: 'Doctor Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter doctor name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _dateController,
-                decoration: InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter date';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _timeController,
-                decoration: InputDecoration(labelText: 'Time'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter time';
+                    return 'Please enter the patient name';
                   }
                   return null;
                 },
@@ -86,15 +53,25 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
                 decoration: InputDecoration(labelText: 'Description'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter description';
+                    return 'Please enter a description';
                   }
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              TextFormField(
+                controller: _doctorNameController,
+                decoration: InputDecoration(labelText: 'Doctor Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the doctor name';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _submitForm,
-                child: Text('Add Appointment'),
+                onPressed: _saveForm,
+                child: Text('Save Appointment'),
               ),
             ],
           ),

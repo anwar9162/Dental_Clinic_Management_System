@@ -16,7 +16,22 @@ class AppointmentCalendarScreen extends StatefulWidget {
 class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _selectedDay = DateTime.now();
-  List<Appointment> _appointments = [];
+  List<Appointment> _appointments = [
+    Appointment(
+      id: '1',
+      patientName: 'John Doe',
+      date: DateTime.now(),
+      description: 'Routine check-up',
+      doctorName: 'Dr. Smith',
+    ),
+    Appointment(
+      id: '2',
+      patientName: 'Jane Doe',
+      date: DateTime.now().add(Duration(days: 1)),
+      description: 'Teeth cleaning',
+      doctorName: 'Dr. Brown',
+    ),
+  ];
 
   void _addNewAppointment(Appointment newAppointment) {
     setState(() {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/appointment_model.dart';
+import '../../models/appointment_model.dart';
 
 class AppointmentCard extends StatelessWidget {
   final Appointment appointment;
@@ -11,11 +11,11 @@ class AppointmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        title: Text(appointment.patientName),
-        subtitle: Text('${appointment.date.toLocal()}'.split(' ')[0] +
-            ' at ' +
-            appointment.time),
         onTap: onTap,
+        title: Text(appointment.patientName),
+        subtitle:
+            Text('${appointment.description} with ${appointment.doctorName}'),
+        trailing: Text('${appointment.date.toLocal()}'.split(' ')[0]),
       ),
     );
   }

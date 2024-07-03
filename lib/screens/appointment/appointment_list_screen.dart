@@ -1,46 +1,33 @@
 import 'package:flutter/material.dart';
 import '../../models/appointment_model.dart';
-import 'add_appointment_screen.dart';
-import 'appointment_detail_screen.dart';
-import '../../widgets/navigation_drawer.dart' as custom;
 import '../../widgets/appointment_card.dart';
+import '../../widgets/navigation_drawer.dart' as custom;
+import './add_appointment_screen.dart';
+import './appointment_detail_screen.dart';
 
-class AppointmentListScreen extends StatefulWidget {
-  @override
-  _AppointmentListScreenState createState() => _AppointmentListScreenState();
-}
-
-class _AppointmentListScreenState extends State<AppointmentListScreen> {
+class AppointmentListScreen extends StatelessWidget {
   final List<Appointment> _appointments = [
     Appointment(
       id: '1',
       patientName: 'John Doe',
-      doctorName: 'Dr. Smith',
       date: DateTime.now(),
-      time: '10:00 AM',
-      description: 'Regular checkup',
+      description: 'Routine check-up',
+      doctorName: 'Dr. Smith',
     ),
     Appointment(
       id: '2',
-      patientName: 'Jane Smith',
-      doctorName: 'Dr. Adams',
+      patientName: 'Jane Doe',
       date: DateTime.now().add(Duration(days: 1)),
-      time: '11:00 AM',
       description: 'Teeth cleaning',
+      doctorName: 'Dr. Brown',
     ),
   ];
-
-  void _addNewAppointment(Appointment newAppointment) {
-    setState(() {
-      _appointments.add(newAppointment);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Appointment List'),
+        title: Text('Appointments'),
       ),
       drawer: custom.NavigationDrawer(),
       body: ListView.builder(
@@ -68,7 +55,7 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
           );
 
           if (newAppointment != null) {
-            _addNewAppointment(newAppointment);
+            _appointments.add(newAppointment);
           }
         },
         child: Icon(Icons.add),
