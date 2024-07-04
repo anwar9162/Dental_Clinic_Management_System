@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
-    show CalendarCarousel, Event, EventList;
+import 'package:table_calendar/table_calendar.dart';
 import '../../models/appointment_model.dart';
 import '../../models/patient_model.dart';
 import '../../widgets/navigation_drawer.dart' as custom;
@@ -12,7 +11,8 @@ class AppointmentCalendarScreen extends StatefulWidget {
 }
 
 class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
-  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
   List<Appointment> _appointments = [];
   List<Patient> _patients = [
     Patient(id: '1', name: 'John Doe'),
@@ -21,33 +21,43 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
     Patient(id: '4', name: 'Bob Johnson'),
   ];
   Patient? _selectedPatient;
-  EventList<Event> _markedDateMap = EventList<Event>();
+
+  Map<DateTime, List<Appointment>> _groupedAppointments = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _groupAppointments();
+  }
+
+  void _groupAppointments() {
+    _groupedAppointments = {};
+    for (var appointment in _appointments) {
+      DateTime date = DateTime.utc(appointment.date.year,
+          appointment.date.month, appointment.date.day, 12);
+      if (_groupedAppointments[date] == null) _groupedAppointments[date] = [];
+      _groupedAppointments[date]!.add(appointment);
+    }
+  }
 
   List<Appointment> _getAppointmentsForDay(DateTime day) {
-    return _appointments
-        .where((appointment) => isSameDay(appointment.date, day))
-        .toList();
+    return _groupedAppointments[
+            DateTime.utc(day.year, day.month, day.day, 12)] ??
+        [];
   }
 
   void _addNewAppointment() {
-    if (_selectedPatient != null) {
+    if (_selectedPatient != null && _selectedDay != null) {
       setState(() {
         Appointment newAppointment = Appointment(
           id: DateTime.now().toString(),
           patientName: _selectedPatient!.name,
-          date: _selectedDay,
+          date: _selectedDay!,
           description: 'New Appointment',
           doctorName: 'Dr. Smith',
         );
         _appointments.add(newAppointment);
-        _markedDateMap.add(
-          newAppointment.date,
-          Event(
-            date: newAppointment.date,
-            title: newAppointment.patientName,
-            icon: _appointmentMarker(newAppointment.patientName),
-          ),
-        );
+        _groupAppointments();
         _selectedPatient = null;
       });
     }
@@ -56,20 +66,20 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
   void _removeAppointment(Appointment appointment) {
     setState(() {
       _appointments.remove(appointment);
-      _markedDateMap.remove(
-          appointment.date,
-          Event(
-            date: appointment.date,
-            title: appointment.patientName,
-            icon: _appointmentMarker(appointment.patientName),
-          ));
+      _groupAppointments();
     });
   }
 
-  bool isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
+  Color _getAppointmentColor(int index) {
+    List<Color> colors = [
+      Colors.teal,
+      Colors.blue,
+      Colors.orange,
+      Colors.red,
+      Colors.purple,
+      Colors.green,
+    ];
+    return colors[index % colors.length];
   }
 
   @override
@@ -79,143 +89,149 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         title: Text('Appointment Calendar'),
       ),
       drawer: custom.NavigationDrawer(),
-      body: Column(
+      body: Row(
         children: [
           Expanded(
             flex: 3,
-            child: CalendarCarousel<Event>(
-              onDayPressed: (DateTime date, List<Event> events) {
-                setState(() => _selectedDay = date);
-              },
-              weekendTextStyle: TextStyle(color: Colors.red),
-              thisMonthDayBorderColor: Colors.grey,
-              selectedDateTime: _selectedDay,
-              daysHaveCircularBorder: false,
-              customGridViewPhysics: NeverScrollableScrollPhysics(),
-              markedDatesMap: _markedDateMap,
-              height: 420.0,
-              selectedDayTextStyle: TextStyle(
-                color: Colors.yellow,
-              ),
-              todayTextStyle: TextStyle(
-                color: Colors.blue,
-              ),
-              markedDateShowIcon: true,
-              markedDateIconBuilder: (event) {
-                return event.icon ?? Container();
-              },
-              markedDateMoreShowTotal: null,
-            ),
-          ),
-          Expanded(
-            flex: 7,
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount:
-                              _getAppointmentsForDay(_selectedDay).length,
-                          itemBuilder: (context, index) {
-                            final appointment =
-                                _getAppointmentsForDay(_selectedDay)[index];
-                            return Card(
-                              margin: EdgeInsets.all(8.0),
-                              child: ListTile(
-                                title: Text(appointment.patientName),
-                                subtitle: Text(appointment.description),
-                                trailing: IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () =>
-                                      _removeAppointment(appointment),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: TableCalendar<Appointment>(
+                    firstDay: DateTime.utc(2020, 1, 1),
+                    lastDay: DateTime.utc(2030, 12, 31),
+                    focusedDay: _focusedDay,
+                    selectedDayPredicate: (day) {
+                      return isSameDay(_selectedDay, day);
+                    },
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                      });
+                    },
+                    eventLoader: _getAppointmentsForDay,
+                    calendarBuilders: CalendarBuilders<Appointment>(
+                      markerBuilder: (context, date, events) {
+                        if (events.isEmpty) return SizedBox();
+                        return Column(
+                          children: events.asMap().entries.map((entry) {
+                            int idx = entry.key;
+                            Appointment appointment = entry.value;
+                            return Container(
+                              margin: EdgeInsets.symmetric(vertical: 1.0),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 4.0, vertical: 2.0),
+                              decoration: BoxDecoration(
+                                color: _getAppointmentColor(idx),
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              child: Text(
+                                '${idx + 1}. ${appointment.patientName}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
                             );
-                          },
-                        ),
+                          }).toList(),
+                        );
+                      },
+                    ),
+                    calendarStyle: CalendarStyle(
+                      markersMaxCount: 3,
+                      markerDecoration: BoxDecoration(
+                        color: Colors.teal,
+                        shape: BoxShape.circle,
                       ),
-                      if (_selectedPatient != null)
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                            onPressed: _addNewAppointment,
-                            child: Text('Add Appointment'),
-                          ),
-                        ),
-                    ],
+                      markerSizeScale: 0.4,
+                    ),
                   ),
                 ),
-                VerticalDivider(),
                 Expanded(
-                  flex: 1,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Search Patients',
-                            border: OutlineInputBorder(),
+                  child: ListView.builder(
+                    itemCount:
+                        _getAppointmentsForDay(_selectedDay ?? _focusedDay)
+                            .length,
+                    itemBuilder: (context, index) {
+                      final appointment = _getAppointmentsForDay(
+                          _selectedDay ?? _focusedDay)[index];
+                      return Card(
+                        margin: EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text(appointment.patientName),
+                          subtitle: Text(appointment.description),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => _removeAppointment(appointment),
                           ),
-                          onChanged: (value) {
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                if (_selectedPatient != null)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: _addNewAppointment,
+                      child: Text('Add Appointment'),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          VerticalDivider(),
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Search Patients',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _patients = _patients
+                            .where((patient) => patient.name
+                                .toLowerCase()
+                                .contains(value.toLowerCase()))
+                            .toList();
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _patients.length,
+                    itemBuilder: (context, index) {
+                      final patient = _patients[index];
+                      return Card(
+                        margin: EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text(patient.name),
+                          onTap: () {
                             setState(() {
-                              _patients = _patients
-                                  .where((patient) => patient.name
-                                      .toLowerCase()
-                                      .contains(value.toLowerCase()))
-                                  .toList();
+                              _selectedPatient = patient;
                             });
                           },
+                          selected: _selectedPatient == patient,
+                          selectedTileColor: Colors.blue[100],
                         ),
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: _patients.length,
-                          itemBuilder: (context, index) {
-                            final patient = _patients[index];
-                            return Card(
-                              margin: EdgeInsets.all(8.0),
-                              child: ListTile(
-                                title: Text(patient.name),
-                                onTap: () {
-                                  setState(() {
-                                    _selectedPatient = patient;
-                                  });
-                                },
-                                selected: _selectedPatient == patient,
-                                selectedTileColor: Colors.blue[100],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _appointmentMarker(String patientName) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      padding: EdgeInsets.all(4.0),
-      child: Text(
-        patientName,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12.0,
-        ),
       ),
     );
   }

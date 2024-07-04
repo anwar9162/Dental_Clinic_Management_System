@@ -9,7 +9,7 @@ class NavigationDrawer extends StatelessWidget {
         children: <Widget>[
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Colors.teal,
             ),
             child: Text(
               'Dental Clinic Management',

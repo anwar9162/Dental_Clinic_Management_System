@@ -7,7 +7,7 @@ import 'screens/billing/billing_list_screen.dart';
 import 'screens/appointment/add_appointment_screen.dart';
 import 'screens/appointment/appointment_detail_screen.dart';
 import 'screens/appointment/appointment_calendar_screen.dart';
-import 'models/appointment_model.dart'; // Ensure this import is correct
+import 'models/appointment_model.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Dental Clinic Management',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       initialRoute: '/',
