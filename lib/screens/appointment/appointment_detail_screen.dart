@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/appointment_model.dart';
+import '../../widgets/navigation_drawer.dart' as custom;
 
 class AppointmentDetailScreen extends StatelessWidget {
   final Appointment appointment;
@@ -12,6 +13,7 @@ class AppointmentDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Appointment Details'),
       ),
+      drawer: custom.NavigationDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

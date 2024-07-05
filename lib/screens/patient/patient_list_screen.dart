@@ -1,28 +1,69 @@
 import 'package:flutter/material.dart';
+import '../patient/add_patient_screen.dart';
+import '../patient/patient_detail_screen.dart';
+import '../../models/patient_model.dart';
 import '../../widgets/navigation_drawer.dart' as custom;
 
 class PatientListScreen extends StatelessWidget {
-  final List<Map<String, String>> mockPatients = [
-    {'name': 'John Doe', 'id': '001', 'phone': '123-456-7890'},
-    {'name': 'Jane Smith', 'id': '002', 'phone': '987-654-3210'},
+  final List<Patient> patients = [
+    Patient(
+      id: '1',
+      name: 'John Doe',
+      firstVisitDate: DateTime.now().subtract(Duration(days: 365)),
+      lastTreatment: 'Root Canal',
+      currentAppointmentReason: 'Routine Checkup',
+    ),
+    Patient(
+      id: '2',
+      name: 'Jane Doe',
+      firstVisitDate: DateTime.now().subtract(Duration(days: 200)),
+      lastTreatment: 'Tooth Extraction',
+      currentAppointmentReason: 'Toothache',
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Patient List'),
+        title: Text('Patients List'),
       ),
       drawer: custom.NavigationDrawer(),
       body: ListView.builder(
-        itemCount: mockPatients.length,
+        itemCount: patients.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(mockPatients[index]['name']!),
-            subtitle: Text('ID: ${mockPatients[index]['id']}'),
-            trailing: Text(mockPatients[index]['phone']!),
+          final patient = patients[index];
+          return Card(
+            margin: EdgeInsets.all(8.0),
+            child: ListTile(
+              title: Text(patient.name),
+              subtitle: Text('Last Treatment: ${patient.lastTreatment}'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PatientDetailScreen(
+                      name: patient.name,
+                      firstVisitDate: patient.firstVisitDate,
+                      lastTreatment: patient.lastTreatment,
+                      currentAppointmentReason:
+                          patient.currentAppointmentReason,
+                    ),
+                  ),
+                );
+              },
+            ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddPatientScreen()),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

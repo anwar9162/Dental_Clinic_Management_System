@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/appointment_model.dart';
+import '../../widgets/navigation_drawer.dart' as custom;
 
 class AddAppointmentScreen extends StatefulWidget {
   @override
@@ -32,6 +33,7 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
       appBar: AppBar(
         title: Text('Add Appointment'),
       ),
+      drawer: custom.NavigationDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

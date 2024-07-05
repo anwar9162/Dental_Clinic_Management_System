@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../models/appointment_model.dart';
 import '../../models/patient_model.dart';
 import '../../widgets/navigation_drawer.dart' as custom;
@@ -6,25 +7,43 @@ import '../../widgets/navigation_drawer.dart' as custom;
 class HomeScreen extends StatelessWidget {
   final List<Appointment> _appointments = [
     Appointment(
-        id: '1',
-        patientName: 'John Doe',
-        date: DateTime.now(),
-        description: 'Routine Checkup',
-        doctorName: 'Dr. Smith'),
+      id: '1',
+      patientName: 'John Doe',
+      date: DateTime.now(),
+      firstVisitDate: DateTime(2024, 6, 25),
+      lastTreatment: 'Brace',
+      currentAppointmentReason: 'Emergency Consultation',
+      description: 'Routine Checkup',
+      doctorName: 'Dr. Smith',
+    ),
     Appointment(
         id: '2',
         patientName: 'Jane Doe',
         date: DateTime.now(),
         description: 'Tooth Extraction',
-        doctorName: 'Dr. Johnson'),
+        doctorName: 'Dr. Johnson',
+        firstVisitDate: DateTime(2024, 6, 25),
+        lastTreatment: 'Brace',
+        currentAppointmentReason: 'Emergency Consultation'),
   ];
 
   final List<Patient> _walkInPatients = [
-    Patient(id: '5', name: 'Michael Jordan'),
+    Patient(
+      id: '5',
+      name: 'Michael Jordan',
+      firstVisitDate: DateTime(2024, 6, 25),
+      lastTreatment: 'Brace',
+      currentAppointmentReason: 'Emergency Consultation',
+    ),
   ];
 
   final List<Patient> _newPatients = [
-    Patient(id: '6', name: 'LeBron James'),
+    Patient(
+      id: '6',
+      name: 'LeBron James',
+      firstVisitDate: DateTime(2024, 6, 25),
+      currentAppointmentReason: 'New patient consultation',
+    ),
   ];
 
   int _expectedPatientsCount() {
@@ -45,6 +64,14 @@ class HomeScreen extends StatelessWidget {
     return _newPatients.length;
   }
 
+  String _formatDate(DateTime date) {
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
+
+  int _daysSinceFirstVisit(DateTime firstVisit) {
+    return DateTime.now().difference(firstVisit).inDays;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,59 +79,55 @@ class HomeScreen extends StatelessWidget {
         title: Text('Dental Clinic Management - Home'),
       ),
       drawer: custom.NavigationDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildInfoCard(
-                  context,
-                  title: 'Expected Patients',
-                  count: _expectedPatientsCount(),
-                  icon: Icons.person,
-                  color: Colors.teal,
-                ),
-                _buildInfoCard(
-                  context,
-                  title: 'Walk-In Patients',
-                  count: _walkInPatientsCount(),
-                  icon: Icons.person_outline,
-                  color: Colors.orange,
-                ),
-                _buildInfoCard(
-                  context,
-                  title: 'New Patients',
-                  count: _newPatientsCount(),
-                  icon: Icons.person_add,
-                  color: Colors.blue,
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildDetailCard(
+                  _buildInfoCard(
                     context,
-                    title: 'Today\'s Expected Patients',
-                    patients: _appointments.map((a) => a.patientName).toList(),
+                    title: 'Expected Patients',
+                    count: _expectedPatientsCount(),
+                    icon: Icons.person,
+                    color: Colors.teal,
                   ),
-                  _buildDetailCard(
+                  _buildInfoCard(
                     context,
-                    title: 'Today\'s Walk-In Patients',
-                    patients: _walkInPatients.map((p) => p.name).toList(),
+                    title: 'Walk-In Patients',
+                    count: _walkInPatientsCount(),
+                    icon: Icons.person_outline,
+                    color: Colors.orange,
                   ),
-                  _buildDetailCard(
+                  _buildInfoCard(
                     context,
-                    title: 'Today\'s New Patients',
-                    patients: _newPatients.map((p) => p.name).toList(),
+                    title: 'New Patients',
+                    count: _newPatientsCount(),
+                    icon: Icons.person_add,
+                    color: Colors.blue,
                   ),
                 ],
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              _buildDetailCard(
+                context,
+                title: 'Today\'s Expected Patients',
+                appointments: _appointments,
+              ),
+              _buildDetailCard(
+                context,
+                title: 'Today\'s Walk-In Patients',
+                patients: _walkInPatients,
+              ),
+              _buildDetailCard(
+                context,
+                title: 'Today\'s New Patients',
+                patients: _newPatients,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -154,7 +177,9 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildDetailCard(BuildContext context,
-      {required String title, required List<String> patients}) {
+      {required String title,
+      List<Appointment>? appointments,
+      List<Patient>? patients}) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -174,10 +199,38 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            ...patients.map((patient) => ListTile(
-                  leading: Icon(Icons.person),
-                  title: Text(patient),
-                )),
+            ...?appointments?.map((appointment) {
+              return ListTile(
+                leading: Icon(Icons.person),
+                title: Text(appointment.patientName),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Last Treatment: ${appointment.lastTreatment}'),
+                    Text(
+                        'Current Appointment: ${appointment.currentAppointmentReason}'),
+                    Text(
+                        'Days Since First Visit: ${appointment.firstVisitDate != null ? _daysSinceFirstVisit(appointment.firstVisitDate!) : 'N/A'}'),
+                  ],
+                ),
+              );
+            }).toList(),
+            ...?patients?.map((patient) {
+              return ListTile(
+                leading: Icon(Icons.person),
+                title: Text(patient.name),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Last Treatment: ${patient.lastTreatment}'),
+                    Text(
+                        'Current Appointment: ${patient.currentAppointmentReason}'),
+                    Text(
+                        'Days Since First Visit: ${_daysSinceFirstVisit(patient.firstVisitDate)}'),
+                  ],
+                ),
+              );
+            }).toList(),
           ],
         ),
       ),
