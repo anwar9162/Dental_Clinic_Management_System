@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/patient_model.dart';
 
 class NavigationDrawer extends StatelessWidget {
   @override
@@ -59,6 +60,24 @@ class NavigationDrawer extends StatelessWidget {
             title: Text('Manage Billing'),
             onTap: () {
               Navigator.pushReplacementNamed(context, '/billing');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.person_outline),
+            title: Text('Patient Record'),
+            onTap: () {
+              // Replace with your actual patient data
+              Navigator.pushNamed(
+                context,
+                '/patientrecord',
+                arguments: Patient(
+                  id: '1',
+                  name: 'John Doe',
+                  firstVisitDate: DateTime(2023, 1, 1),
+                  lastTreatment: 'Cleaning',
+                  currentAppointmentReason: 'Routine Checkup',
+                ),
+              );
             },
           ),
         ],

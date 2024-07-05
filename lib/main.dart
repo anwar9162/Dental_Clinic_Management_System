@@ -7,7 +7,10 @@ import 'screens/billing/billing_list_screen.dart';
 import 'screens/appointment/add_appointment_screen.dart';
 import 'screens/appointment/appointment_detail_screen.dart';
 import 'screens/appointment/appointment_calendar_screen.dart';
+import 'screens/patient/patient_record_screen.dart';
+import 'models/patient_model.dart';
 import 'models/appointment_model.dart';
+import 'widgets/navigation_drawer.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,9 +34,22 @@ class MyApp extends StatelessWidget {
         '/doctors': (context) => DoctorListScreen(),
         '/billing': (context) => BillingListScreen(),
         '/add-appointment': (context) => AddAppointmentScreen(),
-        '/appointment-detail': (context) => AppointmentDetailScreen(
-            appointment:
-                ModalRoute.of(context)!.settings.arguments as Appointment),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/patientrecord') {
+          final patient = settings.arguments as Patient;
+          return MaterialPageRoute(
+            builder: (context) => PatientRecordScreen(patient: patient),
+          );
+        }
+        if (settings.name == '/appointment-detail') {
+          final appointment = settings.arguments as Appointment;
+          return MaterialPageRoute(
+            builder: (context) =>
+                AppointmentDetailScreen(appointment: appointment),
+          );
+        }
+        return null;
       },
     );
   }

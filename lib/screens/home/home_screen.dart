@@ -4,7 +4,24 @@ import '../../models/appointment_model.dart';
 import '../../models/patient_model.dart';
 import '../../widgets/navigation_drawer.dart' as custom;
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late GlobalKey<ScaffoldState> _scaffoldKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaffoldKey = GlobalKey<ScaffoldState>();
+    // Open the drawer initially
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scaffoldKey.currentState?.openDrawer();
+    });
+  }
+
   final List<Appointment> _appointments = [
     Appointment(
       id: '1',
@@ -75,60 +92,82 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Dental Clinic Management - Home'),
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            if (_scaffoldKey.currentState!.isDrawerOpen) {
+              Navigator.of(context).pop();
+            } else {
+              _scaffoldKey.currentState!.openDrawer();
+            }
+          },
+        ),
       ),
       drawer: custom.NavigationDrawer(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildInfoCard(
-                    context,
-                    title: 'Expected Patients',
-                    count: _expectedPatientsCount(),
-                    icon: Icons.person,
-                    color: Colors.teal,
-                  ),
-                  _buildInfoCard(
-                    context,
-                    title: 'Walk-In Patients',
-                    count: _walkInPatientsCount(),
-                    icon: Icons.person_outline,
-                    color: Colors.orange,
-                  ),
-                  _buildInfoCard(
-                    context,
-                    title: 'New Patients',
-                    count: _newPatientsCount(),
-                    icon: Icons.person_add,
-                    color: Colors.blue,
-                  ),
-                ],
+      body: Row(
+        children: [
+          if (MediaQuery.of(context).size.width > 600)
+            Container(
+              width: 250, // Adjust the width as per your requirement
+              child: custom.NavigationDrawer(),
+            ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildInfoCard(
+                          context,
+                          title: 'Expected Patients',
+                          count: _expectedPatientsCount(),
+                          icon: Icons.person,
+                          color: Colors.teal,
+                        ),
+                        _buildInfoCard(
+                          context,
+                          title: 'Walk-In Patients',
+                          count: _walkInPatientsCount(),
+                          icon: Icons.person_outline,
+                          color: Colors.orange,
+                        ),
+                        _buildInfoCard(
+                          context,
+                          title: 'New Patients',
+                          count: _newPatientsCount(),
+                          icon: Icons.person_add,
+                          color: Colors.blue,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    _buildDetailCard(
+                      context,
+                      title: 'Today\'s Expected Patients',
+                      appointments: _appointments,
+                    ),
+                    _buildDetailCard(
+                      context,
+                      title: 'Today\'s Walk-In Patients',
+                      patients: _walkInPatients,
+                    ),
+                    _buildDetailCard(
+                      context,
+                      title: 'Today\'s New Patients',
+                      patients: _newPatients,
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 20),
-              _buildDetailCard(
-                context,
-                title: 'Today\'s Expected Patients',
-                appointments: _appointments,
-              ),
-              _buildDetailCard(
-                context,
-                title: 'Today\'s Walk-In Patients',
-                patients: _walkInPatients,
-              ),
-              _buildDetailCard(
-                context,
-                title: 'Today\'s New Patients',
-                patients: _newPatients,
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
