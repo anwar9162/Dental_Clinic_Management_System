@@ -56,6 +56,7 @@ const deleteAppointment = async (req, res) => {
 
 const getTodaysAppointments = async (req, res) => {
   try {
+    
     const appointments = await appointmentService.getTodaysAppointments();
     res.status(200).json(appointments);
   } catch (error) {

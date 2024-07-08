@@ -15,6 +15,12 @@ const appointmentSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  AppointmentReason:{
+    type:String
+  },
+  ExpectedPayment:{
+    type:String
+  },
   status: {
     type: String,
     enum: ['Scheduled', 'Arrived', 'Completed'],

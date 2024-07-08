@@ -1,12 +1,36 @@
-const Appointment = require('../models/appointment');
-const Patient = require('../models/Patient');
+const Appointment = require("../models/Appointment");
+
+const getAllAppointments = async () => {
+  return await Appointment.find();
+};
+
+const getAppointmentById = async (id) => {
+  return await Appointment.findById(id);
+};
+
+const createAppointment = async (appointmentData) => {
+  const newAppointment = new Appointment(appointmentData);
+  return await newAppointment.save();
+};
+
+const updateAppointment = async (id, appointmentData) => {
+  return await Appointment.findByIdAndUpdate(id, appointmentData, {
+    new: true,
+  });
+};
+
+const deleteAppointment = async (id) => {
+  return await Appointment.findByIdAndDelete(id);
+};
+
 
 const getTodaysAppointments = async () => {
+  console.log("on service");
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
-
+console.log(today);
   return await Appointment.find({
     date: { $gte: today, $lt: tomorrow },
   }).populate('patient').populate('doctor');
@@ -39,4 +63,5 @@ module.exports = {
   getTodaysAppointments,
   getArrivedPatients,
   getVisitHistory,
+
 };
