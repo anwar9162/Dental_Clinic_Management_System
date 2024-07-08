@@ -9,7 +9,6 @@ const patientSchema = new mongoose.Schema({
     treatment: String,
     date: Date
   }],
-  // Adding visit history to the patient schema
   visitHistory: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Appointment',

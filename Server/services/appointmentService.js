@@ -25,7 +25,7 @@ const deleteAppointment = async (id) => {
 
 
 const getTodaysAppointments = async () => {
-  console.log("on service");
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);

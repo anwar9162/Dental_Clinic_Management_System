@@ -1,5 +1,6 @@
 const appointmentService = require('../services/appointmentService');
-
+const Appointment = require('../models/Appointment');
+const Patient = require('../models/Patient');
 const getAllAppointments = async (req, res) => {
   try {
     const appointments = await appointmentService.getAllAppointments();
@@ -31,14 +32,30 @@ const createAppointment = async (req, res) => {
 };
 
 const updateAppointment = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
   try {
-    const appointment = await appointmentService.updateAppointment(req.params.id, req.body);
+    const appointment = await Appointment.findById(id);
     if (!appointment) {
       return res.status(404).json({ message: 'Appointment not found' });
     }
+
+    appointment.status = status;
+
+    await appointment.save();
+
+    if (status === 'Completed') {
+      const patientRecord = await Patient.findById(appointment.patient);
+      if (patientRecord) {
+        patientRecord.visitHistory.push(appointment._id);
+        await patientRecord.save();
+      }
+    }
+
     res.status(200).json(appointment);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -74,13 +91,18 @@ const getArrivedPatients = async (req, res) => {
 };
 
 const getVisitHistory = async (req, res) => {
+  const { patientId } = req.params;
   try {
-    const history = await appointmentService.getVisitHistory(req.params.patientId);
-    res.status(200).json(history);
+    const patient = await Patient.findById(patientId).populate('visitHistory');
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+    res.status(200).json(patient.visitHistory);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
+
 
 module.exports = {
   getAllAppointments,
