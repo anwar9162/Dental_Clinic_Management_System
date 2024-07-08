@@ -1,4 +1,4 @@
-const appointmentService = require("../services/appointmentService");
+const appointmentService = require('../services/appointmentService');
 
 const getAllAppointments = async (req, res) => {
   try {
@@ -11,11 +11,9 @@ const getAllAppointments = async (req, res) => {
 
 const getAppointmentById = async (req, res) => {
   try {
-    const appointment = await appointmentService.getAppointmentById(
-      req.params.id
-    );
+    const appointment = await appointmentService.getAppointmentById(req.params.id);
     if (!appointment) {
-      return res.status(404).json({ message: "Appointment not found" });
+      return res.status(404).json({ message: 'Appointment not found' });
     }
     res.status(200).json(appointment);
   } catch (error) {
@@ -34,12 +32,9 @@ const createAppointment = async (req, res) => {
 
 const updateAppointment = async (req, res) => {
   try {
-    const appointment = await appointmentService.updateAppointment(
-      req.params.id,
-      req.body
-    );
+    const appointment = await appointmentService.updateAppointment(req.params.id, req.body);
     if (!appointment) {
-      return res.status(404).json({ message: "Appointment not found" });
+      return res.status(404).json({ message: 'Appointment not found' });
     }
     res.status(200).json(appointment);
   } catch (error) {
@@ -49,13 +44,38 @@ const updateAppointment = async (req, res) => {
 
 const deleteAppointment = async (req, res) => {
   try {
-    const appointment = await appointmentService.deleteAppointment(
-      req.params.id
-    );
+    const appointment = await appointmentService.deleteAppointment(req.params.id);
     if (!appointment) {
-      return res.status(404).json({ message: "Appointment not found" });
+      return res.status(404).json({ message: 'Appointment not found' });
     }
-    res.status(200).json({ message: "Appointment deleted" });
+    res.status(200).json({ message: 'Appointment deleted' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getTodaysAppointments = async (req, res) => {
+  try {
+    const appointments = await appointmentService.getTodaysAppointments();
+    res.status(200).json(appointments);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getArrivedPatients = async (req, res) => {
+  try {
+    const patients = await appointmentService.getArrivedPatients();
+    res.status(200).json(patients);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getVisitHistory = async (req, res) => {
+  try {
+    const history = await appointmentService.getVisitHistory(req.params.patientId);
+    res.status(200).json(history);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -67,4 +87,7 @@ module.exports = {
   createAppointment,
   updateAppointment,
   deleteAppointment,
+  getTodaysAppointments,
+  getArrivedPatients,
+  getVisitHistory,
 };

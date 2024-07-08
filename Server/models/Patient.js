@@ -1,20 +1,21 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const mongoose = require('mongoose');
 
-const patientSchema = new Schema({
-  name: String,
+const patientSchema = new mongoose.Schema({
+  firstName: String,
+  lastName: String,
   dateOfBirth: Date,
-  gender: String,
-  contactInfo: {
-    phone: String,
-    email: String,
-    address: String,
-  },
-  firstVisitDate: Date,
-  medicalHistory: [String],
-  currentAppointmentReason: String,
-  lastTreatment: String,
+  medicalHistory: [{
+    condition: String,
+    treatment: String,
+    date: Date
+  }],
+  // Adding visit history to the patient schema
+  visitHistory: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Appointment',
+  }]
 });
 
-const Patient = mongoose.model("Patient", patientSchema);
+const Patient = mongoose.model('Patient', patientSchema);
+
 module.exports = Patient;

@@ -1,26 +1,33 @@
-const Appointment = require("../models/Appointment");
+const Appointment = require('../models/appointment');
+const Patient = require('../models/Patient');
 
-const getAllAppointments = async () => {
-  return await Appointment.find();
+const getTodaysAppointments = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  return await Appointment.find({
+    date: { $gte: today, $lt: tomorrow },
+  }).populate('patient').populate('doctor');
 };
 
-const getAppointmentById = async (id) => {
-  return await Appointment.findById(id);
+const getArrivedPatients = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  return await Appointment.find({
+    date: { $gte: today, $lt: tomorrow },
+    status: 'Arrived',
+  }).populate('patient').populate('doctor');
 };
 
-const createAppointment = async (appointmentData) => {
-  const newAppointment = new Appointment(appointmentData);
-  return await newAppointment.save();
-};
-
-const updateAppointment = async (id, appointmentData) => {
-  return await Appointment.findByIdAndUpdate(id, appointmentData, {
-    new: true,
-  });
-};
-
-const deleteAppointment = async (id) => {
-  return await Appointment.findByIdAndDelete(id);
+const getVisitHistory = async (patientId) => {
+  return await Appointment.find({
+    patient: patientId,
+  }).populate('doctor').sort({ date: -1 });
 };
 
 module.exports = {
@@ -29,4 +36,7 @@ module.exports = {
   createAppointment,
   updateAppointment,
   deleteAppointment,
+  getTodaysAppointments,
+  getArrivedPatients,
+  getVisitHistory,
 };
