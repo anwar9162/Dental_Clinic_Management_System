@@ -67,10 +67,57 @@ const deletePatient = async (req, res) => {
   }
 };
 
+const addDentalChartEntry = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    patient.dentalChart.push(req.body);
+    await patient.save();
+    res.status(201).json({ message: 'Dental chart entry added', patient });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getDentalChart = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    res.status(200).json(patient.dentalChart);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteDentalChartEntry = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    patient.dentalChart.id(req.params.entryId).remove();
+    await patient.save();
+    res.status(200).json({ message: 'Dental chart entry deleted', patient });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 module.exports = {
   getAllPatients,
   getPatientById,
   createPatient,
   updatePatient,
   deletePatient,
+  addDentalChartEntry,
+  deleteDentalChartEntry,
+  getDentalChart,
 };
