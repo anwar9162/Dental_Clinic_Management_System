@@ -31,7 +31,6 @@ class PatientDetailScreen extends StatelessWidget {
         32,
         (index) => Tooth(
           number: index + 1,
-          condition: index % 2 == 0 ? "Healthy" : "Decayed",
           notes: "No issues",
           isUpper: index < 16,
           type: _getToothType(index + 1),
@@ -89,10 +88,25 @@ class PatientDetailScreen extends StatelessWidget {
   }
 
   String _getToothType(int number) {
-    if (number <= 4 || (number >= 29 && number <= 32)) return "Molar";
-    if (number >= 5 && number <= 12) return "Premolar";
-    if (number == 6 || number == 11 || number == 22 || number == 27)
+    if ((number >= 7 && number <= 10) || (number >= 23 && number <= 26)) {
+      return "Incisor";
+    } else if ((number >= 1 && number <= 3) ||
+        (number >= 14 && number <= 19) ||
+        (number >= 30 && number <= 32)) {
+      return "Molar";
+    } else if ((number == 4 ||
+        number == 5 ||
+        number == 12 ||
+        number == 13 ||
+        number == 20 ||
+        number == 21 ||
+        number == 28 ||
+        number == 29)) {
+      return "Premolar";
+    } else if (number == 6 || number == 11 || number == 22 || number == 27) {
       return "Canine";
-    return "Incisor";
+    } else {
+      return "Unknown"; // Handle any unexpected numbers gracefully
+    }
   }
 }
