@@ -49,39 +49,124 @@ class PatientDetailScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Name: ${mockPatient.name}',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'First Visit Date: ${visitDate.toLocal()}'.split(' ')[0],
-                style: TextStyle(fontSize: 18),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Last Treatment: ${mockPatient.lastTreatment}',
-                style: TextStyle(fontSize: 18),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Current Appointment Reason: ${mockPatient.currentAppointmentReason}',
-                style: TextStyle(fontSize: 18),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Days Since First Visit: $daysSinceFirstVisit',
-                style: TextStyle(fontSize: 18),
-              ),
+              _buildPatientInfoSection(mockPatient, daysSinceFirstVisit),
               SizedBox(height: 20),
-              Text(
-                'Dental Chart:',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              DentalChart(dentalChart: mockPatient.dentalChart!),
+              _buildDentalChartSection(mockPatient.dentalChart!),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPatientInfoSection(Patient patient, int daysSinceFirstVisit) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    patient.name,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  _buildInfoRow('First Visit Date:',
+                      '${patient.firstVisitDate.toLocal()}'.split(' ')[0]),
+                  _buildInfoRow('Last Treatment:',
+                      patient.lastTreatment ?? "No treatment"),
+                  _buildInfoRow('Current Appointment Reason:',
+                      patient.currentAppointmentReason),
+                  _buildInfoRow(
+                      'Days Since First Visit:', '$daysSinceFirstVisit'),
+                ],
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              flex: 1,
+              child: Column(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.asset(
+                      'assets/images/user_profile_image.jpg',
+                      height: 150,
+                      width: 150,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDentalChartSection(List<Tooth> dentalChart) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Dental Chart',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 10),
+            DentalChart(dentalChart: dentalChart),
+          ],
         ),
       ),
     );
