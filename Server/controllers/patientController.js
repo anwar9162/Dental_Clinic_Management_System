@@ -67,6 +67,7 @@ const deletePatient = async (req, res) => {
   }
 };
 
+// Add a dental chart entry
 const addDentalChartEntry = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
@@ -74,7 +75,18 @@ const addDentalChartEntry = async (req, res) => {
       return res.status(404).json({ message: 'Patient not found' });
     }
 
-    patient.dentalChart.push(req.body);
+    const { toothNumber, condition, treatment, date } = req.body;
+    const toothEntry = patient.dentalChart.find(entry => entry.toothNumber === toothNumber);
+
+    if (toothEntry) {
+      toothEntry.notes.push({ condition, treatment, date });
+    } else {
+      patient.dentalChart.push({
+        toothNumber,
+        notes: [{ condition, treatment, date }]
+      });
+    }
+
     await patient.save();
     res.status(201).json({ message: 'Dental chart entry added', patient });
   } catch (error) {
@@ -82,6 +94,7 @@ const addDentalChartEntry = async (req, res) => {
   }
 };
 
+// Get dental chart for a patient
 const getDentalChart = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
@@ -95,6 +108,7 @@ const getDentalChart = async (req, res) => {
   }
 };
 
+// Delete dental chart entry
 const deleteDentalChartEntry = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
@@ -102,7 +116,23 @@ const deleteDentalChartEntry = async (req, res) => {
       return res.status(404).json({ message: 'Patient not found' });
     }
 
-    patient.dentalChart.id(req.params.entryId).remove();
+    const toothEntry = patient.dentalChart.find(entry => entry.toothNumber === req.params.toothNumber);
+    if (!toothEntry) {
+      return res.status(404).json({ message: 'Tooth entry not found' });
+    }
+
+    const noteIndex = toothEntry.notes.findIndex(note => note._id.toString() === req.params.entryId);
+    if (noteIndex === -1) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+
+    toothEntry.notes.splice(noteIndex, 1);
+
+    // If the tooth entry has no more notes, remove the entire tooth entry
+    if (toothEntry.notes.length === 0) {
+      patient.dentalChart = patient.dentalChart.filter(entry => entry.toothNumber !== req.params.toothNumber);
+    }
+
     await patient.save();
     res.status(200).json({ message: 'Dental chart entry deleted', patient });
   } catch (error) {
@@ -110,6 +140,35 @@ const deleteDentalChartEntry = async (req, res) => {
   }
 };
 
+// Update dental chart entry
+const updateDentalChartEntry = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    const toothEntry = patient.dentalChart.find(entry => entry.toothNumber === req.params.toothNumber);
+    if (!toothEntry) {
+      return res.status(404).json({ message: 'Tooth entry not found' });
+    }
+
+    const note = toothEntry.notes.id(req.params.entryId);
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+
+    // Update the note with the new data from the request body
+    note.condition = req.body.condition || note.condition;
+    note.treatment = req.body.treatment || note.treatment;
+    note.date = req.body.date || note.date;
+
+    await patient.save();
+    res.status(200).json({ message: 'Dental chart entry updated', patient });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   getAllPatients,
@@ -120,4 +179,5 @@ module.exports = {
   addDentalChartEntry,
   deleteDentalChartEntry,
   getDentalChart,
+  updateDentalChartEntry,
 };

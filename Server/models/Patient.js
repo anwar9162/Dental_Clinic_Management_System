@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
-const dentalChartSchema = new mongoose.Schema({
-  toothNumber: String,
+const dentalChartEntrySchema = new mongoose.Schema({
   condition: String,
   treatment: String,
   date: Date
+});
+
+const dentalChartSchema = new mongoose.Schema({
+  toothNumber: String,
+  notes: [dentalChartEntrySchema]
 });
 const patientSchema = new mongoose.Schema({
   firstName: String,
@@ -18,7 +22,7 @@ const patientSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Appointment',
   }],
-  dentalChart:[dentalChartSchema]
+  dentalChart: [dentalChartSchema]
 });
 
 const Patient = mongoose.model('Patient', patientSchema);

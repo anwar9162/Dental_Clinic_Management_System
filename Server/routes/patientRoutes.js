@@ -8,6 +8,7 @@ const {
   addDentalChartEntry,
   getDentalChart,
   deleteDentalChartEntry,
+  updateDentalChartEntry,
 } = require("../controllers/patientController");
 
 const router = express.Router();
@@ -20,6 +21,8 @@ router.delete("/:id", deletePatient);
 
 router.post('/:id/dental-chart', addDentalChartEntry);
 router.get('/:id/dental-chart', getDentalChart);
-router.delete('/:id/dental-chart/:entryId', deleteDentalChartEntry);
+router.delete('/:id/dental-chart/:toothNumber/:entryId', deleteDentalChartEntry);
+router.put('/:id/dental-chart/:toothNumber/:entryId', updateDentalChartEntry);
+
 
 module.exports = router;
