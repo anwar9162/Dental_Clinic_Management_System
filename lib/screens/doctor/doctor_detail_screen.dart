@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/navigation_drawer.dart' as custom;
+import '../../widgets/navigation_drawer.dart';
 
 class DoctorDetailScreen extends StatelessWidget {
   final String name;
@@ -13,7 +13,7 @@ class DoctorDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Doctor Details'),
       ),
-      drawer: custom.NavigationDrawer(),
+      drawer: CustomNavigationDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

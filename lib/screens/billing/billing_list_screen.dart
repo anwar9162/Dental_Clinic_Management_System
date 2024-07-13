@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/navigation_drawer.dart' as custom;
+import '../../widgets/navigation_drawer.dart';
 
 class BillingListScreen extends StatelessWidget {
   final List<Map<String, String>> mockBillings = [
@@ -13,16 +13,18 @@ class BillingListScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Billing List'),
       ),
-      drawer: custom.NavigationDrawer(),
-      body: ListView.builder(
-        itemCount: mockBillings.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(mockBillings[index]['patient']!),
-            subtitle: Text('Amount: ${mockBillings[index]['amount']}'),
-            trailing: Text(mockBillings[index]['date']!),
-          );
-        },
+      drawer: CustomNavigationDrawer(),
+      body: Builder(
+        builder: (context) => ListView.builder(
+          itemCount: mockBillings.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(mockBillings[index]['patient']!),
+              subtitle: Text('Amount: ${mockBillings[index]['amount']}'),
+              trailing: Text(mockBillings[index]['date']!),
+            );
+          },
+        ),
       ),
     );
   }

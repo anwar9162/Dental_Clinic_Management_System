@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../patient/add_patient_screen.dart';
 import '../patient/patient_detail_screen.dart';
 import '../../models/patient_model.dart';
-import '../../widgets/navigation_drawer.dart' as custom;
+import '../../widgets/navigation_drawer.dart';
 
 class PatientListScreen extends StatelessWidget {
   final List<Patient> patients = [
@@ -28,7 +28,7 @@ class PatientListScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Patients List'),
       ),
-      drawer: custom.NavigationDrawer(),
+      drawer: CustomNavigationDrawer(),
       body: ListView.builder(
         itemCount: patients.length,
         itemBuilder: (context, index) {

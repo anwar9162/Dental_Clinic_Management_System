@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/navigation_drawer.dart' as custom;
+import '../../widgets/navigation_drawer.dart';
 import '../../models/patient_model.dart';
 import '../../widgets/dental_chart.dart';
 
@@ -42,7 +42,7 @@ class PatientDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Patient Details'),
       ),
-      drawer: custom.NavigationDrawer(),
+      drawer: CustomNavigationDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(

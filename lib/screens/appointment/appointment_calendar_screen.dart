@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../models/appointment_model.dart';
 import '../../models/patient_model.dart';
-import '../../widgets/navigation_drawer.dart' as custom;
+import '../../widgets/navigation_drawer.dart';
 
 class AppointmentCalendarScreen extends StatefulWidget {
   @override
@@ -93,7 +93,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
       appBar: AppBar(
         title: Text('Appointment Calendar'),
       ),
-      drawer: custom.NavigationDrawer(),
+      drawer: CustomNavigationDrawer(),
       body: Column(
         children: [
           TableCalendar(

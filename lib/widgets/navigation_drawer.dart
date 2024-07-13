@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/patient_model.dart';
 
-class NavigationDrawer extends StatelessWidget {
+class CustomNavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -66,7 +66,6 @@ class NavigationDrawer extends StatelessWidget {
             leading: Icon(Icons.person_outline),
             title: Text('Patient Record'),
             onTap: () {
-              // Replace with your actual patient data
               Navigator.pushNamed(
                 context,
                 '/patientrecord',

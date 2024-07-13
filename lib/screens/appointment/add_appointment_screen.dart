@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../models/appointment_model.dart';
-import '../../widgets/navigation_drawer.dart' as custom;
 
 class AddAppointmentScreen extends StatefulWidget {
+  final Appointment? appointment;
+
+  AddAppointmentScreen({this.appointment});
+
   @override
   _AddAppointmentScreenState createState() => _AddAppointmentScreenState();
 }
@@ -14,10 +17,21 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
   final _doctorNameController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.appointment != null) {
+      _patientNameController.text = widget.appointment!.patientName;
+      _descriptionController.text = widget.appointment!.description;
+      _doctorNameController.text = widget.appointment!.doctorName;
+      _selectedDate = widget.appointment!.date;
+    }
+  }
+
   void _saveForm() {
     if (_formKey.currentState!.validate()) {
       final newAppointment = Appointment(
-        id: DateTime.now().toString(),
+        id: widget.appointment?.id ?? DateTime.now().toString(),
         patientName: _patientNameController.text,
         date: _selectedDate,
         description: _descriptionController.text,
@@ -31,9 +45,11 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Appointment'),
+        title: Text(widget.appointment == null
+            ? 'Add Appointment'
+            : 'Edit Appointment'),
+        backgroundColor: Colors.teal,
       ),
-      drawer: custom.NavigationDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -42,7 +58,11 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
             children: [
               TextFormField(
                 controller: _patientNameController,
-                decoration: InputDecoration(labelText: 'Patient Name'),
+                decoration: InputDecoration(
+                  labelText: 'Patient Name',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the patient name';
@@ -50,9 +70,14 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
                   return null;
                 },
               ),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.description),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a description';
@@ -60,9 +85,14 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
                   return null;
                 },
               ),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _doctorNameController,
-                decoration: InputDecoration(labelText: 'Doctor Name'),
+                decoration: InputDecoration(
+                  labelText: 'Doctor Name',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.local_hospital),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the doctor name';
@@ -71,9 +101,33 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
                 },
               ),
               SizedBox(height: 16),
+              ListTile(
+                title: Text("Appointment Date: ${_selectedDate.toLocal()}"
+                    .split(' ')[0]),
+                trailing: Icon(Icons.calendar_today),
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: _selectedDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2101),
+                  );
+                  if (pickedDate != null && pickedDate != _selectedDate) {
+                    setState(() {
+                      _selectedDate = pickedDate;
+                    });
+                  }
+                },
+              ),
+              SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _saveForm,
                 child: Text('Save Appointment'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  textStyle: TextStyle(fontSize: 16),
+                ),
               ),
             ],
           ),

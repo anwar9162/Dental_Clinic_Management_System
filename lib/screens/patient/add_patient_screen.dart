@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/navigation_drawer.dart' as custom;
+import '../../widgets/navigation_drawer.dart';
 
 class AddPatientScreen extends StatefulWidget {
   @override
@@ -26,7 +26,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
       appBar: AppBar(
         title: Text('Add Patient'),
       ),
-      drawer: custom.NavigationDrawer(),
+      drawer: CustomNavigationDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
