@@ -10,23 +10,24 @@ class ToothWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String imagePath = 'assets/images/${tooth.type.toLowerCase()}.svg';
+    Color bgColor =
+        tooth.notes.contains('Needs') ? Colors.red[100]! : Colors.green[100]!;
 
     return GestureDetector(
       onTap: () => _showMarkDialog(context),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Tooltip(
             message: "Tooth ${tooth.number}\nNotes: ${tooth.notes}",
             child: Container(
-              width: 50,
-              height: 50,
+              width: 60,
+              height: 60,
               padding: EdgeInsets.all(4),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey, width: 1),
-                color: tooth.notes.contains('Needs')
-                    ? Colors.red[100]
-                    : Colors.green[100],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[300]!, width: 1),
+                color: bgColor,
               ),
               child: SvgPicture.asset(
                 imagePath,
@@ -34,10 +35,14 @@ class ToothWidget extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 4),
+          SizedBox(height: 6),
           Text(
-            '${tooth.type}\n${tooth.notes}',
-            style: TextStyle(fontSize: 10),
+            'Tooth ${tooth.number}\n${tooth.notes}',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -53,12 +58,14 @@ class ToothWidget extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Mark Tooth ${tooth.number}'),
+          title: Text('Update Tooth ${tooth.number}'),
           content: TextField(
             controller: notesController,
             decoration: InputDecoration(
               hintText: 'Enter notes or issues...',
+              border: OutlineInputBorder(),
             ),
+            maxLines: 3,
           ),
           actions: [
             TextButton(

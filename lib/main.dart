@@ -13,6 +13,7 @@ import 'models/patient_model.dart';
 import 'models/appointment_model.dart';
 import 'providers/appointment_provider.dart';
 import 'widgets/navigation_drawer.dart';
+import 'utils/constants.dart'; // Ensure this import is correct based on your file structure
 
 void main() {
   runApp(MyApp());
@@ -27,6 +28,9 @@ class MyApp extends StatelessWidget {
         title: 'Dental Clinic Management',
         theme: ThemeData(
           primarySwatch: Colors.teal,
+          scaffoldBackgroundColor:
+              backgroundColor, // Set the background color for the Scaffold
+
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         initialRoute: '/',

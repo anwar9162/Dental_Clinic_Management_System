@@ -1,32 +1,23 @@
 import 'package:flutter/material.dart';
-import '../../widgets/navigation_drawer.dart';
 import '../../models/patient_model.dart';
-import '../../widgets/dental_chart.dart';
+import '../../widgets/dental_chart.dart'; // Ensure you have the DentalChart widget
 
-class PatientDetailScreen extends StatelessWidget {
-  final String name;
-  final DateTime? firstVisitDate;
-  final String? lastTreatment;
-  final String currentAppointmentReason;
+class PatientDetailWidget extends StatelessWidget {
+  final Patient patient;
 
-  PatientDetailScreen({
-    required this.name,
-    this.firstVisitDate,
-    this.lastTreatment,
-    required this.currentAppointmentReason,
-  });
+  PatientDetailWidget({required this.patient});
 
   @override
   Widget build(BuildContext context) {
-    DateTime visitDate = firstVisitDate ?? DateTime.now();
+    DateTime visitDate = patient.firstVisitDate ?? DateTime.now();
     int daysSinceFirstVisit = DateTime.now().difference(visitDate).inDays;
 
     final mockPatient = Patient(
       id: "12",
-      name: name,
+      name: patient.name,
       firstVisitDate: visitDate,
-      lastTreatment: lastTreatment ?? "No treatment",
-      currentAppointmentReason: currentAppointmentReason,
+      lastTreatment: patient.lastTreatment ?? "No treatment",
+      currentAppointmentReason: patient.currentAppointmentReason,
       dentalChart: List.generate(
         32,
         (index) => Tooth(
@@ -38,22 +29,16 @@ class PatientDetailScreen extends StatelessWidget {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Patient Details'),
-      ),
-      drawer: CustomNavigationDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildPatientInfoSection(mockPatient, daysSinceFirstVisit),
-              SizedBox(height: 20),
-              _buildDentalChartSection(mockPatient.dentalChart!),
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildPatientInfoSection(mockPatient, daysSinceFirstVisit),
+            SizedBox(height: 16),
+            _buildDentalChartSection(mockPatient.dentalChart!),
+          ],
         ),
       ),
     );
@@ -61,13 +46,14 @@ class PatientDetailScreen extends StatelessWidget {
 
   Widget _buildPatientInfoSection(Patient patient, int daysSinceFirstVisit) {
     return Card(
-      elevation: 3,
+      elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               flex: 2,
@@ -77,37 +63,39 @@ class PatientDetailScreen extends StatelessWidget {
                   Text(
                     patient.name,
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      color: Colors.teal,
                     ),
                   ),
-                  SizedBox(height: 10),
-                  _buildInfoRow('First Visit Date:',
+                  SizedBox(height: 8),
+                  _buildInfoRow('First Visit:',
                       '${patient.firstVisitDate.toLocal()}'.split(' ')[0]),
                   _buildInfoRow('Last Treatment:',
                       patient.lastTreatment ?? "No treatment"),
-                  _buildInfoRow('Current Appointment Reason:',
-                      patient.currentAppointmentReason),
                   _buildInfoRow(
-                      'Days Since First Visit:', '$daysSinceFirstVisit'),
+                      'Current Appointment:', patient.currentAppointmentReason),
+                  _buildInfoRow(
+                      'Days Since First Visit:', '$daysSinceFirstVisit days'),
                 ],
               ),
             ),
-            SizedBox(width: 16),
+            SizedBox(width: 12),
             Expanded(
               flex: 1,
-              child: Column(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Container(
+                  width: double.infinity,
+                  height: 120,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
                     child: Image.asset(
                       'assets/images/user_profile_image.jpg',
-                      height: 150,
-                      width: 150,
                       fit: BoxFit.cover,
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ],
@@ -118,7 +106,7 @@ class PatientDetailScreen extends StatelessWidget {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
           Expanded(
@@ -126,8 +114,9 @@ class PatientDetailScreen extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
+                color: Colors.teal,
               ),
             ),
           ),
@@ -136,7 +125,7 @@ class PatientDetailScreen extends StatelessWidget {
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 color: Colors.grey[700],
               ),
             ),
@@ -148,23 +137,24 @@ class PatientDetailScreen extends StatelessWidget {
 
   Widget _buildDentalChartSection(List<Tooth> dentalChart) {
     return Card(
-      elevation: 3,
+      elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Dental Chart',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: Colors.teal,
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 8),
             DentalChart(dentalChart: dentalChart),
           ],
         ),

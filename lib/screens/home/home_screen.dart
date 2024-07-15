@@ -3,6 +3,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../../models/appointment_model.dart';
 import '../../models/patient_model.dart';
 import '../../widgets/navigation_drawer.dart';
+import '../../utils/constants.dart'; // Import the constants file
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -60,61 +61,64 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
       ),
       drawer: CustomNavigationDrawer(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildInfoCard(
-                    context,
-                    title: 'Expected Patients',
-                    count: _appointments.length,
-                    icon: Icons.person,
-                    color: Colors.teal,
-                  ),
-                  _buildInfoCard(
-                    context,
-                    title: 'Walk-In Patients',
-                    count: _walkInPatients.length,
-                    icon: Icons.person_outline,
-                    color: Colors.orange,
-                  ),
-                  _buildInfoCard(
-                    context,
-                    title: 'New Patients',
-                    count: _newPatients.length,
-                    icon: Icons.person_add,
-                    color: Colors.blue,
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              StaggeredGrid.count(
-                crossAxisCount: 3, // Change to 3 columns
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                children: [
-                  _buildDetailCard(
-                    context,
-                    title: 'Today\'s Expected Patients',
-                    appointments: _appointments,
-                  ),
-                  _buildDetailCard(
-                    context,
-                    title: 'Today\'s Walk-In Patients',
-                    patients: _walkInPatients,
-                  ),
-                  _buildDetailCard(
-                    context,
-                    title: 'Today\'s New Patients',
-                    patients: _newPatients,
-                  ),
-                ],
-              ),
-            ],
+      body: Container(
+        color: backgroundColor, // Ensure background color is set correctly
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildInfoCard(
+                      context,
+                      title: 'Expected Patients',
+                      count: _appointments.length,
+                      icon: Icons.person,
+                      color: Colors.teal,
+                    ),
+                    _buildInfoCard(
+                      context,
+                      title: 'Walk-In Patients',
+                      count: _walkInPatients.length,
+                      icon: Icons.person_outline,
+                      color: Colors.orange,
+                    ),
+                    _buildInfoCard(
+                      context,
+                      title: 'New Patients',
+                      count: _newPatients.length,
+                      icon: Icons.person_add,
+                      color: Colors.blue,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                StaggeredGrid.count(
+                  crossAxisCount: 3, // Change to 3 columns
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  children: [
+                    _buildDetailCard(
+                      context,
+                      title: 'Today\'s Expected Patients',
+                      appointments: _appointments,
+                    ),
+                    _buildDetailCard(
+                      context,
+                      title: 'Today\'s Walk-In Patients',
+                      patients: _walkInPatients,
+                    ),
+                    _buildDetailCard(
+                      context,
+                      title: 'Today\'s New Patients',
+                      patients: _newPatients,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
