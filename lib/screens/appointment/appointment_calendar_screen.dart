@@ -76,6 +76,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
   ];
   Patient? _selectedPatient;
   Appointment? _selectedAppointment;
+  String _messageContent = '';
 
   Map<DateTime, List<Appointment>> _groupedAppointments = {};
 
@@ -117,6 +118,11 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         _selectedAppointment = null;
       });
     }
+  }
+
+  void _sendSMS(String message) {
+    // Implement SMS sending logic here
+    print('Sending SMS to ${_selectedAppointment!.patientName}: $message');
   }
 
   @override
@@ -247,14 +253,26 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
-                              trailing: IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  setState(() {
-                                    _appointments.remove(appointment);
-                                    _groupAppointments();
-                                  });
-                                },
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () {
+                                      setState(() {
+                                        _appointments.remove(appointment);
+                                        _groupAppointments();
+                                      });
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.sms, color: Colors.blue),
+                                    onPressed: () {
+                                      print(
+                                          'Send SMS to ${appointment.patientName}');
+                                    },
+                                  ),
+                                ],
                               ),
                               onTap: () {
                                 setState(() {
@@ -359,6 +377,58 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                           Text(
                               'Description: ${_selectedAppointment!.description}'),
                           Text('Doctor: ${_selectedAppointment!.doctorName}'),
+                        ],
+                      ),
+                    ),
+                  SizedBox(height: 16.0),
+                  if (_selectedAppointment != null)
+                    Container(
+                      padding: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8.0,
+                            spreadRadius: 2.0,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Send Message:',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextField(
+                            onChanged: (value) {
+                              setState(() {
+                                _messageContent = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Type your message here',
+                            ),
+                          ),
+                          SizedBox(height: 8.0),
+                          ElevatedButton(
+                            onPressed: () {
+                              _sendSMS(_messageContent);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                            ),
+                            child: Text('Send'),
+                          ),
                         ],
                       ),
                     ),
