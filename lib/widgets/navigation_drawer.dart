@@ -55,13 +55,14 @@ class CustomNavigationDrawer extends StatelessWidget {
               Navigator.pushReplacementNamed(context, '/doctors');
             },
           ),
+          /*
           ListTile(
             leading: Icon(Icons.payment),
             title: Text('Manage Billing'),
             onTap: () {
               Navigator.pushReplacementNamed(context, '/billing');
             },
-          ),
+          ),*/
           ListTile(
             leading: Icon(Icons.person_outline),
             title: Text('Patient Record'),

@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           '/appointments': (context) => AppointmentListScreen(),
           '/appointment-calendar': (context) => AppointmentCalendarScreen(),
           '/doctors': (context) => DoctorListScreen(),
-          '/billing': (context) => BillingListScreen(),
+          // '/billing': (context) => BillingListScreen(),
           '/add-appointment': (context) => AddAppointmentScreen(),
         },
         onGenerateRoute: (settings) {

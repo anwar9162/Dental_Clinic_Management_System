@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../widgets/navigation_drawer.dart';
 
 class DoctorDetailScreen extends StatelessWidget {
   final String name;
@@ -10,10 +9,7 @@ class DoctorDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Doctor Details'),
-      ),
-      drawer: CustomNavigationDrawer(),
+      backgroundColor: Colors.white, // Set the background color to white
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

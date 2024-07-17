@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../widgets/navigation_drawer.dart';
 
 class AddDoctorScreen extends StatefulWidget {
   @override
@@ -21,10 +20,11 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      /* appBar: AppBar(
         title: Text('Add Doctor'),
-      ),
-      drawer: CustomNavigationDrawer(),
+      ),*/
+      backgroundColor: Colors.white, // Set the background color to white
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

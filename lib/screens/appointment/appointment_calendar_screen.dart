@@ -247,6 +247,15 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
+                              trailing: IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  setState(() {
+                                    _appointments.remove(appointment);
+                                    _groupAppointments();
+                                  });
+                                },
+                              ),
                               onTap: () {
                                 setState(() {
                                   _selectedAppointment = appointment;
