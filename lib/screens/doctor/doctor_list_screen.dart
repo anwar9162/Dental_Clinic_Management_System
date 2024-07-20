@@ -36,9 +36,9 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Doctors List'),
-        centerTitle: true,
+        //centerTitle: true,
+        backgroundColor: Colors.teal,
       ),
-      drawer: CustomNavigationDrawer(),
       body: Row(
         children: [
           // Narrowed doctor list

@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import '../models/patient_model.dart';
 
 class CustomNavigationDrawer extends StatelessWidget {
+  final Function(String, {Object? arguments}) onMenuTap;
+
+  CustomNavigationDrawer({required this.onMenuTap});
+
   @override
   Widget build(BuildContext context) {
-    return Drawer(
+    return Container(
+      width: 250, // Set a fixed width for the navigation drawer
+      color: Colors.teal,
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
@@ -13,7 +19,7 @@ class CustomNavigationDrawer extends StatelessWidget {
               color: Colors.teal,
             ),
             child: Text(
-              'Dental Clinic Management',
+              'Hospital Management',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -21,54 +27,46 @@ class CustomNavigationDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/');
-            },
+            leading: Icon(Icons.home, color: Colors.white),
+            title: Text('Home', style: TextStyle(color: Colors.white)),
+            onTap: () => onMenuTap('/'),
           ),
           ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Manage Patients'),
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/patients');
-            },
+            leading: Icon(Icons.person, color: Colors.white),
+            title:
+                Text('Manage Patients', style: TextStyle(color: Colors.white)),
+            onTap: () => onMenuTap('/patients'),
           ),
           ListTile(
-            leading: Icon(Icons.calendar_today),
-            title: Text('Manage Appointments (List)'),
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/appointments');
-            },
+            leading: Icon(Icons.calendar_today, color: Colors.white),
+            title: Text('Manage Appointments (List)',
+                style: TextStyle(color: Colors.white)),
+            onTap: () => onMenuTap('/appointments'),
           ),
           ListTile(
-            leading: Icon(Icons.calendar_view_month),
-            title: Text('Manage Appointments (Calendar)'),
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/appointment-calendar');
-            },
+            leading: Icon(Icons.calendar_view_month, color: Colors.white),
+            title: Text('Manage Appointments (Calendar)',
+                style: TextStyle(color: Colors.white)),
+            onTap: () => onMenuTap('/appointment-calendar'),
           ),
           ListTile(
-            leading: Icon(Icons.local_hospital),
-            title: Text('Manage Doctors'),
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/doctors');
-            },
+            leading: Icon(Icons.local_hospital, color: Colors.white),
+            title:
+                Text('Manage Doctors', style: TextStyle(color: Colors.white)),
+            onTap: () => onMenuTap('/doctors'),
           ),
           /*
           ListTile(
-            leading: Icon(Icons.payment),
-            title: Text('Manage Billing'),
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/billing');
-            },
+            leading: Icon(Icons.payment, color: Colors.white),
+            title: Text('Manage Billing', style: TextStyle(color: Colors.white)),
+            onTap: () => onMenuTap('/billing'),
           ),*/
           ListTile(
-            leading: Icon(Icons.person_outline),
-            title: Text('Patient Record'),
+            leading: Icon(Icons.person_outline, color: Colors.white),
+            title:
+                Text('Patient Record', style: TextStyle(color: Colors.white)),
             onTap: () {
-              Navigator.pushNamed(
-                context,
+              onMenuTap(
                 '/patientrecord',
                 arguments: Patient(
                   id: '1',

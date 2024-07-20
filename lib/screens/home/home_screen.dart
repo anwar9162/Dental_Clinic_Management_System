@@ -57,10 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dental Clinic Management'),
+        title: Text('Dashboard'),
         centerTitle: true,
+        backgroundColor: Colors.teal,
       ),
-      drawer: CustomNavigationDrawer(),
       body: Container(
         color: backgroundColor, // Ensure background color is set correctly
         child: SingleChildScrollView(
@@ -172,53 +172,71 @@ class _HomeScreenState extends State<HomeScreen> {
       List<Appointment>? appointments,
       List<Patient>? patients}) {
     return Card(
-      elevation: 6,
+      elevation: 8,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
       margin: EdgeInsets.symmetric(vertical: 10),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 10),
-            Container(
-              height: 200,
-              child: ListView.separated(
-                separatorBuilder: (context, index) => Divider(),
-                itemCount:
-                    (appointments?.length ?? 0) + (patients?.length ?? 0),
-                itemBuilder: (context, index) {
-                  if (index < (appointments?.length ?? 0)) {
-                    final appointment = appointments![index];
-                    return _buildListTile(
-                      appointment.patientName,
-                      'Last Treatment: ${appointment.lastTreatment}',
-                      'Current Appointment: ${appointment.currentAppointmentReason}',
-                      'Days Since First Visit: ${_daysSinceFirstVisit(appointment.firstVisitDate)}',
-                    );
-                  } else {
-                    final patient =
-                        patients![index - (appointments?.length ?? 0)];
-                    return _buildListTile(
-                      patient.name,
-                      'Last Treatment: ${patient.lastTreatment}',
-                      'Current Appointment: ${patient.currentAppointmentReason}',
-                      'Days Since First Visit: ${_daysSinceFirstVisit(patient.firstVisitDate)}',
-                    );
-                  }
-                },
-              ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Color.fromARGB(255, 6, 216, 69)!],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 8,
+              spreadRadius: 2,
+              offset: Offset(0, 2),
             ),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 10),
+              Container(
+                height: 200,
+                child: ListView.separated(
+                  separatorBuilder: (context, index) => Divider(),
+                  itemCount:
+                      (appointments?.length ?? 0) + (patients?.length ?? 0),
+                  itemBuilder: (context, index) {
+                    if (index < (appointments?.length ?? 0)) {
+                      final appointment = appointments![index];
+                      return _buildListTile(
+                        appointment.patientName,
+                        'Last Treatment: ${appointment.lastTreatment}',
+                        'Current Appointment: ${appointment.currentAppointmentReason}',
+                        'Days Since First Visit: ${_daysSinceFirstVisit(appointment.firstVisitDate)}',
+                      );
+                    } else {
+                      final patient =
+                          patients![index - (appointments?.length ?? 0)];
+                      return _buildListTile(
+                        patient.name,
+                        'Last Treatment: ${patient.lastTreatment}',
+                        'Current Appointment: ${patient.currentAppointmentReason}',
+                        'Days Since First Visit: ${_daysSinceFirstVisit(patient.firstVisitDate)}',
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -13,7 +13,6 @@ class BillingListScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Billing List'),
       ),
-      drawer: CustomNavigationDrawer(),
       body: Builder(
         builder: (context) => ListView.builder(
           itemCount: mockBillings.length,

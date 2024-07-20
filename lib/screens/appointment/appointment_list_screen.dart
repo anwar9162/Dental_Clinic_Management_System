@@ -26,7 +26,6 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
           elevation: 0,
           backgroundColor: Colors.teal,
         ),
-        drawer: CustomNavigationDrawer(),
         body: Center(
           child: Consumer<AppointmentProvider>(
             builder: (context, provider, child) {

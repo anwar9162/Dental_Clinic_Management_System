@@ -3,7 +3,6 @@ import '../patient/PatientDetailWidget.dart';
 import '../patient/add_patient_screen.dart';
 import '../patient/add_arrived_patient_screen.dart';
 import '../../models/patient_model.dart';
-import '../../widgets/navigation_drawer.dart';
 
 class PatientListScreen extends StatefulWidget {
   @override
@@ -92,7 +91,6 @@ class _PatientListScreenState extends State<PatientListScreen>
           ),
         ),
       ),
-      drawer: CustomNavigationDrawer(),
       body: Row(
         children: [
           Expanded(

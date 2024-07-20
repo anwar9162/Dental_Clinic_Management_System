@@ -132,7 +132,6 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         title: Text('Appointment Calendar'),
         backgroundColor: Colors.teal,
       ),
-      drawer: CustomNavigationDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(

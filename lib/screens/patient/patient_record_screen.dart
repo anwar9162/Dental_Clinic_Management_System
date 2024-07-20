@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/patient_model.dart';
 import '../../models/appointment_model.dart';
-import '../../widgets/navigation_drawer.dart';
 
 class PatientRecordScreen extends StatelessWidget {
   final Patient patient;
@@ -14,7 +13,6 @@ class PatientRecordScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Patient Record: ${patient.name}'),
       ),
-      drawer: CustomNavigationDrawer(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
