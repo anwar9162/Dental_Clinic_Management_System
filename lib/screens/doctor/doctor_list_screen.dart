@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'add_doctor_screen.dart';
 import 'doctor_detail_screen.dart';
-import '../../widgets/navigation_drawer.dart';
 
 class DoctorListScreen extends StatefulWidget {
   @override

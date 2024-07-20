@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Appointment> _appointments = [
       Appointment(
         id: '1',
-        patientName: 'John Doe',
+        patientName: 'Kibrom Adinew',
         date: DateTime.now(),
         firstVisitDate: DateTime(2024, 6, 25),
         lastTreatment: 'Brace',
@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       Appointment(
         id: '2',
-        patientName: 'Jane Doe',
+        patientName: 'Matebe Assfaw',
         date: DateTime.now(),
         description: 'Tooth Extraction',
         doctorName: 'Dr. Johnson',
@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Patient> _walkInPatients = [
       Patient(
         id: '5',
-        name: 'Michael Jordan',
+        name: 'Anwar Ahmed',
         firstVisitDate: DateTime(2024, 6, 25),
         lastTreatment: 'Brace',
         currentAppointmentReason: 'Emergency Consultation',
@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Patient> _newPatients = [
       Patient(
         id: '6',
-        name: 'LeBron James',
+        name: 'Abraham Worku',
         firstVisitDate: DateTime(2024, 6, 25),
         currentAppointmentReason: 'New patient consultation',
       ),
@@ -180,7 +180,10 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.white, Color.fromARGB(255, 6, 216, 69)!],
+            colors: [
+              Color.fromARGB(255, 252, 252, 252),
+              Color.fromARGB(255, 6, 216, 69)!
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
