@@ -11,69 +11,113 @@ class PatientRecordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.teal, // Teal background color
         title: Text('Patient Record: ${patient.name}'),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSectionTitle('Personal Information'),
-              _buildPersonalInfoCard(patient),
-              SizedBox(height: 20),
-              _buildSectionTitle('Medical History'),
-              _buildMedicalHistoryCard(patient),
-              SizedBox(height: 20),
-              _buildSectionTitle('Appointment History'),
-              _buildAppointmentHistoryCard(patient),
-              SizedBox(height: 20),
-              _buildSectionTitle('Treatment Plan'),
-              _buildTreatmentPlanCard(patient),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Widget _buildPersonalInfoCard(Patient patient) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInfoRow('Name', patient.name),
-            _buildInfoRow('Date of Birth', '1990-01-01'), // Mock data
-            _buildInfoRow('Gender', 'Male'), // Mock data
-            _buildInfoRow('Phone Number', '123-456-7890'), // Mock data
-            _buildInfoRow('Email', 'johndoe@example.com'), // Mock data
+            _buildSectionTitle('Personal Information'),
+            _buildPersonalInfoCard(
+                context, patient), // Pass context to _buildPersonalInfoCard
+            SizedBox(height: 20),
+            _buildSectionTitle('Medical History'),
+            _buildMedicalHistoryCard(patient),
+            SizedBox(height: 20),
+            _buildSectionTitle('Appointment History'),
+            _buildAppointmentHistoryCard(patient),
+            SizedBox(height: 20),
+            _buildSectionTitle('Treatment Plan'),
+            _buildTreatmentPlanCard(patient),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Colors.blueGrey[900],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPersonalInfoCard(BuildContext context, Patient patient) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => FullScreenProfileImage(
+                imageAsset: 'assets/images/user_profile_image.jpg'),
+          ),
+        );
+      },
+      child: Hero(
+        tag: 'profileImage-${patient.id}', // Unique tag for Hero animation
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Image.asset(
+                    'assets/images/user_profile_image.jpg',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(height: 10),
+                _buildInfoRow('Name', patient.name,
+                    valueStyle: TextStyle(fontWeight: FontWeight.bold)),
+                _buildInfoRow('Date of Birth', '1990-01-01'), // Mock data
+                _buildInfoRow('Gender', 'Male'), // Mock data
+                _buildInfoRow('Phone Number', '123-456-7890'), // Mock data
+                _buildInfoRow('Email', 'johndoe@example.com'), // Mock data
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMedicalHistoryCard(Patient patient) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -83,8 +127,16 @@ class PatientRecordScreen extends StatelessWidget {
             _buildInfoRow('First Visit Date',
                 patient.firstVisitDate.toString().split(' ')[0]),
             _buildInfoRow('Last Treatment', patient.lastTreatment ?? 'N/A'),
-            _buildInfoRow('Known Allergies', 'None'), // Mock data
-            _buildInfoRow('Chronic Conditions', 'None'), // Mock data
+            _buildInfoRow(
+              'Known Allergies',
+              'None',
+              valueStyle: TextStyle(color: Colors.blueGrey[900]),
+            ),
+            _buildInfoRow(
+              'Chronic Conditions',
+              'None',
+              valueStyle: TextStyle(color: Colors.blueGrey[900]),
+            ),
           ],
         ),
       ),
@@ -108,37 +160,55 @@ class PatientRecordScreen extends StatelessWidget {
           doctorName: 'Dr. Johnson'),
     ];
 
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: appointments.map((appointment) {
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                appointment.description,
-                style: TextStyle(fontWeight: FontWeight.bold),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: appointments.map((appointment) {
+          return ListTile(
+            title: Text(
+              appointment.description,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey[900],
               ),
-              subtitle: Text(
-                  'Date: ${appointment.date.toString().split(' ')[0]}\nDoctor: ${appointment.doctorName}'),
-              isThreeLine: true,
-            );
-          }).toList(),
-        ),
+            ),
+            subtitle: Text(
+              'Date: ${appointment.date.toString().split(' ')[0]}\nDoctor: ${appointment.doctorName}',
+              style: TextStyle(color: Colors.blueGrey[700]),
+            ),
+            isThreeLine: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          );
+        }).toList(),
       ),
     );
   }
 
   Widget _buildTreatmentPlanCard(Patient patient) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -146,26 +216,64 @@ class PatientRecordScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildInfoRow(
-                'Current Appointment Reason', patient.currentAppointmentReason),
-            _buildInfoRow('Next Appointment Date', '2023-10-01'), // Mock data
+              'Current Appointment Reason',
+              patient.currentAppointmentReason,
+              valueStyle: TextStyle(color: Colors.blueGrey[900]),
+            ),
+            _buildInfoRow(
+              'Next Appointment Date',
+              '2023-10-01', // Mock data
+              valueStyle: TextStyle(color: Colors.blueGrey[900]),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(String label, String value, {TextStyle? valueStyle}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(fontWeight: FontWeight.bold),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
-          Text(value),
+          Expanded(
+            flex: 2,
+            child: Text(
+              value,
+              style: valueStyle,
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class FullScreenProfileImage extends StatelessWidget {
+  final String imageAsset;
+
+  FullScreenProfileImage({required this.imageAsset});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.teal,
+        title: Text('Profile Image'),
+      ),
+      body: Center(
+        child: Hero(
+          tag:
+              'profileImage-tag', // Make sure to use the same tag as in PatientRecordScreen
+          child: Image.asset(imageAsset),
+        ),
       ),
     );
   }
