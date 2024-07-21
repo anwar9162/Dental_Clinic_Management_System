@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../models/appointment_model.dart';
 import '../../providers/appointment_provider.dart';
 import './appointment_calendar_screen.dart';
-import './appointment_detail_screen.dart';
 import '../../widgets/navigation_drawer.dart';
 
 class AppointmentListScreen extends StatefulWidget {
@@ -45,9 +44,12 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
               return Column(
                 children: [
                   _buildSearchAndAddRow(context),
-                  _buildAppointmentTable(filteredAppointments, provider),
+                  Expanded(
+                    child:
+                        _buildAppointmentTable(filteredAppointments, provider),
+                  ),
                   if (selectedAppointment != null)
-                    AppointmentDetailPanel(appointment: selectedAppointment!),
+                    _buildAppointmentDetailPanel(selectedAppointment!),
                 ],
               );
             },
@@ -117,56 +119,54 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
 
   Widget _buildAppointmentTable(
       List<Appointment> filteredAppointments, AppointmentProvider provider) {
-    return Expanded(
-      child: Container(
-        padding: EdgeInsets.all(16),
-        constraints: BoxConstraints(maxWidth: 1000),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: DataTable2(
-          columnSpacing: 12,
-          horizontalMargin: 12,
-          minWidth: 600,
-          columns: [
-            DataColumn2(label: Text('ID'), size: ColumnSize.S),
-            DataColumn2(label: Text('Patient Name')),
-            DataColumn2(label: Text('Date')),
-            DataColumn2(label: Text('Description')),
-            DataColumn2(label: Text('Doctor Name')),
-            DataColumn2(label: Text('Actions')),
-          ],
-          rows: filteredAppointments.map((appointment) {
-            bool isSelected = selectedAppointment == appointment;
+    return Container(
+      padding: EdgeInsets.all(16),
+      constraints: BoxConstraints(maxWidth: 1000),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: DataTable2(
+        columnSpacing: 12,
+        horizontalMargin: 12,
+        minWidth: 600,
+        columns: [
+          DataColumn2(label: Text('ID'), size: ColumnSize.S),
+          DataColumn2(label: Text('Patient Name')),
+          DataColumn2(label: Text('Date')),
+          DataColumn2(label: Text('Description')),
+          DataColumn2(label: Text('Doctor Name')),
+          DataColumn2(label: Text('Actions')),
+        ],
+        rows: filteredAppointments.map((appointment) {
+          bool isSelected = selectedAppointment == appointment;
 
-            return DataRow(
-              selected: isSelected,
-              onSelectChanged: (value) {
-                setState(() {
-                  selectedAppointment = isSelected ? null : appointment;
-                });
-              },
-              cells: [
-                DataCell(Text(appointment.id)),
-                DataCell(Text(appointment.patientName)),
-                DataCell(
-                    Text(appointment.date.toLocal().toString().split(' ')[0])),
-                DataCell(Text(appointment.description)),
-                DataCell(Text(appointment.doctorName)),
-                DataCell(_buildActionButtons(context, appointment, provider)),
-              ],
-            );
-          }).toList(),
-        ),
+          return DataRow(
+            selected: isSelected,
+            onSelectChanged: (value) {
+              setState(() {
+                selectedAppointment = isSelected ? null : appointment;
+              });
+            },
+            cells: [
+              DataCell(Text(appointment.id)),
+              DataCell(Text(appointment.patientName)),
+              DataCell(
+                  Text(appointment.date.toLocal().toString().split(' ')[0])),
+              DataCell(Text(appointment.description)),
+              DataCell(Text(appointment.doctorName)),
+              DataCell(_buildActionButtons(context, appointment, provider)),
+            ],
+          );
+        }).toList(),
       ),
     );
   }
@@ -198,57 +198,71 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
       ],
     );
   }
-}
 
-class AppointmentDetailPanel extends StatelessWidget {
-  final Appointment appointment;
-
-  AppointmentDetailPanel({required this.appointment});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+  Widget _buildAppointmentDetailPanel(Appointment appointment) {
+    return Container(
+      color: Color.fromARGB(255, 247, 242, 242),
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Appointment Details',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          _buildDetailRow(
+              Icons.person, 'Patient Name: ${appointment.patientName}'),
+          _buildDetailRow(Icons.calendar_today,
+              'Date: ${appointment.date.toLocal().toString().split(' ')[0]}'),
+          _buildDetailRow(
+              Icons.description, 'Description: ${appointment.description}'),
+          _buildDetailRow(
+              Icons.medical_services, 'Doctor Name: ${appointment.doctorName}'),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  _showAppointmentCalendar(context);
+                },
+                child: Text('Edit'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                ),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
+                  // Implement delete functionality
+                },
+                child: Text('Delete'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Appointment Details',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 20),
-            Text('Patient Name: ${appointment.patientName}'),
-            Text(
-                'Date: ${appointment.date.toLocal().toString().split(' ')[0]}'),
-            Text('Description: ${appointment.description}'),
-            Text('Doctor Name: ${appointment.doctorName}'),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Add your edit functionality here
-                  },
-                  child: Text('Edit'),
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    // Add your delete functionality here
-                  },
-                  child: Text('Delete'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                ),
-              ],
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.teal),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 16),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
