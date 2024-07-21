@@ -11,23 +11,8 @@ class PatientListScreen extends StatefulWidget {
 
 class _PatientListScreenState extends State<PatientListScreen>
     with SingleTickerProviderStateMixin {
-  final List<Patient> _patients = [
-    Patient(
-      id: '1',
-      name: 'John Doe',
-      firstVisitDate: DateTime.now().subtract(Duration(days: 365)),
-      lastTreatment: 'Root Canal',
-      currentAppointmentReason: 'Routine Checkup',
-    ),
-    Patient(
-      id: '2',
-      name: 'Jane Doe',
-      firstVisitDate: DateTime.now().subtract(Duration(days: 200)),
-      lastTreatment: 'Tooth Extraction',
-      currentAppointmentReason: 'Toothache',
-    ),
-  ];
-
+  List<Patient> _patients =
+      mockPatients; // Using mockPatient from patient_model.dart
   String _searchQuery = '';
   Patient? selectedPatient;
   late TabController _tabController;
