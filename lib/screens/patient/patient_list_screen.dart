@@ -36,6 +36,8 @@ class _PatientListScreenState extends State<PatientListScreen>
   void _onSearch(String query) {
     setState(() {
       _searchQuery = query;
+      _isAddingPatient = false;
+      selectedPatient = null;
     });
   }
 
@@ -118,7 +120,7 @@ class _PatientListScreenState extends State<PatientListScreen>
                             title: Text(
                               patient.name,
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
+                                  fontWeight: FontWeight.bold, fontSize: 14),
                             ),
                             subtitle: Text(
                               'Last Treatment: ${patient.lastTreatment}',
@@ -133,6 +135,7 @@ class _PatientListScreenState extends State<PatientListScreen>
                             onTap: () {
                               setState(() {
                                 selectedPatient = patient;
+                                _isAddingPatient = false;
                               });
                             },
                           ),
@@ -145,7 +148,7 @@ class _PatientListScreenState extends State<PatientListScreen>
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 4,
             child: _isAddingPatient
                 ? Column(
                     children: [
