@@ -12,32 +12,15 @@ class PatientDetailWidget extends StatelessWidget {
     DateTime visitDate = patient.firstVisitDate ?? DateTime.now();
     int daysSinceFirstVisit = DateTime.now().difference(visitDate).inDays;
 
-    final mockPatient = Patient(
-      id: "12",
-      name: patient.name,
-      firstVisitDate: visitDate,
-      lastTreatment: patient.lastTreatment ?? "No treatment",
-      currentAppointmentReason: patient.currentAppointmentReason,
-      dentalChart: List.generate(
-        32,
-        (index) => Tooth(
-          number: index + 1,
-          notes: "No issues",
-          isUpper: index < 16,
-          type: _getToothType(index + 1),
-        ),
-      ),
-    );
-
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPatientInfoSection(mockPatient, daysSinceFirstVisit),
+            _buildPatientInfoSection(patient, daysSinceFirstVisit),
             SizedBox(height: 16),
-            _buildDentalChartSection(mockPatient.dentalChart!),
+            _buildDentalChartSection(patient.dentalChart ?? []),
           ],
         ),
       ),
@@ -50,8 +33,10 @@ class PatientDetailWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
+      color: const Color.fromARGB(
+          244, 255, 255, 255), // Background color of the card
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(16.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,10 +50,10 @@ class PatientDetailWidget extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.teal,
+                      color: Colors.black,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: 12), // Increased spacing between elements
                   _buildInfoRow('First Visit:',
                       '${patient.firstVisitDate.toLocal()}'.split(' ')[0]),
                   _buildInfoRow('Last Treatment:',
@@ -80,19 +65,23 @@ class PatientDetailWidget extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(width: 12),
+            SizedBox(width: 20), // Increased spacing between sections
             Expanded(
               flex: 1,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10.0),
                 child: Container(
                   width: double.infinity,
-                  height: 120,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    color: Colors
+                        .grey[200], // Background color of the image container
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: Image.asset(
                       'assets/images/user_profile_image.jpg',
-                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
@@ -106,7 +95,7 @@ class PatientDetailWidget extends StatelessWidget {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
           Expanded(
@@ -114,9 +103,8 @@ class PatientDetailWidget extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.teal,
               ),
             ),
           ),
@@ -125,8 +113,8 @@ class PatientDetailWidget extends StatelessWidget {
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[700],
+                fontSize: 16,
+                color: Colors.grey[800],
               ),
             ),
           ),
@@ -141,47 +129,25 @@ class PatientDetailWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
+      color: Colors.white, // Background color of the card
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Dental Chart',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.teal,
+                color: Colors.black,
               ),
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 12), // Increased spacing
             DentalChart(dentalChart: dentalChart),
           ],
         ),
       ),
     );
-  }
-
-  String _getToothType(int number) {
-    if ((number >= 7 && number <= 10) || (number >= 23 && number <= 26)) {
-      return "Incisor";
-    } else if ((number >= 1 && number <= 3) ||
-        (number >= 14 && number <= 19) ||
-        (number >= 30 && number <= 32)) {
-      return "Molar";
-    } else if ((number == 4 ||
-        number == 5 ||
-        number == 12 ||
-        number == 13 ||
-        number == 20 ||
-        number == 21 ||
-        number == 28 ||
-        number == 29)) {
-      return "Premolar";
-    } else if (number == 6 || number == 11 || number == 22 || number == 27) {
-      return "Canine";
-    } else {
-      return "Unknown"; // Handle any unexpected numbers gracefully
-    }
   }
 }
