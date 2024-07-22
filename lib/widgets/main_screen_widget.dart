@@ -8,6 +8,7 @@ import '../screens/appointment/add_appointment_screen.dart';
 import '../screens/appointment/appointment_calendar_screen.dart';
 import '../widgets/navigation_drawer.dart';
 import '../screens/patient/patient_record_screen.dart';
+import '../screens/Tele_Medicine/telemedicine_screen.dart';
 import '../models/patient_model.dart';
 
 class MainScreen extends StatefulWidget {
@@ -63,6 +64,9 @@ class _MainScreenState extends State<MainScreen> {
                   case '/patientrecord':
                     builder = (context) =>
                         PatientRecordScreen(patient: _arguments as Patient);
+                    break;
+                  case '/Telemedicine':
+                    builder = (context) => TelemedicineScreen();
                     break;
                   default:
                     builder = (context) => HomeScreen();
