@@ -78,6 +78,13 @@ class CustomNavigationDrawer extends StatelessWidget {
               );
             },
           ),
+          ListTile(
+            leading: Icon(Icons.videocam, color: Colors.white),
+            title: Text('Tele Medicine', style: TextStyle(color: Colors.white)),
+
+            onTap: () =>
+                onMenuTap('/Telemedicine'), // Corrected onTap assignment
+          ),
         ],
       ),
     );
