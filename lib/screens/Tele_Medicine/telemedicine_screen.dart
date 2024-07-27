@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:omni_jitsi_meet/jitsi_meet.dart';
@@ -10,16 +9,29 @@ class TelemedicineScreen extends StatefulWidget {
 }
 
 class _TelemedicineScreenState extends State<TelemedicineScreen> {
-  final serverText = TextEditingController();
-  final roomText = TextEditingController(text: "telemedicine_room");
-  final subjectText = TextEditingController(text: "Telemedicine Consultation");
-  final nameText = TextEditingController(text: "Patient Name");
-  final emailText = TextEditingController(text: "patient@example.com");
-  final iosAppBarRGBAColor =
-      TextEditingController(text: "#0080FF80"); // transparent blue
-  bool? isAudioOnly = true;
-  bool? isAudioMuted = true;
-  bool? isVideoMuted = true;
+  final roomText = TextEditingController();
+  bool isAudioOnly = true;
+  bool isAudioMuted = true;
+  bool isVideoMuted = true;
+
+  // Mock patient data
+  final List<Map<String, String>> patients = [
+    {"name": "John Doe", "room": "john_doe_room"},
+    {"name": "Jane Smith", "room": "jane_smith_room"},
+    {"name": "Emily Davis", "room": "emily_davis_room"},
+  ];
+
+  String? selectedPatientRoom;
+
+  @override
+  void initState() {
+    super.initState();
+    if (patients.isNotEmpty) {
+      selectedPatientRoom = patients.first['room'];
+
+      roomText.text = selectedPatientRoom!;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,31 +39,69 @@ class _TelemedicineScreenState extends State<TelemedicineScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Telemedicine'),
+        backgroundColor: Colors.teal,
+        elevation: 4.0,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              // Show help dialog or tooltip
+            },
+          ),
+        ],
       ),
       body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueGrey[900]!, Colors.blueGrey[500]!],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: kIsWeb
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: width * 0.30,
-                    child: meetConfig(),
+                  // Left Container with Elevation 1
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      child: _meetConfig(),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  Container(
-                    width: width * 0.60,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        color: Colors.white54,
-                        child: SizedBox(
-                          width: width * 0.60 * 0.70,
-                          height: width * 0.60 * 0.70,
-                          child: JitsiMeetConferencing(
-                            extraJS: [
-                              // extraJs setup example
-                              '<script src="https://code.jquery.com/jquery-3.6.3.slim.js" integrity="sha256-DKU1CmJ8kBuEwumaLuh9Tl/6ZB6jzGOBV/5YpNE2BWc=" crossorigin="anonymous"></script>'
-                            ],
+                  SizedBox(width: 16.0),
+                  // Right Container with Elevation 4
+                  Expanded(
+                    flex: 7,
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: Colors.white,
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: width * 0.60 * 0.70,
+                            child: JitsiMeetConferencing(
+                              extraJS: [
+                                '<script src="https://code.jquery.com/jquery-3.6.3.slim.js" integrity="sha256-DKU1CmJ8kBuEwumaLuh9Tl/6ZB6jzGOBV/5YpNE2BWc=" crossorigin="anonymous"></script>'
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -59,96 +109,88 @@ class _TelemedicineScreenState extends State<TelemedicineScreen> {
                   ),
                 ],
               )
-            : meetConfig(),
+            : _meetConfig(),
       ),
     );
   }
 
-  Widget meetConfig() {
+  Widget _meetConfig() {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 16.0),
-          TextField(
-            controller: serverText,
+          Text(
+            "Select Patient",
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          SizedBox(height: 8.0),
+          InputDecorator(
             decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Server URL",
-              hintText: "Hint: Leave empty for meet.jitsi.si",
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              filled: true,
+              fillColor: Colors.grey[200],
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: selectedPatientRoom,
+                onChanged: (String? newRoom) {
+                  setState(() {
+                    selectedPatientRoom = newRoom;
+                    roomText.text = selectedPatientRoom!;
+                  });
+                },
+                items: patients.map<DropdownMenuItem<String>>((patient) {
+                  return DropdownMenuItem<String>(
+                    value: patient['room'],
+                    child: Text(patient['name']!),
+                  );
+                }).toList(),
+                isExpanded: true,
+              ),
             ),
           ),
-          SizedBox(height: 14.0),
+          SizedBox(height: 16.0),
           TextField(
             controller: roomText,
             decoration: InputDecoration(
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               labelText: "Room",
+              filled: true,
+              fillColor: Colors.grey[200],
             ),
+            readOnly: true, // Room is set based on the patient selection
           ),
-          SizedBox(height: 14.0),
-          TextField(
-            controller: subjectText,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Subject",
-            ),
-          ),
-          SizedBox(height: 14.0),
-          TextField(
-            controller: nameText,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Display Name",
-            ),
-          ),
-          SizedBox(height: 14.0),
-          TextField(
-            controller: emailText,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Email",
-            ),
-          ),
-          SizedBox(height: 14.0),
-          TextField(
-            controller: iosAppBarRGBAColor,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "AppBar Color(IOS only)",
-              hintText: "Hint: This HAS to be in HEX RGBA format",
-            ),
-          ),
-          SizedBox(height: 14.0),
-          CheckboxListTile(
-            title: Text("Audio Only"),
-            value: isAudioOnly,
-            onChanged: _onAudioOnlyChanged,
-          ),
-          SizedBox(height: 14.0),
-          CheckboxListTile(
-            title: Text("Audio Muted"),
-            value: isAudioMuted,
-            onChanged: _onAudioMutedChanged,
-          ),
-          SizedBox(height: 14.0),
-          CheckboxListTile(
-            title: Text("Video Muted"),
-            value: isVideoMuted,
-            onChanged: _onVideoMutedChanged,
-          ),
+          SizedBox(height: 16.0),
+          _buildCheckboxListTile(
+              "Audio Only", isAudioOnly, _onAudioOnlyChanged),
+          _buildCheckboxListTile(
+              "Audio Muted", isAudioMuted, _onAudioMutedChanged),
+          _buildCheckboxListTile(
+              "Video Muted", isVideoMuted, _onVideoMutedChanged),
           Divider(height: 48.0, thickness: 2.0),
           SizedBox(
             height: 64.0,
-            width: double.maxFinite,
+            width: double.infinity,
             child: ElevatedButton(
               onPressed: _joinMeeting,
               child: Text(
                 "Join Meeting",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateColor.resolveWith((states) => Colors.blue),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueGrey[800],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 4,
               ),
             ),
           ),
@@ -158,27 +200,45 @@ class _TelemedicineScreenState extends State<TelemedicineScreen> {
     );
   }
 
+  Widget _buildCheckboxListTile(
+      String title, bool value, ValueChanged<bool?> onChanged) {
+    return CheckboxListTile(
+      title: Text(title),
+      value: value,
+      onChanged: onChanged,
+      controlAffinity: ListTileControlAffinity.leading,
+      contentPadding: EdgeInsets.zero,
+      activeColor: Colors.blueGrey[800],
+      checkColor: Colors.white,
+    );
+  }
+
   void _onAudioOnlyChanged(bool? value) {
     setState(() {
-      isAudioOnly = value;
+      isAudioOnly = value!;
     });
   }
 
   void _onAudioMutedChanged(bool? value) {
     setState(() {
-      isAudioMuted = value;
+      isAudioMuted = value!;
     });
   }
 
   void _onVideoMutedChanged(bool? value) {
     setState(() {
-      isVideoMuted = value;
+      isVideoMuted = value!;
     });
   }
 
   void _joinMeeting() async {
-    final String? serverUrl =
-        serverText.text.trim().isEmpty ? null : serverText.text;
+    if (selectedPatientRoom == null) {
+      // Show error message or handle the case where room is null
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please select a patient to join the meeting.")),
+      );
+      return;
+    }
 
     final featureFlags = {
       FeatureFlagEnum.RESOLUTION: FeatureFlagVideoResolution.MD_RESOLUTION,
@@ -189,20 +249,20 @@ class _TelemedicineScreenState extends State<TelemedicineScreen> {
     }
 
     final options = JitsiMeetingOptions(
-      room: roomText.text,
-      serverURL: serverUrl,
-      subject: subjectText.text,
-      userDisplayName: nameText.text,
-      userEmail: emailText.text,
-      iosAppBarRGBAColor: iosAppBarRGBAColor.text,
+      room: selectedPatientRoom!,
+      serverURL: "https://meet.jit.si/",
+      subject: "Telemedicine session",
+      userDisplayName: "Doctor",
+      userEmail: "aa@gmail.com",
       audioOnly: isAudioOnly,
       audioMuted: isAudioMuted,
       videoMuted: isVideoMuted,
       featureFlags: featureFlags,
       webOptions: {
-        "roomName": roomText.text,
-        "width": "75%",
-        "height": "75%",
+        "roomName": selectedPatientRoom!,
+        "userDisplayName": "Doctor",
+        "width": "100%",
+        "height": "100%",
         "enableWelcomePage": false,
         "enableNoAudioDetection": true,
         "enableNoisyMicDetection": true,
@@ -211,16 +271,9 @@ class _TelemedicineScreenState extends State<TelemedicineScreen> {
         "hideConferenceTimer": true,
         "disableInviteFunctions": true,
         "chromeExtensionBanner": null,
-        "configOverwrite": {
-          "prejoinPageEnabled": false,
-          "disableDeepLinking": true,
-          "enableLobbyChat": false,
-          "enableClosePage": false,
-          "chromeExtensionBanner": null,
-        },
-        "userInfo": {
-          "email": emailText.text,
-          "displayName": nameText.text,
+        'userInfo': {
+          'displayName': 'Doctor',
+          'email': 'anwarahmed9162@gmail.com',
         },
       },
     );
