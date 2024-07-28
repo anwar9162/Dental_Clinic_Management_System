@@ -16,9 +16,9 @@ class _TelemedicineScreenState extends State<TelemedicineScreen> {
 
   // Mock patient data
   final List<Map<String, String>> patients = [
-    {"name": "John Doe", "room": "john_doe_room"},
-    {"name": "Jane Smith", "room": "jane_smith_room"},
-    {"name": "Emily Davis", "room": "emily_davis_room"},
+    {"name": "Anwar Ahmed", "room": "Anwar_Ahmed_room"},
+    {"name": "Kibrom Adinew", "room": "Kibrom_Adinew_room"},
+    {"name": "Abraham Worku", "room": "Abraham_Worku_room"},
   ];
 
   String? selectedPatientRoom;
@@ -182,7 +182,7 @@ class _TelemedicineScreenState extends State<TelemedicineScreen> {
             child: ElevatedButton(
               onPressed: _joinMeeting,
               child: Text(
-                "Join Meeting",
+                "Join Session",
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
               style: ElevatedButton.styleFrom(
