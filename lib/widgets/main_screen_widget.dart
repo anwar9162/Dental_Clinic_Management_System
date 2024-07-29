@@ -9,6 +9,7 @@ import '../screens/appointment/appointment_calendar_screen.dart';
 import '../widgets/navigation_drawer.dart';
 import '../screens/patient/patient_record_screen.dart';
 import '../screens/Tele_Medicine/telemedicine_screen.dart';
+import '../screens/patient/Arrived_and_new_patient_screen.dart';
 import '../models/patient_model.dart';
 
 class MainScreen extends StatefulWidget {
@@ -32,19 +33,24 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: Row(
         children: [
-          CustomNavigationDrawer(onMenuTap: _onMenuTap),
+          CustomNavigationDrawer(
+            onMenuTap: _onMenuTap,
+            selectedRoute: _currentScreen, // Pass the current route here
+          ),
           Expanded(
             child: Navigator(
-              key: GlobalKey<
-                  NavigatorState>(), // Ensure each navigator has a unique key
+              key: GlobalKey<NavigatorState>(),
               onGenerateRoute: (settings) {
                 WidgetBuilder builder;
                 switch (_currentScreen) {
                   case '/':
                     builder = (context) => HomeScreen();
                     break;
-                  case '/patients':
+                  case '/medical-information':
                     builder = (context) => PatientListScreen();
+                    break;
+                  case '/add_patient':
+                    builder = (context) => ArrivedAndNewPatientScreen();
                     break;
                   case '/appointments':
                     builder = (context) => AppointmentListScreen();

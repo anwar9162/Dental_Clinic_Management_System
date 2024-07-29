@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 class AddArrivedPatientScreen extends StatefulWidget {
   final VoidCallback onClose;
 
-  AddArrivedPatientScreen({required this.onClose});
+  const AddArrivedPatientScreen({Key? key, required this.onClose})
+      : super(key: key);
 
   @override
   _AddArrivedPatientScreenState createState() =>
@@ -12,14 +14,27 @@ class AddArrivedPatientScreen extends StatefulWidget {
 
 class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _arrivalTimeController = TextEditingController();
   final _notesController = TextEditingController();
+  String? _selectedPatient;
+
+  // Sample patient data
+  final List<Map<String, String>> _patients = [
+    {'name': 'John Doe', 'phone': '123-456-7890'},
+    {'name': 'Jane Smith', 'phone': '987-654-3210'},
+    {'name': 'Alice Johnson', 'phone': '555-666-7777'},
+    // Add more patient records here
+  ];
 
   void _submitForm() {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState?.validate() ?? false) {
+      if (_selectedPatient == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select a patient')),
+        );
+        return;
+      }
       // Handle the form submission logic here
-      // Example: Mark the patient as arrived
       widget.onClose(); // Close the form after submission
     }
   }
@@ -28,87 +43,146 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Container(
-        width: double.infinity,
-        constraints: BoxConstraints(maxWidth: 700),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black26, blurRadius: 6, offset: Offset(0, 4)),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildHeader(),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTextField('Name', _nameController),
-                      _buildTextField('Arrival Time', _arrivalTimeController,
-                          keyboardType: TextInputType.datetime),
-                      _buildTextField('Notes', _notesController),
-                      SizedBox(height: 16),
-                      _buildSubmitButton(),
-                      SizedBox(height: 12),
-                      _buildCancelButton(),
-                    ],
+      child: Center(
+        child: Container(
+          width: 700, // Fixed width for the container
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 12,
+                offset: Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSearchableDropdown(),
+                        SizedBox(height: 16),
+                        _buildLabeledTextField(
+                            'Arrival Time', _arrivalTimeController,
+                            keyboardType: TextInputType.datetime),
+                        SizedBox(height: 16),
+                        _buildLabeledTextField('Notes', _notesController),
+                        SizedBox(height: 24),
+                        _buildSubmitButton(),
+                        SizedBox(height: 16),
+                        _buildCancelButton(),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.teal,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(12),
-          topRight: Radius.circular(12),
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
       child: Text(
         'Add Arrived Patient',
         style: TextStyle(
-            fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
+  Widget _buildSearchableDropdown() {
+    return DropdownSearch<String>(
+      items: _patients
+          .map((patient) => '${patient['name']} (${patient['phone']})')
+          .toList(),
+      onChanged: (selectedItem) {
+        setState(() {
+          _selectedPatient = selectedItem;
+        });
+      },
+      popupProps: PopupProps.menu(
+        showSearchBox: true,
+        searchFieldProps: TextFieldProps(
+          decoration: InputDecoration(
+            labelText: 'Search by name or phone',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        menuProps: MenuProps(
+          backgroundColor: Colors.grey[100], // Change background color here
+        ),
+      ),
+      dropdownDecoratorProps: DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          labelText: "Select Patient",
+          hintText: "Search by name or phone",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
         ),
-        keyboardType: keyboardType,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter $label';
-          }
-          return null;
-        },
       ),
+      itemAsString: (String? item) => item ?? '',
+    );
+  }
+
+  Widget _buildLabeledTextField(String label, TextEditingController controller,
+      {TextInputType keyboardType = TextInputType.text}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 150, // Fixed width for labels
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.grey[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none, // Remove border line
+              ),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter $label';
+              }
+              return null;
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -116,20 +190,27 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
     return ElevatedButton(
       onPressed: _submitForm,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.teal,
-        padding: EdgeInsets.symmetric(vertical: 14),
+        backgroundColor: Color.fromARGB(255, 194, 199, 230), // Updated color
+        padding: EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
         ),
+        elevation: 5, // Subtle shadow for a modern effect
       ),
-      child: Text('Mark as Arrived', style: TextStyle(fontSize: 16)),
+      child: Text(
+        'Mark as Arrived',
+        style: TextStyle(fontSize: 18, color: Colors.white),
+      ),
     );
   }
 
   Widget _buildCancelButton() {
     return TextButton(
       onPressed: widget.onClose,
-      child: Text('Cancel', style: TextStyle(color: Colors.teal)),
+      child: Text(
+        'Cancel',
+        style: TextStyle(color: Colors.indigo, fontSize: 16),
+      ),
     );
   }
 }
