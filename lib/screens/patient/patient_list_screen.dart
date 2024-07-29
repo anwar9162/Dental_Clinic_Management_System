@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../patient/PatientDetailWidget.dart';
-import '../patient/add_patient_screen.dart';
-import '../patient/add_arrived_patient_screen.dart';
 import '../../models/patient_model.dart';
 
 class PatientListScreen extends StatefulWidget {
@@ -9,20 +7,11 @@ class PatientListScreen extends StatefulWidget {
   _PatientListScreenState createState() => _PatientListScreenState();
 }
 
-class _PatientListScreenState extends State<PatientListScreen>
-    with SingleTickerProviderStateMixin {
+class _PatientListScreenState extends State<PatientListScreen> {
   List<Patient> _patients =
       mockPatients; // Using mockPatient from patient_model.dart
   String _searchQuery = '';
   Patient? selectedPatient;
-  late TabController _tabController;
-  bool _isAddingPatient = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
 
   List<Patient> get _filteredPatients {
     return _searchQuery.isEmpty
@@ -36,18 +25,7 @@ class _PatientListScreenState extends State<PatientListScreen>
   void _onSearch(String query) {
     setState(() {
       _searchQuery = query;
-      _isAddingPatient = false;
       selectedPatient = null;
-    });
-  }
-
-  void _toggleAddPatientScreen() {
-    setState(() {
-      _isAddingPatient = !_isAddingPatient;
-      if (_isAddingPatient) {
-        selectedPatient = null;
-        _tabController.index = 0; // Switch to Add Patient tab
-      }
     });
   }
 
@@ -135,7 +113,6 @@ class _PatientListScreenState extends State<PatientListScreen>
                             onTap: () {
                               setState(() {
                                 selectedPatient = patient;
-                                _isAddingPatient = false;
                               });
                             },
                           ),
@@ -149,62 +126,17 @@ class _PatientListScreenState extends State<PatientListScreen>
           ),
           Expanded(
             flex: 4,
-            child: _isAddingPatient
-                ? Column(
-                    children: [
-                      TabBar(
-                        controller: _tabController,
-                        tabs: [
-                          Tab(text: 'Add Patient'),
-                          Tab(text: 'Arrived Patient'),
-                        ],
-                        indicatorColor: Colors.teal,
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                          controller: _tabController,
-                          children: [
-                            _buildAddPatientTab(),
-                            _buildArrivedPatientTab(),
-                          ],
-                        ),
-                      ),
-                    ],
+            child: selectedPatient == null
+                ? Center(
+                    child: Text(
+                      'Select a patient to view details',
+                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                    ),
                   )
-                : selectedPatient == null
-                    ? Center(
-                        child: Text(
-                          'Select a patient to view details',
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.grey[700]),
-                        ),
-                      )
-                    : PatientDetailWidget(patient: selectedPatient!),
+                : PatientDetailWidget(patient: selectedPatient!),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _toggleAddPatientScreen,
-        backgroundColor: Colors.teal,
-        mini: true,
-        child: Icon(_isAddingPatient ? Icons.close : Icons.add),
-      ),
     );
-  }
-
-  Widget _buildAddPatientTab() {
-    return AddPatientScreen(onClose: () {
-      setState(() {
-        // Optionally update patient list or perform any action
-      });
-    });
-  }
-
-  Widget _buildArrivedPatientTab() {
-    return AddArrivedPatientScreen(onClose: () {
-      setState(() {
-        // Optionally update patient list or perform any action
-      });
-    });
   }
 }
