@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../patient/PatientDetailWidget.dart';
-import '../../models/patient_model.dart';
+import 'package:data_table_2/data_table_2.dart';
+import 'add_patient_screen.dart';
+import 'add_arrived_patient_screen.dart';
 
 class PatientListScreen extends StatefulWidget {
   @override
@@ -8,132 +9,259 @@ class PatientListScreen extends StatefulWidget {
 }
 
 class _PatientListScreenState extends State<PatientListScreen> {
-  List<Patient> _patients =
-      mockPatients; // Using mockPatient from patient_model.dart
-  String _searchQuery = '';
-  Patient? selectedPatient;
+  List<Map<String, String>> patients = [
+    {
+      'firstName': 'John',
+      'lastName': 'Doe',
+      'phoneNumber': '1234567890',
+      'gender': 'Male',
+      'dob': '01/01/1990',
+      'address': '123 Main St'
+    },
+    {
+      'firstName': 'Jane',
+      'lastName': 'Smith',
+      'phoneNumber': '0987654321',
+      'gender': 'Female',
+      'dob': '02/02/1995',
+      'address': '456 Elm St'
+    },
+    // Add more mock patients as needed
+  ];
 
-  List<Patient> get _filteredPatients {
-    return _searchQuery.isEmpty
-        ? _patients
-        : _patients
-            .where((patient) =>
-                patient.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-            .toList();
+  String _searchQuery = '';
+
+  List<Map<String, String>> get _filteredPatients {
+    if (_searchQuery.isEmpty) return patients;
+    return patients.where((patient) {
+      return patient.values.any(
+          (value) => value.toLowerCase().contains(_searchQuery.toLowerCase()));
+    }).toList();
   }
 
-  void _onSearch(String query) {
-    setState(() {
-      _searchQuery = query;
-      selectedPatient = null;
-    });
+  void _editPatient(int index) {
+    // Implement your edit patient logic
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Patient'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                  'Edit details for ${patients[index]['firstName']} ${patients[index]['lastName']}'),
+              // Add your editing form here
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () {
+                // Save logic
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deletePatient(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Patient'),
+          content: Text('Are you sure you want to delete this patient?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                setState(() {
+                  patients.removeAt(index);
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _openAddPatientScreen() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return AddPatientScreen(
+            onClose: () {
+              Navigator.of(context).pop();
+              // Optionally, refresh the patient list here if needed
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  void _openAddArrivedPatientScreen() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return AddArrivedPatientScreen(
+            onClose: () {
+              Navigator.of(context).pop();
+              // Optionally, refresh the patient list here if needed
+            },
+          );
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Patients List', style: TextStyle(fontSize: 20)),
-        elevation: 4,
-        backgroundColor: Colors.teal,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
+        title: Text('Patient Management'),
+        backgroundColor: Color(0xFF6ABEDC),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search patients...',
+                labelText: 'Search Patients',
                 prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (query) {
+                setState(() {
+                  _searchQuery = query;
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: DataTable2(
+                  columnSpacing: 16,
+                  horizontalMargin: 12,
+                  minWidth: 800,
+                  headingRowColor: MaterialStateProperty.all(
+                      Color(0xFF6ABEDC)), // Use specified color for header
+                  dataRowColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      return Colors.white;
+                    },
+                  ),
+                  headingTextStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  dataTextStyle: TextStyle(color: Colors.black87),
+                  columns: [
+                    DataColumn(label: Text('No.')),
+                    DataColumn(label: Text('First Name')),
+                    DataColumn(label: Text('Last Name')),
+                    DataColumn(label: Text('Phone Number')),
+                    DataColumn(label: Text('Gender')),
+                    DataColumn(label: Text('Date of Birth')),
+                    DataColumn(label: Text('Address')),
+                    DataColumn(label: Text('Actions')),
+                  ],
+                  rows: _filteredPatients.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    Map<String, String> patient = entry.value;
+                    return DataRow(
+                      cells: [
+                        DataCell(Text((index + 1).toString())),
+                        DataCell(Text(patient['firstName'] ?? '')),
+                        DataCell(Text(patient['lastName'] ?? '')),
+                        DataCell(Text(patient['phoneNumber'] ?? '')),
+                        DataCell(Text(patient['gender'] ?? '')),
+                        DataCell(Text(patient['dob'] ?? '')),
+                        DataCell(Text(patient['address'] ?? '')),
+                        DataCell(Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit, color: Color(0xFF00796B)),
+                              onPressed: () => _editPatient(index),
+                              tooltip: 'Edit Patient',
+                            ),
+                            SizedBox(width: 8),
+                            IconButton(
+                              icon:
+                                  Icon(Icons.delete, color: Color(0xFFD32F2F)),
+                              onPressed: () => _deletePatient(index),
+                              tooltip: 'Delete Patient',
+                            ),
+                          ],
+                        )),
+                      ],
+                    );
+                  }).toList(),
                 ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              onChanged: _onSearch,
-            ),
-          ),
-        ),
-      ),
-      body: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.grey[100],
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text(
-                      'Total Patients: ${_filteredPatients.length}',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _filteredPatients.length,
-                      itemBuilder: (context, index) {
-                        final patient = _filteredPatients[index];
-                        final isSelected = selectedPatient == patient;
-                        return Container(
-                          margin: EdgeInsets.symmetric(vertical: 4.0),
-                          decoration: BoxDecoration(
-                            color: isSelected ? Colors.teal[50] : Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              if (isSelected)
-                                BoxShadow(
-                                  color: Colors.teal.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  spreadRadius: 2,
-                                ),
-                            ],
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              patient.name,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 14),
-                            ),
-                            subtitle: Text(
-                              'Last Treatment: ${patient.lastTreatment}',
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                            leading: Icon(
-                              Icons.person,
-                              color: Colors.teal,
-                            ),
-                            trailing: Icon(Icons.arrow_forward_ios,
-                                color: Colors.teal),
-                            onTap: () {
-                              setState(() {
-                                selectedPatient = patient;
-                              });
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
-          Expanded(
-            flex: 4,
-            child: selectedPatient == null
-                ? Center(
-                    child: Text(
-                      'Select a patient to view details',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  icon: Icon(Icons.person_add),
+                  label: Text('Add New Patient'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF00796B), // Background color
+                    foregroundColor: Colors.white, // Text color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  )
-                : PatientDetailWidget(patient: selectedPatient!),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    textStyle: TextStyle(fontSize: 16),
+                  ),
+                  onPressed: _openAddPatientScreen,
+                ),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.check_circle_outline),
+                  label: Text('Mark Arrived Patient'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFD32F2F), // Background color
+                    foregroundColor: Colors.white, // Text color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    textStyle: TextStyle(fontSize: 16),
+                  ),
+                  onPressed: _openAddArrivedPatientScreen,
+                ),
+              ],
+            ),
           ),
         ],
       ),

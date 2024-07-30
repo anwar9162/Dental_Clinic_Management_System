@@ -10,20 +10,25 @@ class CustomNavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Define your new colors
+    final Color primaryColor = Color(0xFF6ABEDC); // Soft Blue
+    final Color selectedColor = Color(0xFF4A9CBB); // Darker Blue for selected
+    final Color subColor = Color(0xFF8CC0D8); // Lighter Blue for sub-items
+
     return Container(
       width: 250, // Set a fixed width for the navigation drawer
-      color: Colors.teal,
+      color: primaryColor, // Primary color for the drawer
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.teal,
+              color: primaryColor, // Match the drawer color
             ),
             child: Text(
-              'Hospital Management',
+              'Dental Management',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.white, // Text color
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -34,7 +39,7 @@ class CustomNavigationDrawer extends StatelessWidget {
             title: Text('Home',
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w500)),
-            tileColor: selectedRoute == '/' ? Colors.teal.shade700 : null,
+            tileColor: selectedRoute == '/' ? selectedColor : null,
             onTap: () => onMenuTap('/'),
           ),
           ExpansionTile(
@@ -45,27 +50,23 @@ class CustomNavigationDrawer extends StatelessWidget {
             tilePadding: EdgeInsets.symmetric(horizontal: 16.0),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             childrenPadding: EdgeInsets.only(left: 16.0),
-            backgroundColor: selectedRoute.startsWith('/patient')
-                ? Colors.teal.shade700
-                : null,
+            backgroundColor:
+                selectedRoute.startsWith('/patient') ? selectedColor : null,
             children: <Widget>[
               ListTile(
                 leading: Icon(Icons.medical_information, color: Colors.white),
                 title: Text('Medical Information',
                     style: TextStyle(color: Colors.white)),
-                tileColor: selectedRoute == '/medical-information'
-                    ? Colors.teal.shade600
-                    : null,
+                tileColor:
+                    selectedRoute == '/medical-information' ? subColor : null,
                 onTap: () => onMenuTap('/medical-information'),
               ),
               ListTile(
                 leading: Icon(Icons.add, color: Colors.white),
                 title:
-                    Text('Add Patient', style: TextStyle(color: Colors.white)),
-                tileColor: selectedRoute == '/add_patient'
-                    ? Colors.teal.shade600
-                    : null,
-                onTap: () => onMenuTap('/add_patient'),
+                    Text('Patient List', style: TextStyle(color: Colors.white)),
+                tileColor: selectedRoute == '/patient-lists' ? subColor : null,
+                onTap: () => onMenuTap('/patient-lists'),
               ),
             ],
           ),
@@ -75,8 +76,7 @@ class CustomNavigationDrawer extends StatelessWidget {
             title: Text('Manage Appointments (List)',
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w500)),
-            tileColor:
-                selectedRoute == '/appointments' ? Colors.teal.shade700 : null,
+            tileColor: selectedRoute == '/appointments' ? selectedColor : null,
             onTap: () => onMenuTap('/appointments'),
           ),
           ListTile(
@@ -84,9 +84,8 @@ class CustomNavigationDrawer extends StatelessWidget {
             title: Text('Manage Appointments (Calendar)',
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w500)),
-            tileColor: selectedRoute == '/appointment-calendar'
-                ? Colors.teal.shade700
-                : null,
+            tileColor:
+                selectedRoute == '/appointment-calendar' ? selectedColor : null,
             onTap: () => onMenuTap('/appointment-calendar'),
           ),
           ListTile(
@@ -94,8 +93,7 @@ class CustomNavigationDrawer extends StatelessWidget {
             title: Text('Manage Doctors',
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w500)),
-            tileColor:
-                selectedRoute == '/doctors' ? Colors.teal.shade700 : null,
+            tileColor: selectedRoute == '/doctors' ? selectedColor : null,
             onTap: () => onMenuTap('/doctors'),
           ),
           Divider(color: Colors.white54),
@@ -104,8 +102,7 @@ class CustomNavigationDrawer extends StatelessWidget {
             title: Text('Patient Record',
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w500)),
-            tileColor:
-                selectedRoute == '/patientrecord' ? Colors.teal.shade700 : null,
+            tileColor: selectedRoute == '/patientrecord' ? selectedColor : null,
             onTap: () {
               onMenuTap(
                 '/patientrecord',
@@ -121,11 +118,10 @@ class CustomNavigationDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.videocam, color: Colors.white),
-            title: Text('Tele Medicine',
+            title: Text('Telemedicine',
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w500)),
-            tileColor:
-                selectedRoute == '/Telemedicine' ? Colors.teal.shade700 : null,
+            tileColor: selectedRoute == '/Telemedicine' ? selectedColor : null,
             onTap: () => onMenuTap('/Telemedicine'),
           ),
         ],

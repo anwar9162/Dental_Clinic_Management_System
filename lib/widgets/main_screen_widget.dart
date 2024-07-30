@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/home/home_screen.dart';
-import '../screens/patient/patient_list_screen.dart';
+import '../screens/patient/medical_information_screen.dart';
 import '../screens/appointment/appointment_list_screen.dart';
 import '../screens/doctor/doctor_list_screen.dart';
 import '../screens/billing/billing_list_screen.dart';
@@ -9,7 +9,7 @@ import '../screens/appointment/appointment_calendar_screen.dart';
 import '../widgets/navigation_drawer.dart';
 import '../screens/patient/patient_record_screen.dart';
 import '../screens/Tele_Medicine/telemedicine_screen.dart';
-import '../screens/patient/Arrived_and_new_patient_screen.dart';
+import '../screens/patient/patient_list_screen.dart';
 import '../models/patient_model.dart';
 
 class MainScreen extends StatefulWidget {
@@ -47,10 +47,10 @@ class _MainScreenState extends State<MainScreen> {
                     builder = (context) => HomeScreen();
                     break;
                   case '/medical-information':
-                    builder = (context) => PatientListScreen();
+                    builder = (context) => MedicalInformationScreen();
                     break;
-                  case '/add_patient':
-                    builder = (context) => ArrivedAndNewPatientScreen();
+                  case '/patient-lists':
+                    builder = (context) => PatientListScreen();
                     break;
                   case '/appointments':
                     builder = (context) => AppointmentListScreen();

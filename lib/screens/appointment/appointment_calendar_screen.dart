@@ -130,7 +130,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Appointment Calendar'),
-        backgroundColor: Colors.teal,
+        backgroundColor: Color(0xFF6ABEDC),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
