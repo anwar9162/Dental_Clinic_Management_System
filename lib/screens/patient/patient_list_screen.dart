@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'add_patient_screen.dart';
 import 'add_arrived_patient_screen.dart';
+import 'payment_data_screen.dart'; // Import your new Payment Data screen
 
 class PatientListScreen extends StatefulWidget {
   @override
@@ -33,6 +34,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
   String _searchQuery = '';
   bool _showAddPatientScreen = false;
   bool _showAddArrivedPatientScreen = false;
+  bool _showPaymentDataScreen = false;
 
   List<Map<String, String>> get _filteredPatients {
     if (_searchQuery.isEmpty) return patients;
@@ -85,6 +87,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
     setState(() {
       _showAddPatientScreen = !_showAddPatientScreen;
       _showAddArrivedPatientScreen = false;
+      _showPaymentDataScreen = false;
     });
   }
 
@@ -92,6 +95,15 @@ class _PatientListScreenState extends State<PatientListScreen> {
     setState(() {
       _showAddArrivedPatientScreen = !_showAddArrivedPatientScreen;
       _showAddPatientScreen = false;
+      _showPaymentDataScreen = false;
+    });
+  }
+
+  void _togglePaymentDataScreen() {
+    setState(() {
+      _showPaymentDataScreen = !_showPaymentDataScreen;
+      _showAddPatientScreen = false;
+      _showAddArrivedPatientScreen = false;
     });
   }
 
@@ -116,13 +128,17 @@ class _PatientListScreenState extends State<PatientListScreen> {
               ],
             ),
           ),
-          if (_showAddPatientScreen || _showAddArrivedPatientScreen)
+          if (_showAddPatientScreen ||
+              _showAddArrivedPatientScreen ||
+              _showPaymentDataScreen)
             Container(
               width: 600, // Specify width for the sidebar
               child: _showAddPatientScreen
                   ? AddPatientScreen(onClose: _toggleAddPatientScreen)
-                  : AddArrivedPatientScreen(
-                      onClose: _toggleAddArrivedPatientScreen),
+                  : _showAddArrivedPatientScreen
+                      ? AddArrivedPatientScreen(
+                          onClose: _toggleAddArrivedPatientScreen)
+                      : PaymentDataScreen(onClose: _togglePaymentDataScreen),
             ),
         ],
       ),
@@ -249,6 +265,20 @@ class _PatientListScreenState extends State<PatientListScreen> {
               textStyle: TextStyle(fontSize: 16),
             ),
             onPressed: _toggleAddArrivedPatientScreen,
+          ),
+          ElevatedButton.icon(
+            icon: Icon(Icons.payment),
+            label: Text('Payment Data'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF00796B), // Background color
+              foregroundColor: Colors.white, // Text color
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              textStyle: TextStyle(fontSize: 16),
+            ),
+            onPressed: _togglePaymentDataScreen,
           ),
         ],
       ),
