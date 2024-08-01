@@ -22,7 +22,7 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
     // Add more mock patients as needed
   ];
 
-  final List<String> _statusOptions = ['Paid', 'Pending', 'Cancelled'];
+  final List<String> _statusOptions = ['Paid', 'Pending'];
 
   List<Map<String, String>> get _filteredPatients {
     final query = _searchController.text.toLowerCase();
@@ -280,15 +280,31 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                       final patient = filteredPatients[index];
                       final patientName =
                           '${patient['firstName']} ${patient['lastName']}';
-                      return ListTile(
-                        title: Text(patientName),
-                        subtitle: Text(patient['phoneNumber'] ?? ''),
-                        onTap: () {
-                          setState(() {
-                            _selectedPatientName = patientName;
-                          });
-                        },
-                        contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            left: BorderSide(
+                              color: _selectedPatientName == patientName
+                                  ? Color(0xFF00796B)
+                                  : Colors.transparent,
+
+                              width: 5, // Adjust the thickness here
+                            ),
+                          ),
+                        ),
+                        child: ListTile(
+                          title: Text(patientName),
+                          subtitle: Text(patient['phoneNumber'] ?? ''),
+                          onTap: () {
+                            setState(() {
+                              _selectedPatientName = patientName;
+                              _searchController.text =
+                                  patientName; // Update the search field with the selected patient name
+                            });
+                          },
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 10.0),
+                        ),
                       );
                     },
                   )
