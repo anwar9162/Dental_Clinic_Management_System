@@ -27,7 +27,6 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
   List<Map<String, String>> get _filteredPatients {
     final query = _searchController.text.toLowerCase();
     if (query.isEmpty) {
-      // Return an empty list if there is no query
       return [];
     } else {
       return _patients.where((patient) {
@@ -51,7 +50,7 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
           ),
         ],
       ),
-      backgroundColor: Colors.grey,
+      backgroundColor: Colors.grey[200], // Lighter background color
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -115,16 +114,30 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      TextFormField(
-                        controller: _amountController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                      Container(
+                        width: 250, // Narrow the width of the amount field
+                        child: TextFormField(
+                          controller: _amountController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            prefixIcon: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              child: Text(
+                                'ETB',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            hintText: 'Enter amount',
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            filled: true,
+                            fillColor: Colors.white,
                           ),
-                          hintText: 'Enter amount',
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
+                          style: TextStyle(fontSize: 16),
                         ),
                       ),
                       SizedBox(height: 16),
@@ -136,22 +149,45 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      DropdownButtonFormField<String>(
-                        value: _selectedStatus,
-                        items: _statusOptions.map((status) {
-                          return DropdownMenuItem<String>(
-                            value: status,
-                            child: Text(status),
-                          );
-                        }).toList(),
-                        onChanged: (newStatus) {
+                      PopupMenuButton<String>(
+                        onSelected: (String newStatus) {
                           setState(() {
-                            _selectedStatus = newStatus!;
+                            _selectedStatus = newStatus;
                           });
                         },
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
+                        itemBuilder: (BuildContext context) {
+                          return _statusOptions.map((status) {
+                            return PopupMenuItem<String>(
+                              value: status,
+                              child: Text(
+                                status,
+                                style: TextStyle(
+                                    color: Colors.black), // Text color
+                              ),
+                            );
+                          }).toList();
+                        },
+                        child: Container(
+                          width: 200, // Set a specific width here
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey),
+                            color: Colors.white,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _selectedStatus,
+                                style: TextStyle(
+                                    color: Colors.black), // Text color
+                              ),
+                              Icon(
+                                Icons.arrow_drop_down,
+                                color: Color(0xFF00796B), // Icon color
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -174,7 +210,10 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                           hintText: 'Enter reason for payment',
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 16, vertical: 12),
+                          filled: true,
+                          fillColor: Colors.white,
                         ),
+                        style: TextStyle(fontSize: 16),
                       ),
                       SizedBox(height: 16),
                       // Submit Button
