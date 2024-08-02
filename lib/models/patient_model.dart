@@ -14,6 +14,16 @@ class Tooth {
   });
 }
 
+class PatientImage {
+  final DateTime dateCaptured;
+  final String assetPath; // Path to the asset image
+
+  PatientImage({
+    required this.dateCaptured,
+    required this.assetPath,
+  });
+}
+
 class Patient {
   final String id;
   final String name;
@@ -21,6 +31,9 @@ class Patient {
   final String? lastTreatment;
   final String currentAppointmentReason;
   final List<Tooth>? dentalChart;
+  final List<PatientImage>?
+      progressImages; // Optional: Images showing the progress of teeth
+  final List<PatientImage>? xrayImages; // Optional: X-ray images
 
   Patient({
     required this.id,
@@ -29,9 +42,12 @@ class Patient {
     this.lastTreatment,
     required this.currentAppointmentReason,
     this.dentalChart,
+    this.progressImages,
+    this.xrayImages,
   });
 }
 
+// Sample data with image assets
 final Patient mockPatient = Patient(
   id: "12",
   name: "Kibrom Adinew",
@@ -72,7 +88,27 @@ final Patient mockPatient = Patient(
     Tooth(number: 31, notes: "No issues", isUpper: false, type: "Molar"),
     Tooth(number: 32, notes: "Needs filling", isUpper: false, type: "Molar"),
   ],
+  progressImages: [
+    PatientImage(
+        dateCaptured: DateTime(2023, 1, 15),
+        assetPath: "assets/images/Teeth-month-1.jpg"),
+    PatientImage(
+        dateCaptured: DateTime(2023, 6, 15),
+        assetPath: "assets/images/Teeth-month-2.jpg"),
+    PatientImage(
+        dateCaptured: DateTime(2023, 12, 15),
+        assetPath: "assets/images/Teeth-month-3.jpg"),
+  ],
+  xrayImages: [
+    PatientImage(
+        dateCaptured: DateTime(2023, 1, 15),
+        assetPath: "assets/images/Xray1.jpg"),
+    PatientImage(
+        dateCaptured: DateTime(2023, 6, 15),
+        assetPath: "assets/images/Xray2.jpg"),
+  ],
 );
+
 final Patient anotherMockPatient = Patient(
   id: "13",
   name: "Anwar Ahmed",
@@ -113,9 +149,23 @@ final Patient anotherMockPatient = Patient(
     Tooth(number: 31, notes: "No issues", isUpper: false, type: "Molar"),
     Tooth(number: 32, notes: "Needs filling", isUpper: false, type: "Molar"),
   ],
+  progressImages: [
+    PatientImage(
+        dateCaptured: DateTime(2022, 11, 20),
+        assetPath: "assets/images/Teeth-month-1.jpg"),
+    PatientImage(
+        dateCaptured: DateTime(2023, 5, 20),
+        assetPath: "assets/images/Teeth-month-1.jpg"),
+  ],
+  xrayImages: [
+    PatientImage(
+        dateCaptured: DateTime(2022, 11, 20),
+        assetPath: "assets/images/Xray1.jpg"),
+  ],
 );
+
 final Patient anotherMockPatient3 = Patient(
-  id: "13",
+  id: "14",
   name: "Abraham Worku",
   firstVisitDate: DateTime(2024, 8, 13),
   lastTreatment: "Brace",
@@ -154,9 +204,20 @@ final Patient anotherMockPatient3 = Patient(
     Tooth(number: 31, notes: "No issues", isUpper: false, type: "Molar"),
     Tooth(number: 32, notes: "No issues", isUpper: false, type: "Molar"),
   ],
+  progressImages: [
+    PatientImage(
+        dateCaptured: DateTime(2024, 8, 13),
+        assetPath: "assets/images/Teeth-month-1.jpg"),
+  ],
+  xrayImages: [
+    PatientImage(
+        dateCaptured: DateTime(2024, 8, 13),
+        assetPath: "assets/images/Xray1.jpg"),
+  ],
 );
+
 final List<Patient> mockPatients = [
   mockPatient,
   anotherMockPatient,
-  anotherMockPatient3
+  anotherMockPatient3,
 ];
