@@ -86,7 +86,11 @@ flutter:
     - assets/images/canine.svg
     - assets/images/premolar.svg
     - assets/images/molar.svg
-    - assets/images/user_profile_image.jpg
+    - assets/images/Teeth-month-1.jpg
+    - assets/images/Teeth-month-2.jpg
+    - assets/images/Teeth-month-3.jpg
+    - assets/images/Xray1.jpg
+    - assets/images/Xray2.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
