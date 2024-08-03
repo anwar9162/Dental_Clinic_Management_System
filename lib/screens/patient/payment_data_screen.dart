@@ -241,7 +241,7 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF00796B),
+                            backgroundColor: Color(0xFF6ABEDC),
                             padding: EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 12),
                             textStyle: TextStyle(fontSize: 16),
