@@ -92,15 +92,6 @@ final Patient mockPatient = Patient(
     PatientImage(
         dateCaptured: DateTime(2023, 1, 15),
         assetPath: "assets/images/Teeth-month-1.jpg"),
-    PatientImage(
-        dateCaptured: DateTime(2023, 6, 15),
-        assetPath: "assets/images/Teeth-month-2.jpg"),
-    PatientImage(
-        dateCaptured: DateTime(2023, 12, 15),
-        assetPath: "assets/images/Teeth-month-3.jpg"),
-    PatientImage(
-        dateCaptured: DateTime(2023, 6, 15),
-        assetPath: "assets/images/Teeth-month-2.jpg"),
   ],
   xrayImages: [
     PatientImage(

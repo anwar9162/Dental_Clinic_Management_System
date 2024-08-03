@@ -24,11 +24,30 @@ const getPatientById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+// Get patient by phone
+const getPatientByPhone = async (req, res) => {
+  try {
+    const patient = await Patient.findOne({phoneNumber: req.params.phoneNumber});
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+    res.status(200).json(patient);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 // Create new patient
 const createPatient = async (req, res) => {
   try {
-    console.log(req.body); // Log the request body
+    const { phoneNumber } = req.body;
+
+    // Check if a patient with the same phone number already exists
+    const existingPatient = await Patient.findOne({ phoneNumber });
+    if (existingPatient) {
+      return res.status(400).json({ message: "Patient with this phone number already exists" });
+    }
+
+    // Create and save the new patient
     const newPatient = new Patient(req.body);
     await newPatient.save();
     res.status(201).json(newPatient);
@@ -36,6 +55,7 @@ const createPatient = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Update patient
 const updatePatient = async (req, res) => {
@@ -169,6 +189,91 @@ const updateDentalChartEntry = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// Add a payment to a patient's record
+const addPayment = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    const { amount, date, status, reason } = req.body;
+    patient.payments.push({ amount, date, status, reason });
+
+    await patient.save();
+    res.status(201).json({ message: 'Payment added', patient });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+// Update the status and reason of a payment
+const updatePayment = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    const payment = patient.payments.id(req.params.paymentId);
+    if (!payment) {
+      return res.status(404).json({ message: 'Payment not found' });
+    }
+
+    if (req.body.status) {
+      payment.status = req.body.status;
+    }
+    if (req.body.reason) {
+      payment.reason = req.body.reason;
+    }
+
+    await patient.save();
+    res.status(200).json({ message: 'Payment updated', patient });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Add progress images to a patient's record
+const addProgressImages = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    const { progressImages } = req.body; // Array of progress image objects
+    if (Array.isArray(progressImages)) {
+      patient.progressImages.push(...progressImages);
+      await patient.save();
+      res.status(201).json({ message: 'Progress images added', patient });
+    } else {
+      res.status(400).json({ message: 'Invalid data format' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+// Add xray images to a patient's record
+const addXrayImages = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    const { xrayImages } = req.body; // Array of xray image objects
+    if (Array.isArray(xrayImages)) {
+      patient.xrayImages.push(...xrayImages);
+      await patient.save();
+      res.status(201).json({ message: 'Xray images added', patient });
+    } else {
+      res.status(400).json({ message: 'Invalid data format' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 module.exports = {
   getAllPatients,
@@ -180,4 +285,9 @@ module.exports = {
   deleteDentalChartEntry,
   getDentalChart,
   updateDentalChartEntry,
+  getPatientByPhone,
+  addPayment,
+  updatePayment,
+  addProgressImages,
+  addXrayImages,
 };

@@ -23,7 +23,7 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
         appBar: AppBar(
           title: Text('Appointments'),
           elevation: 0,
-          backgroundColor: Colors.teal,
+          backgroundColor: Color(0xFF6ABEDC),
         ),
         body: Center(
           child: Consumer<AppointmentProvider>(
@@ -92,7 +92,7 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
             },
             child: Text('Add Appointment'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal,
+              backgroundColor: Color(0xFF6ABEDC),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),

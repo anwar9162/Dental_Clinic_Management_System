@@ -18,14 +18,8 @@ const appointmentSchema = new mongoose.Schema({
   AppointmentReason:{
     type:String
   },
-  ExpectedPayment:{
-    type:String
-  },
-  status: {
-    type: String,
-    enum: ['Scheduled', 'Arrived', 'Completed'],
-    default: 'Scheduled'
-  },
+ 
+
 });
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);

@@ -36,7 +36,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
       appBar: AppBar(
         title: const Text('Doctors List'),
         //centerTitle: true,
-        backgroundColor: Colors.teal,
+        backgroundColor: Color(0xFF6ABEDC),
       ),
       body: Row(
         children: [

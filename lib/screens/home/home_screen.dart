@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text('Dashboard'),
         centerTitle: true,
-        backgroundColor: Colors.teal,
+        backgroundColor: Color(0xFF6ABEDC),
       ),
       body: Container(
         color: backgroundColor, // Ensure background color is set correctly
