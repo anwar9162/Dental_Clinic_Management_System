@@ -22,8 +22,22 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
   @override
   void initState() {
     super.initState();
-    _progressImages = widget.patient.progressImages ?? [];
-    _xrayImages = widget.patient.xrayImages ?? [];
+    _updateImages();
+  }
+
+  @override
+  void didUpdateWidget(PatientDetailWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.patient != oldWidget.patient) {
+      _updateImages();
+    }
+  }
+
+  void _updateImages() {
+    setState(() {
+      _progressImages = widget.patient.progressImages ?? [];
+      _xrayImages = widget.patient.xrayImages ?? [];
+    });
   }
 
   @override
