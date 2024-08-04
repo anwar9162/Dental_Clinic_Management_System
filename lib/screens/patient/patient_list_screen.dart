@@ -19,6 +19,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
   bool _showAddArrivedPatientScreen = false;
   bool _showPaymentDataScreen = false;
   String _searchQuery = '';
+  List<Map<String, dynamic>> _patients = []; // Store patient data
 
   @override
   void initState() {
@@ -46,8 +47,8 @@ class _PatientListScreenState extends State<PatientListScreen> {
                       if (state is PatientLoading) {
                         return Center(child: CircularProgressIndicator());
                       } else if (state is PatientLoaded) {
-                        final filteredPatients =
-                            state.patients.where((patient) {
+                        _patients = state.patients; // Update the patients data
+                        final filteredPatients = _patients.where((patient) {
                           return patient.values.any((value) => value
                               .toString()
                               .toLowerCase()
@@ -79,7 +80,10 @@ class _PatientListScreenState extends State<PatientListScreen> {
                   : _showAddArrivedPatientScreen
                       ? AddArrivedPatientScreen(
                           onClose: _toggleAddArrivedPatientScreen)
-                      : PaymentDataScreen(onClose: _togglePaymentDataScreen),
+                      : PaymentDataScreen(
+                          onClose: _togglePaymentDataScreen,
+                          patients: _patients,
+                        ),
             ),
         ],
       ),
@@ -165,13 +169,13 @@ class _PatientListScreenState extends State<PatientListScreen> {
                   children: [
                     IconButton(
                       icon: Icon(Icons.edit, color: Color(0xFF00796B)),
-                      onPressed: () => _editPatient(patient['id']),
+                      onPressed: () => _editPatient(patient['_id']),
                       tooltip: 'Edit Patient',
                     ),
                     SizedBox(width: 8),
                     IconButton(
                       icon: Icon(Icons.delete, color: Color(0xFFD32F2F)),
-                      onPressed: () => _deletePatient(patient['id']),
+                      onPressed: () => _deletePatient(patient['_id']),
                       tooltip: 'Delete Patient',
                     ),
                   ],

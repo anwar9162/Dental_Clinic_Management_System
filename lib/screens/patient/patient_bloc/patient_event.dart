@@ -1,4 +1,3 @@
-// patient_event.dart
 import 'package:equatable/equatable.dart';
 
 abstract class PatientEvent extends Equatable {
@@ -15,4 +14,14 @@ class DeletePatient extends PatientEvent {
 
   @override
   List<Object> get props => [id];
+}
+
+class AddPayment extends PatientEvent {
+  final String patientId;
+  final Map<String, dynamic> paymentData;
+
+  AddPayment({required this.patientId, required this.paymentData});
+
+  @override
+  List<Object> get props => [patientId, paymentData];
 }

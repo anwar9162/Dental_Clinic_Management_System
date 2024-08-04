@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Add this import to use DateFormat
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'patient_bloc/patient_bloc.dart';
+import 'patient_bloc/patient_event.dart';
+import 'patient_bloc/patient_state.dart';
 
 class PaymentDataScreen extends StatefulWidget {
   final VoidCallback onClose;
+  final List<Map<String, dynamic>> patients;
 
-  PaymentDataScreen({required this.onClose});
+  PaymentDataScreen({required this.onClose, required this.patients});
 
   @override
   _PaymentDataScreenState createState() => _PaymentDataScreenState();
@@ -13,18 +20,21 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _reasonController = TextEditingController();
-  String _selectedStatus = 'Pending'; // Default status
-  String? _selectedPatientName; // Holds the name of the selected patient
+  String _selectedStatus = 'Pending';
+  String? _selectedPatientId;
+  String? _selectedPatientName;
 
-  final List<Map<String, String>> _patients = [
-    {'firstName': 'Abebe', 'lastName': 'Alemu', 'phoneNumber': '0912345678'},
-    {'firstName': 'Abel', 'lastName': 'Hagos', 'phoneNumber': '0987654321'},
-    // Add more mock patients as needed
-  ];
+  late List<Map<String, dynamic>> _patients;
 
   final List<String> _statusOptions = ['Paid', 'Pending'];
 
-  List<Map<String, String>> get _filteredPatients {
+  @override
+  void initState() {
+    super.initState();
+    _patients = widget.patients;
+  }
+
+  List<Map<String, dynamic>> get _filteredPatients {
     final query = _searchController.text.toLowerCase();
     if (query.isEmpty) {
       return [];
@@ -50,7 +60,7 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
           ),
         ],
       ),
-      backgroundColor: Colors.grey[200], // Lighter background color
+      backgroundColor: Colors.grey[200],
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -71,8 +81,7 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                   filled: true,
                 ),
                 onChanged: (query) {
-                  setState(
-                      () {}); // Update the patient list on search query change
+                  setState(() {});
                 },
               ),
             ),
@@ -115,7 +124,7 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                         ),
                       ),
                       Container(
-                        width: 250, // Narrow the width of the amount field
+                        width: 250,
                         child: TextFormField(
                           controller: _amountController,
                           keyboardType: TextInputType.number,
@@ -161,14 +170,13 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                               value: status,
                               child: Text(
                                 status,
-                                style: TextStyle(
-                                    color: Colors.black), // Text color
+                                style: TextStyle(color: Colors.black),
                               ),
                             );
                           }).toList();
                         },
                         child: Container(
-                          width: 200, // Set a specific width here
+                          width: 200,
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
@@ -180,12 +188,11 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                             children: [
                               Text(
                                 _selectedStatus,
-                                style: TextStyle(
-                                    color: Colors.black), // Text color
+                                style: TextStyle(color: Colors.black),
                               ),
                               Icon(
                                 Icons.arrow_drop_down,
-                                color: Color(0xFF00796B), // Icon color
+                                color: Color(0xFF00796B),
                               ),
                             ],
                           ),
@@ -217,10 +224,9 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                       ),
                       SizedBox(height: 16),
                       // Submit Button
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Handle form submission
+                      BlocConsumer<PatientBloc, PatientState>(
+                        listener: (context, state) {
+                          if (state is PaymentSuccess) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -239,16 +245,44 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                                 );
                               },
                             );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF6ABEDC),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            textStyle: TextStyle(fontSize: 16),
-                          ),
-                          child: Text('Save Payment'),
-                        ),
-                      ),
+                          } else if (state is PaymentError) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text('Payment failed: ${state.message}')),
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          return ElevatedButton(
+                            onPressed: () {
+                              if (_selectedPatientId != null) {
+                                final paymentData = {
+                                  'amount': _amountController.text,
+                                  'date': DateFormat('yyyy-MM-dd').format(
+                                      DateTime
+                                          .now()), // Format the current date
+                                  'status': _selectedStatus,
+                                  'reason': _reasonController.text,
+                                };
+                                context.read<PatientBloc>().add(
+                                      AddPayment(
+                                        patientId: _selectedPatientId!,
+                                        paymentData: paymentData,
+                                      ),
+                                    );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF6ABEDC),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              textStyle: TextStyle(fontSize: 16),
+                            ),
+                            child: Text('Save Payment'),
+                          );
+                        },
+                      )
                     ],
                   ),
                 ),
@@ -278,6 +312,7 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                     itemCount: filteredPatients.length,
                     itemBuilder: (context, index) {
                       final patient = filteredPatients[index];
+                      final patientId = patient['_id'];
                       final patientName =
                           '${patient['firstName']} ${patient['lastName']}';
                       return Container(
@@ -287,8 +322,7 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                               color: _selectedPatientName == patientName
                                   ? Color(0xFF00796B)
                                   : Colors.transparent,
-
-                              width: 5, // Adjust the thickness here
+                              width: 5,
                             ),
                           ),
                         ),
@@ -297,9 +331,9 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                           subtitle: Text(patient['phoneNumber'] ?? ''),
                           onTap: () {
                             setState(() {
+                              _selectedPatientId = patientId;
                               _selectedPatientName = patientName;
-                              _searchController.text =
-                                  patientName; // Update the search field with the selected patient name
+                              _searchController.text = patientName;
                             });
                           },
                           contentPadding: EdgeInsets.symmetric(

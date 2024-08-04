@@ -142,7 +142,8 @@ class PatientApiService {
     );
 
     if (response.statusCode != 201) {
-      throw Exception('Failed to add payment');
+      // Include response body in error message for better debugging
+      throw Exception('Failed to add payment: ${response.body}');
     }
   }
 

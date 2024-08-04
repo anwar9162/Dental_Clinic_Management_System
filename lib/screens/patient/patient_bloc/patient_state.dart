@@ -1,4 +1,3 @@
-// patient_state.dart
 import 'package:equatable/equatable.dart';
 
 abstract class PatientState extends Equatable {
@@ -23,6 +22,19 @@ class PatientError extends PatientState {
   final String message;
 
   PatientError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class PaymentLoading extends PatientState {}
+
+class PaymentSuccess extends PatientState {}
+
+class PaymentError extends PatientState {
+  final String message;
+
+  PaymentError(this.message);
 
   @override
   List<Object> get props => [message];
