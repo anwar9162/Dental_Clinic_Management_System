@@ -1,5 +1,6 @@
 const express = require("express");
 const connectDB = require("./config/db");
+const cors = require("cors");
 const patientRoutes = require("./routes/patientRoutes");
 const doctorRoutes = require("./routes/doctorRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
@@ -8,6 +9,7 @@ require("dotenv").config();
 
 const app = express();
 
+app.use(cors()); // Allows all origins
 // Connect to database
 connectDB();
 

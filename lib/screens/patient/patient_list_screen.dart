@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:data_table_2/data_table_2.dart';
+import 'package:intl/intl.dart'; // Import the intl package
 import 'add_patient_screen.dart';
 import 'add_arrived_patient_screen.dart';
-import 'payment_data_screen.dart'; // Import your new Payment Data screen
+import 'payment_data_screen.dart';
+import 'patient_bloc/patient_bloc.dart';
+import 'patient_bloc/patient_event.dart';
+import 'patient_bloc/patient_state.dart';
 
 class PatientListScreen extends StatefulWidget {
   @override
@@ -10,101 +15,15 @@ class PatientListScreen extends StatefulWidget {
 }
 
 class _PatientListScreenState extends State<PatientListScreen> {
-  List<Map<String, String>> patients = [
-    // Mock data
-    {
-      'firstName': 'John',
-      'lastName': 'Doe',
-      'phoneNumber': '1234567890',
-      'gender': 'Male',
-      'dob': '01/01/1990',
-      'address': '123 Main St'
-    },
-    {
-      'firstName': 'Jane',
-      'lastName': 'Smith',
-      'phoneNumber': '0987654321',
-      'gender': 'Female',
-      'dob': '02/02/1995',
-      'address': '456 Elm St'
-    },
-    // Add more mock patients as needed
-  ];
-
-  String _searchQuery = '';
   bool _showAddPatientScreen = false;
   bool _showAddArrivedPatientScreen = false;
   bool _showPaymentDataScreen = false;
+  String _searchQuery = '';
 
-  List<Map<String, String>> get _filteredPatients {
-    if (_searchQuery.isEmpty) return patients;
-    return patients.where((patient) {
-      return patient.values.any(
-          (value) => value.toLowerCase().contains(_searchQuery.toLowerCase()));
-    }).toList();
-  }
-
-  void _editPatient(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return PatientEditDialog(
-          patient: patients[index],
-          onSave: () {
-            // Save logic
-            Navigator.of(context).pop();
-          },
-          onCancel: () {
-            Navigator.of(context).pop();
-          },
-        );
-      },
-    );
-  }
-
-  void _deletePatient(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ConfirmationDialog(
-          title: 'Delete Patient',
-          content: 'Are you sure you want to delete this patient?',
-          onConfirm: () {
-            setState(() {
-              patients.removeAt(index);
-            });
-            Navigator.of(context).pop();
-          },
-          onCancel: () {
-            Navigator.of(context).pop();
-          },
-        );
-      },
-    );
-  }
-
-  void _toggleAddPatientScreen() {
-    setState(() {
-      _showAddPatientScreen = !_showAddPatientScreen;
-      _showAddArrivedPatientScreen = false;
-      _showPaymentDataScreen = false;
-    });
-  }
-
-  void _toggleAddArrivedPatientScreen() {
-    setState(() {
-      _showAddArrivedPatientScreen = !_showAddArrivedPatientScreen;
-      _showAddPatientScreen = false;
-      _showPaymentDataScreen = false;
-    });
-  }
-
-  void _togglePaymentDataScreen() {
-    setState(() {
-      _showPaymentDataScreen = !_showPaymentDataScreen;
-      _showAddPatientScreen = false;
-      _showAddArrivedPatientScreen = false;
-    });
+  @override
+  void initState() {
+    super.initState();
+    context.read<PatientBloc>().add(LoadPatients()); // Load patients on init
   }
 
   @override
@@ -122,7 +41,29 @@ class _PatientListScreenState extends State<PatientListScreen> {
               children: [
                 _buildSearchField(),
                 Expanded(
-                  child: _buildPatientTable(),
+                  child: BlocBuilder<PatientBloc, PatientState>(
+                    builder: (context, state) {
+                      if (state is PatientLoading) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (state is PatientLoaded) {
+                        final filteredPatients =
+                            state.patients.where((patient) {
+                          return patient.values.any((value) => value
+                              .toString()
+                              .toLowerCase()
+                              .contains(_searchQuery.toLowerCase()));
+                        }).toList();
+                        if (filteredPatients.isEmpty) {
+                          return Center(child: Text('No patients found.'));
+                        } else {
+                          return _buildPatientTable(filteredPatients);
+                        }
+                      } else if (state is PatientError) {
+                        return Center(child: Text('Error: ${state.message}'));
+                      }
+                      return Center(child: Text('No data available'));
+                    },
+                  ),
                 ),
                 _buildActionButtons(),
               ],
@@ -132,7 +73,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
               _showAddArrivedPatientScreen ||
               _showPaymentDataScreen)
             Container(
-              width: 600, // Specify width for the sidebar
+              width: 600,
               child: _showAddPatientScreen
                   ? AddPatientScreen(onClose: _toggleAddPatientScreen)
                   : _showAddArrivedPatientScreen
@@ -163,7 +104,10 @@ class _PatientListScreenState extends State<PatientListScreen> {
     );
   }
 
-  Widget _buildPatientTable() {
+  Widget _buildPatientTable(List<Map<String, dynamic>> patients) {
+    // Reverse the list to show latest entries first
+    List<Map<String, dynamic>> reversedPatients = patients.reversed.toList();
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -196,30 +140,38 @@ class _PatientListScreenState extends State<PatientListScreen> {
             DataColumn(label: Text('Address')),
             DataColumn(label: Text('Actions')),
           ],
-          rows: _filteredPatients.asMap().entries.map((entry) {
+          rows: reversedPatients.asMap().entries.map((entry) {
             int index = entry.key;
-            Map<String, String> patient = entry.value;
+            Map<String, dynamic> patient = entry.value;
+
+            // Format date of birth
+            String formattedDateOfBirth = '';
+            if (patient['dateOfBirth'] != null) {
+              DateTime dob = DateTime.parse(patient['dateOfBirth']);
+              formattedDateOfBirth = DateFormat('yyyy-MM-dd').format(dob);
+            }
+
             return DataRow(
               cells: [
                 DataCell(Text((index + 1).toString())),
                 DataCell(Text(patient['firstName'] ?? '')),
                 DataCell(Text(patient['lastName'] ?? '')),
                 DataCell(Text(patient['phoneNumber'] ?? '')),
-                DataCell(Text(patient['gender'] ?? '')),
-                DataCell(Text(patient['dob'] ?? '')),
-                DataCell(Text(patient['address'] ?? '')),
+                DataCell(Text(patient['Gender'] ?? '')),
+                DataCell(Text(formattedDateOfBirth)), // Display formatted date
+                DataCell(Text(patient['Address'] ?? '')),
                 DataCell(Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
                       icon: Icon(Icons.edit, color: Color(0xFF00796B)),
-                      onPressed: () => _editPatient(index),
+                      onPressed: () => _editPatient(patient['id']),
                       tooltip: 'Edit Patient',
                     ),
                     SizedBox(width: 8),
                     IconButton(
                       icon: Icon(Icons.delete, color: Color(0xFFD32F2F)),
-                      onPressed: () => _deletePatient(index),
+                      onPressed: () => _deletePatient(patient['id']),
                       tooltip: 'Delete Patient',
                     ),
                   ],
@@ -242,8 +194,8 @@ class _PatientListScreenState extends State<PatientListScreen> {
             icon: Icon(Icons.person_add),
             label: Text('Add New Patient'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF00796B), // Background color
-              foregroundColor: Colors.white, // Text color
+              backgroundColor: Color(0xFF00796B),
+              foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -256,8 +208,8 @@ class _PatientListScreenState extends State<PatientListScreen> {
             icon: Icon(Icons.check_circle_outline),
             label: Text('Mark Arrived Patient'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFD32F2F), // Background color
-              foregroundColor: Colors.white, // Text color
+              backgroundColor: Color(0xFFD32F2F),
+              foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -270,8 +222,8 @@ class _PatientListScreenState extends State<PatientListScreen> {
             icon: Icon(Icons.payment),
             label: Text('Payment Data'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF00796B), // Background color
-              foregroundColor: Colors.white, // Text color
+              backgroundColor: Color(0xFF00796B),
+              foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -284,70 +236,59 @@ class _PatientListScreenState extends State<PatientListScreen> {
       ),
     );
   }
-}
 
-class PatientEditDialog extends StatelessWidget {
-  final Map<String, String> patient;
-  final VoidCallback onSave;
-  final VoidCallback onCancel;
+  void _editPatient(String id) {
+    // Implement edit functionality
+  }
 
-  PatientEditDialog(
-      {required this.patient, required this.onSave, required this.onCancel});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Edit Patient'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-              'Edit details for ${patient['firstName']} ${patient['lastName']}'),
-          // Add your editing form here
-        ],
-      ),
-      actions: <Widget>[
-        TextButton(
-          child: Text('Cancel'),
-          onPressed: onCancel,
-        ),
-        TextButton(
-          child: Text('Save'),
-          onPressed: onSave,
-        ),
-      ],
+  void _deletePatient(String id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Patient'),
+          content: Text('Are you sure you want to delete this patient?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                context.read<PatientBloc>().add(DeletePatient(id));
+                Navigator.of(context).pop();
+              },
+              child: Text('Confirm'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
     );
   }
-}
 
-class ConfirmationDialog extends StatelessWidget {
-  final String title;
-  final String content;
-  final VoidCallback onConfirm;
-  final VoidCallback onCancel;
+  void _toggleAddPatientScreen() {
+    setState(() {
+      _showAddPatientScreen = !_showAddPatientScreen;
+      _showAddArrivedPatientScreen = false;
+      _showPaymentDataScreen = false;
+    });
+  }
 
-  ConfirmationDialog({
-    required this.title,
-    required this.content,
-    required this.onConfirm,
-    required this.onCancel,
-  });
+  void _toggleAddArrivedPatientScreen() {
+    setState(() {
+      _showAddArrivedPatientScreen = !_showAddArrivedPatientScreen;
+      _showAddPatientScreen = false;
+      _showPaymentDataScreen = false;
+    });
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(title),
-      content: Text(content),
-      actions: <Widget>[
-        TextButton(
-          child: Text('Cancel'),
-          onPressed: onCancel,
-        ),
-        TextButton(
-          child: Text('Confirm'),
-          onPressed: onConfirm,
-        ),
-      ],
-    );
+  void _togglePaymentDataScreen() {
+    setState(() {
+      _showPaymentDataScreen = !_showPaymentDataScreen;
+      _showAddPatientScreen = false;
+      _showAddArrivedPatientScreen = false;
+    });
   }
 }

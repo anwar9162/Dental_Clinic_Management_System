@@ -1,34 +1,34 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 // Define the schema for an image
 const imageSchema = new mongoose.Schema({
   dateCaptured: Date,
-  assetPath: String
+  assetPath: String,
 });
 
 // Define the schema for a payment
 const paymentSchema = new mongoose.Schema({
   amount: Number,
-  date: Date,
+  date: String,
   status: {
     type: String,
-    enum: ['pending', 'cancelled', 'paid'],
-    default: 'pending'
+    enum: ["pending", "cancelled", "paid"],
+    default: "pending",
   },
-  reason: String
+  reason: String,
 });
 
 // Define the schema for dental chart entries
 const dentalChartEntrySchema = new mongoose.Schema({
   condition: String,
   treatment: String,
-  date: Date
+  date: Date,
 });
 
 // Define the schema for dental chart
 const dentalChartSchema = new mongoose.Schema({
   toothNumber: String,
-  notes: [dentalChartEntrySchema]
+  notes: [dentalChartEntrySchema],
 });
 
 // Define the schema for the patient
@@ -37,26 +37,30 @@ const patientSchema = new mongoose.Schema({
   lastName: String,
   phoneNumber: {
     type: String,
-    unique: true
+    unique: true,
   },
   Gender: String,
   dateOfBirth: Date,
   Address: String,
-  medicalHistory: [{
-    condition: String,
-    treatment: String,
-    date: Date
-  }],
-  visitHistory: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Appointment',
-  }],
+  medicalHistory: [
+    {
+      condition: String,
+      treatment: String,
+      date: Date,
+    },
+  ],
+  visitHistory: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Appointment",
+    },
+  ],
   dentalChart: [dentalChartSchema],
   payments: [paymentSchema],
   progressImages: [imageSchema], // Add progressImages field
-  xrayImages: [imageSchema] // Add xrayImages field
+  xrayImages: [imageSchema], // Add xrayImages field
 });
 
-const Patient = mongoose.model('Patient', patientSchema);
+const Patient = mongoose.model("Patient", patientSchema);
 
 module.exports = Patient;

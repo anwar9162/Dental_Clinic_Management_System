@@ -1,15 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../patient/patient_bloc/add_patient_bloc.dart';
+import '../patient/patient_bloc/add_patient_event.dart';
+import '../patient/patient_bloc/add_patient_state.dart';
 
-class AddPatientScreen extends StatefulWidget {
+import '../../services/patient_api_service.dart';
+import 'package:loading_indicator/loading_indicator.dart';
+
+class AddPatientScreen extends StatelessWidget {
   final VoidCallback onClose;
 
   const AddPatientScreen({Key? key, required this.onClose}) : super(key: key);
 
   @override
-  _AddPatientScreenState createState() => _AddPatientScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AddPatientBloc(PatientApiService()),
+      child: _AddPatientForm(onClose: onClose),
+    );
+  }
 }
 
-class _AddPatientScreenState extends State<AddPatientScreen> {
+class _AddPatientForm extends StatefulWidget {
+  final VoidCallback onClose;
+
+  const _AddPatientForm({Key? key, required this.onClose}) : super(key: key);
+
+  @override
+  _AddPatientFormState createState() => _AddPatientFormState();
+}
+
+class _AddPatientFormState extends State<_AddPatientForm> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _firstNameController = TextEditingController();
@@ -19,84 +40,108 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   final _addressController = TextEditingController();
   final _patientType = 'New';
 
+  bool _isLoading = false;
+
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
-      // Handle the form submission logic here
-      widget.onClose();
-    }
-  }
+      final patientData = {
+        'phoneNumber': _phoneController.text,
+        'firstName': _firstNameController.text,
+        'lastName': _lastNameController.text,
+        'dateOfBirth': _dobController.text,
+        'Gender': _genderController.text,
+        'Address': _addressController.text,
+        'patientType': _patientType,
+      };
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (pickedDate != null && pickedDate != DateTime.now()) {
-      setState(() {
-        _dobController.text = _formatDate(pickedDate);
-      });
+      context.read<AddPatientBloc>().add(SubmitPatientForm(patientData));
     }
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.toLocal()}'.split(' ')[0]; // format date as YYYY-MM-DD
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Center(
-        child: Container(
-          width: 700, // Increased width for the container
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 12,
-                offset: Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildNameFields(),
-                        SizedBox(height: 16),
-                        _buildLabeledTextField('Phone Number', _phoneController,
-                            keyboardType: TextInputType.phone),
-                        SizedBox(height: 16),
-                        _buildLabeledDropdownField(
-                            'Gender', _genderController, ['Male', 'Female']),
-                        SizedBox(height: 16),
-                        _buildLabeledDateField('Date of Birth', _dobController),
-                        SizedBox(height: 16),
-                        _buildLabeledTextField('Address', _addressController),
-                        SizedBox(height: 24),
-                        _buildHiddenPatientTypeField(),
-                        SizedBox(height: 24),
-                        _buildActionButtons(),
-                      ],
+    return BlocListener<AddPatientBloc, AddPatientState>(
+      listener: (context, state) {
+        if (state is AddPatientLoading) {
+          setState(() => _isLoading = true);
+        } else if (state is AddPatientSuccess) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Patient added successfully')),
+          );
+          widget.onClose();
+        } else if (state is AddPatientFailure) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to add patient: ${state.error}')),
+          );
+        }
+      },
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 600),
+              decoration: _boxDecoration,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildHeader(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildNameFields(),
+                            SizedBox(height: 16),
+                            _buildLabeledTextField(
+                                'Phone Number', _phoneController,
+                                keyboardType: TextInputType.phone),
+                            SizedBox(height: 16),
+                            _buildLabeledDropdownField('Gender',
+                                _genderController, ['Male', 'Female']),
+                            SizedBox(height: 16),
+                            _buildLabeledDateField(
+                                'Date of Birth', _dobController),
+                            SizedBox(height: 16),
+                            _buildLabeledTextField(
+                                'Address', _addressController),
+                            SizedBox(height: 24),
+                            _buildActionButtons(),
+                          ],
+                        ),
+                      ),
                     ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (_isLoading)
+            Center(
+              child: Container(
+                color: Colors.black
+                    .withOpacity(0.4), // Slightly transparent background
+                child: Center(
+                  child: LoadingIndicator(
+                    indicatorType: Indicator
+                        .ballPulse, // Change this to your desired indicator type
+                    colors: [
+                      Colors.blue,
+                      Colors.green,
+                      Colors.red
+                    ], // Add more colors if desired
+                    strokeWidth: 2,
+                    backgroundColor:
+                        Colors.transparent, // Transparent background
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -109,19 +154,12 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
         children: [
           Text(
             'Add New Patient',
-            style: TextStyle(
-              fontSize: 22, // Slightly larger size
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+            style: _headerTextStyle,
           ),
           SizedBox(height: 8),
           Text(
             'Please fill in the details below to add a new patient.',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 16, // Slightly larger size
-            ),
+            style: _subHeaderTextStyle,
           ),
         ],
       ),
@@ -133,12 +171,10 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: _buildLabeledTextField('First Name', _firstNameController),
-        ),
+            child: _buildLabeledTextField('First Name', _firstNameController)),
         SizedBox(width: 16),
         Expanded(
-          child: _buildLabeledTextField('Last Name', _lastNameController),
-        ),
+            child: _buildLabeledTextField('Last Name', _lastNameController)),
       ],
     );
   }
@@ -148,38 +184,14 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(
-          width: 150, // Fixed width for labels
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ),
+        _buildLabel(label),
         SizedBox(width: 16),
         Expanded(
           child: TextFormField(
             controller: controller,
             keyboardType: keyboardType,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.grey[100],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none, // Remove border line
-              ),
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter $label';
-              }
-              return null;
-            },
+            decoration: _inputDecoration,
+            validator: (value) => _validateField(value, label),
           ),
         ),
       ],
@@ -191,48 +203,24 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(
-          width: 150, // Fixed width for labels
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ),
+        _buildLabel(label),
         SizedBox(width: 16),
         Expanded(
           child: DropdownButtonFormField<String>(
             value: controller.text.isEmpty ? null : controller.text,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.grey[100],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none, // Remove border line
-              ),
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-            ),
             items: options.map((option) {
               return DropdownMenuItem<String>(
                 value: option,
                 child: Text(option),
               );
             }).toList(),
-            onChanged: (String? newValue) {
+            onChanged: (value) {
               setState(() {
-                controller.text = newValue!;
+                controller.text = value!;
               });
             },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please select $label';
-              }
-              return null;
-            },
+            decoration: _inputDecoration,
+            validator: (value) => _validateField(value, label),
           ),
         ),
       ],
@@ -244,81 +232,115 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(
-          width: 150, // Fixed width for labels
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ),
+        _buildLabel(label),
         SizedBox(width: 16),
         Expanded(
           child: TextFormField(
             controller: controller,
             readOnly: true,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.grey[100],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none, // Remove border line
-              ),
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-              suffixIcon: Icon(Icons.calendar_today, color: Colors.indigo),
-            ),
-            onTap: () => _selectDate(context),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please select $label';
+            onTap: () async {
+              final pickedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(1900),
+                lastDate: DateTime.now(),
+              );
+              if (pickedDate != null) {
+                setState(() {
+                  controller.text = _formatDate(pickedDate);
+                });
               }
-              return null;
             },
+            decoration: _inputDecoration,
+            validator: (value) => _validateField(value, label),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildHiddenPatientTypeField() {
-    return TextFormField(
-      initialValue: _patientType,
-      enabled: false,
-      style: TextStyle(color: Colors.transparent), // Hide text
-      decoration: InputDecoration.collapsed(hintText: 'Patient Type'),
+  Widget _buildActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+          onPressed: widget.onClose,
+          child: Text('Cancel'),
+        ),
+        SizedBox(width: 16),
+        ElevatedButton(
+          onPressed: _submitForm,
+          child: Text('Add Patient'),
+        ),
+      ],
     );
   }
 
-  Widget _buildActionButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ElevatedButton(
-          onPressed: _submitForm,
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                const Color.fromARGB(255, 184, 201, 199), // Modern color
-            padding: EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            elevation: 5, // Subtle shadow for a modern effect
-          ),
-          child: Text(
-            'Add Patient',
-            style: TextStyle(fontSize: 18, color: Colors.white),
-          ),
-        ),
-        TextButton(
-          onPressed: widget.onClose,
-          child: Text(
-            'Cancel',
-            style: TextStyle(color: Colors.teal, fontSize: 16),
-          ),
+  // Helper Methods
+  Widget _buildLabel(String label) {
+    return SizedBox(
+      width: 150,
+      child: Text(
+        label,
+        style: _labelTextStyle,
+      ),
+    );
+  }
+
+  String? _validateField(String? value, String label) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter $label';
+    }
+    return null;
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  InputDecoration get _inputDecoration {
+    return InputDecoration(
+      filled: true,
+      fillColor: Colors.grey[100],
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+    );
+  }
+
+  TextStyle get _headerTextStyle {
+    return TextStyle(
+      fontSize: 22,
+      fontWeight: FontWeight.bold,
+      color: Colors.black87,
+    );
+  }
+
+  TextStyle get _subHeaderTextStyle {
+    return TextStyle(
+      color: Colors.grey[600],
+      fontSize: 16,
+    );
+  }
+
+  TextStyle get _labelTextStyle {
+    return TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+      color: Colors.black87,
+    );
+  }
+
+  BoxDecoration get _boxDecoration {
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black12,
+          blurRadius: 12,
+          offset: Offset(0, 6),
         ),
       ],
     );
