@@ -27,7 +27,9 @@ const getPatientById = async (req, res) => {
 // Get patient by phone
 const getPatientByPhone = async (req, res) => {
   try {
-    const patient = await Patient.findOne({phoneNumber: req.params.phoneNumber});
+    const patient = await Patient.findOne({
+      phoneNumber: req.params.phoneNumber,
+    });
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
@@ -44,7 +46,9 @@ const createPatient = async (req, res) => {
     // Check if a patient with the same phone number already exists
     const existingPatient = await Patient.findOne({ phoneNumber });
     if (existingPatient) {
-      return res.status(400).json({ message: "Patient with this phone number already exists" });
+      return res
+        .status(400)
+        .json({ message: "Patient with this phone number already exists" });
     }
 
     // Create and save the new patient
@@ -55,7 +59,6 @@ const createPatient = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // Update patient
 const updatePatient = async (req, res) => {
@@ -92,23 +95,25 @@ const addDentalChartEntry = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(404).json({ message: "Patient not found" });
     }
 
     const { toothNumber, condition, treatment, date } = req.body;
-    const toothEntry = patient.dentalChart.find(entry => entry.toothNumber === toothNumber);
+    const toothEntry = patient.dentalChart.find(
+      (entry) => entry.toothNumber === toothNumber
+    );
 
     if (toothEntry) {
       toothEntry.notes.push({ condition, treatment, date });
     } else {
       patient.dentalChart.push({
         toothNumber,
-        notes: [{ condition, treatment, date }]
+        notes: [{ condition, treatment, date }],
       });
     }
 
     await patient.save();
-    res.status(201).json({ message: 'Dental chart entry added', patient });
+    res.status(201).json({ message: "Dental chart entry added", patient });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -119,7 +124,7 @@ const getDentalChart = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(404).json({ message: "Patient not found" });
     }
 
     res.status(200).json(patient.dentalChart);
@@ -133,28 +138,34 @@ const deleteDentalChartEntry = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(404).json({ message: "Patient not found" });
     }
 
-    const toothEntry = patient.dentalChart.find(entry => entry.toothNumber === req.params.toothNumber);
+    const toothEntry = patient.dentalChart.find(
+      (entry) => entry.toothNumber === req.params.toothNumber
+    );
     if (!toothEntry) {
-      return res.status(404).json({ message: 'Tooth entry not found' });
+      return res.status(404).json({ message: "Tooth entry not found" });
     }
 
-    const noteIndex = toothEntry.notes.findIndex(note => note._id.toString() === req.params.entryId);
+    const noteIndex = toothEntry.notes.findIndex(
+      (note) => note._id.toString() === req.params.entryId
+    );
     if (noteIndex === -1) {
-      return res.status(404).json({ message: 'Note not found' });
+      return res.status(404).json({ message: "Note not found" });
     }
 
     toothEntry.notes.splice(noteIndex, 1);
 
     // If the tooth entry has no more notes, remove the entire tooth entry
     if (toothEntry.notes.length === 0) {
-      patient.dentalChart = patient.dentalChart.filter(entry => entry.toothNumber !== req.params.toothNumber);
+      patient.dentalChart = patient.dentalChart.filter(
+        (entry) => entry.toothNumber !== req.params.toothNumber
+      );
     }
 
     await patient.save();
-    res.status(200).json({ message: 'Dental chart entry deleted', patient });
+    res.status(200).json({ message: "Dental chart entry deleted", patient });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -165,17 +176,19 @@ const updateDentalChartEntry = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(404).json({ message: "Patient not found" });
     }
 
-    const toothEntry = patient.dentalChart.find(entry => entry.toothNumber === req.params.toothNumber);
+    const toothEntry = patient.dentalChart.find(
+      (entry) => entry.toothNumber === req.params.toothNumber
+    );
     if (!toothEntry) {
-      return res.status(404).json({ message: 'Tooth entry not found' });
+      return res.status(404).json({ message: "Tooth entry not found" });
     }
 
     const note = toothEntry.notes.id(req.params.entryId);
     if (!note) {
-      return res.status(404).json({ message: 'Note not found' });
+      return res.status(404).json({ message: "Note not found" });
     }
 
     // Update the note with the new data from the request body
@@ -184,7 +197,7 @@ const updateDentalChartEntry = async (req, res) => {
     note.date = req.body.date || note.date;
 
     await patient.save();
-    res.status(200).json({ message: 'Dental chart entry updated', patient });
+    res.status(200).json({ message: "Dental chart entry updated", patient });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -194,14 +207,14 @@ const addPayment = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(404).json({ message: "Patient not found" });
     }
 
     const { amount, date, status, reason } = req.body;
     patient.payments.push({ amount, date, status, reason });
 
     await patient.save();
-    res.status(201).json({ message: 'Payment added', patient });
+    res.status(201).json({ message: "Payment added", patient });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -211,12 +224,12 @@ const updatePayment = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(404).json({ message: "Patient not found" });
     }
 
     const payment = patient.payments.id(req.params.paymentId);
     if (!payment) {
-      return res.status(404).json({ message: 'Payment not found' });
+      return res.status(404).json({ message: "Payment not found" });
     }
 
     if (req.body.status) {
@@ -227,7 +240,7 @@ const updatePayment = async (req, res) => {
     }
 
     await patient.save();
-    res.status(200).json({ message: 'Payment updated', patient });
+    res.status(200).json({ message: "Payment updated", patient });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -238,16 +251,16 @@ const addProgressImages = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(404).json({ message: "Patient not found" });
     }
 
     const { progressImages } = req.body; // Array of progress image objects
     if (Array.isArray(progressImages)) {
       patient.progressImages.push(...progressImages);
       await patient.save();
-      res.status(201).json({ message: 'Progress images added', patient });
+      res.status(201).json({ message: "Progress images added", patient });
     } else {
-      res.status(400).json({ message: 'Invalid data format' });
+      res.status(400).json({ message: "Invalid data format" });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -258,22 +271,21 @@ const addXrayImages = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(404).json({ message: "Patient not found" });
     }
 
     const { xrayImages } = req.body; // Array of xray image objects
     if (Array.isArray(xrayImages)) {
       patient.xrayImages.push(...xrayImages);
       await patient.save();
-      res.status(201).json({ message: 'Xray images added', patient });
+      res.status(201).json({ message: "Xray images added", patient });
     } else {
-      res.status(400).json({ message: 'Invalid data format' });
+      res.status(400).json({ message: "Invalid data format" });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 module.exports = {
   getAllPatients,
