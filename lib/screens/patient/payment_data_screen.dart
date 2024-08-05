@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Add this import to use DateFormat
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'patient_bloc/patient_bloc.dart';
-import 'patient_bloc/patient_event.dart';
-import 'patient_bloc/patient_state.dart';
+import 'patient_bloc/payment_bloc.dart';
+import 'patient_bloc/payment_event.dart';
+import 'patient_bloc/payment_state.dart';
 
 class PaymentDataScreen extends StatefulWidget {
   final VoidCallback onClose;
@@ -37,7 +37,7 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
   List<Map<String, dynamic>> get _filteredPatients {
     final query = _searchController.text.toLowerCase();
     if (query.isEmpty) {
-      return [];
+      return _patients;
     } else {
       return _patients.where((patient) {
         final name = '${patient['firstName']} ${patient['lastName']}';
@@ -224,7 +224,7 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                       ),
                       SizedBox(height: 16),
                       // Submit Button
-                      BlocConsumer<PatientBloc, PatientState>(
+                      BlocConsumer<PaymentBloc, PaymentState>(
                         listener: (context, state) {
                           if (state is PaymentSuccess) {
                             showDialog(
@@ -239,6 +239,8 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                                       child: Text('OK'),
                                       onPressed: () {
                                         Navigator.of(context).pop();
+                                        widget
+                                            .onClose(); // Notify that the dialog has been closed
                                       },
                                     ),
                                   ],
@@ -259,13 +261,12 @@ class _PaymentDataScreenState extends State<PaymentDataScreen> {
                               if (_selectedPatientId != null) {
                                 final paymentData = {
                                   'amount': _amountController.text,
-                                  'date': DateFormat('yyyy-MM-dd').format(
-                                      DateTime
-                                          .now()), // Format the current date
+                                  'date': DateFormat('yyyy-MM-dd')
+                                      .format(DateTime.now()),
                                   'status': _selectedStatus,
                                   'reason': _reasonController.text,
                                 };
-                                context.read<PatientBloc>().add(
+                                context.read<PaymentBloc>().add(
                                       AddPayment(
                                         patientId: _selectedPatientId!,
                                         paymentData: paymentData,

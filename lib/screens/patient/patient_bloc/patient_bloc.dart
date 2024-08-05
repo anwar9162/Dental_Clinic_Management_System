@@ -9,7 +9,6 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
   PatientBloc(this.patientApiService) : super(PatientInitial()) {
     on<LoadPatients>(_onLoadPatients);
     on<DeletePatient>(_onDeletePatient);
-    on<AddPayment>(_onAddPayment); // Added event handler
   }
 
   Future<void> _onLoadPatients(
@@ -30,18 +29,6 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
       add(LoadPatients()); // Reload patients after deletion
     } catch (e) {
       emit(PatientError(e.toString()));
-    }
-  }
-
-  Future<void> _onAddPayment(
-      AddPayment event, Emitter<PatientState> emit) async {
-    emit(PaymentLoading()); // Optional: Add loading state for payment
-
-    try {
-      await patientApiService.addPayment(event.patientId, event.paymentData);
-      emit(PaymentSuccess()); // Emit success state
-    } catch (e) {
-      emit(PaymentError(e.toString())); // Emit error state
     }
   }
 }

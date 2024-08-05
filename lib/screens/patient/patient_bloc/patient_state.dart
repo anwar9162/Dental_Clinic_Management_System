@@ -26,16 +26,3 @@ class PatientError extends PatientState {
   @override
   List<Object> get props => [message];
 }
-
-class PaymentLoading extends PatientState {}
-
-class PaymentSuccess extends PatientState {}
-
-class PaymentError extends PatientState {
-  final String message;
-
-  PaymentError(this.message);
-
-  @override
-  List<Object> get props => [message];
-}

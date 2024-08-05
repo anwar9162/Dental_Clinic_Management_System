@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import 'providers/appointment_provider.dart';
 import 'screens/patient/patient_bloc/patient_bloc.dart';
+import 'screens/patient/patient_bloc/payment_bloc.dart'; // Import PaymentBloc
 import 'services/patient_api_service.dart'; // Import the PatientApiService
 import 'utils/constants.dart'; // Ensure this import is correct based on your file structure
 import 'widgets/main_screen_widget.dart';
@@ -28,6 +29,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => PatientBloc(
               patientApiService), // Provide PatientApiService to PatientBloc
+        ),
+        BlocProvider(
+          create: (context) =>
+              PaymentBloc(patientApiService), // Provide PaymentBloc
         ),
       ],
       child: MaterialApp(
