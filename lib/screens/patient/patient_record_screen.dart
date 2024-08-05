@@ -12,7 +12,7 @@ class PatientRecordScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.teal, // Teal background color
-        title: Text('Patient Record: ${patient.name}'),
+        title: Text('Patient Record: ${patient.firstName}'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -62,7 +62,8 @@ class PatientRecordScreen extends StatelessWidget {
         );
       },
       child: Hero(
-        tag: 'profileImage-${patient.id}', // Unique tag for Hero animation
+        tag:
+            'profileImage-${patient.firstName!}', // Unique tag for Hero animation
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
@@ -91,7 +92,7 @@ class PatientRecordScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-                _buildInfoRow('Name', patient.name,
+                _buildInfoRow('Name', patient.firstName!,
                     valueStyle: TextStyle(fontWeight: FontWeight.bold)),
                 _buildInfoRow('Date of Birth', '1990-01-01'), // Mock data
                 _buildInfoRow('Gender', 'Male'), // Mock data
@@ -126,7 +127,7 @@ class PatientRecordScreen extends StatelessWidget {
           children: [
             _buildInfoRow('First Visit Date',
                 patient.firstVisitDate.toString().split(' ')[0]),
-            _buildInfoRow('Last Treatment', patient.lastTreatment ?? 'N/A'),
+            _buildInfoRow('Phone Number', patient.phoneNumber ?? 'N/A'),
             _buildInfoRow(
               'Known Allergies',
               'None',
@@ -148,13 +149,13 @@ class PatientRecordScreen extends StatelessWidget {
     List<Appointment> appointments = [
       Appointment(
           id: '1',
-          patientName: patient.name,
+          patientName: patient.firstName!,
           date: DateTime.now().subtract(Duration(days: 30)),
           description: 'Routine Checkup',
           doctorName: 'Dr. Smith'),
       Appointment(
           id: '2',
-          patientName: patient.name,
+          patientName: patient.firstName!,
           date: DateTime.now().subtract(Duration(days: 60)),
           description: 'Tooth Extraction',
           doctorName: 'Dr. Johnson'),
@@ -216,8 +217,8 @@ class PatientRecordScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildInfoRow(
-              'Current Appointment Reason',
-              patient.currentAppointmentReason,
+              'lastname',
+              patient.lastName!,
               valueStyle: TextStyle(color: Colors.blueGrey[900]),
             ),
             _buildInfoRow(

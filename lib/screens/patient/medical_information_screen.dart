@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Import flutter_bloc package
+
 import '../patient/PatientDetailWidget.dart';
 import '../../models/patient_model.dart';
+import 'patient_bloc/medical_information_bloc.dart';
+import 'patient_bloc/medical_information_event.dart';
+import 'patient_bloc/medical_information_state.dart';
+import '../../services/patient_api_service.dart';
 
 class MedicalInformationScreen extends StatefulWidget {
   @override
@@ -9,18 +15,22 @@ class MedicalInformationScreen extends StatefulWidget {
 }
 
 class _MedicalInformationScreenState extends State<MedicalInformationScreen> {
-  List<Patient> _patients =
-      mockPatients; // Using mockPatient from patient_model.dart
+  late final MedicalInformationBloc _bloc;
   String _searchQuery = '';
   Patient? selectedPatient;
 
   List<Patient> get _filteredPatients {
-    return _searchQuery.isEmpty
-        ? _patients
-        : _patients
-            .where((patient) =>
-                patient.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-            .toList();
+    final state = _bloc.state;
+    if (state is MedicalInformationLoaded) {
+      return _searchQuery.isEmpty
+          ? state.patients
+          : state.patients
+              .where((patient) => patient.firstName!
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()))
+              .toList();
+    }
+    return [];
   }
 
   void _onSearch(String query) {
@@ -28,6 +38,13 @@ class _MedicalInformationScreenState extends State<MedicalInformationScreen> {
       _searchQuery = query;
       selectedPatient = null;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = MedicalInformationBloc(PatientApiService());
+    _bloc.add(FetchPatients());
   }
 
   @override
@@ -57,86 +74,105 @@ class _MedicalInformationScreenState extends State<MedicalInformationScreen> {
           ),
         ),
       ),
-      body: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.grey[100],
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text(
-                      'Total Patients: ${_filteredPatients.length}',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _filteredPatients.length,
-                      itemBuilder: (context, index) {
-                        final patient = _filteredPatients[index];
-                        final isSelected = selectedPatient == patient;
-                        return Container(
-                          margin: EdgeInsets.symmetric(vertical: 4.0),
-                          decoration: BoxDecoration(
-                            color: isSelected ? Colors.teal[50] : Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              if (isSelected)
-                                BoxShadow(
-                                  color: Colors.teal.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  spreadRadius: 2,
-                                ),
-                            ],
+      body: BlocBuilder<MedicalInformationBloc, MedicalInformationState>(
+        bloc: _bloc,
+        builder: (context, state) {
+          if (state is MedicalInformationLoading) {
+            return Center(child: CircularProgressIndicator());
+          } else if (state is MedicalInformationLoaded) {
+            return Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Colors.grey[100],
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(
+                            'Total Patients: ${_filteredPatients.length}',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500),
                           ),
-                          child: ListTile(
-                            title: Text(
-                              patient.name,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 14),
-                            ),
-                            subtitle: Text(
-                              'Last Treatment: ${patient.lastTreatment}',
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                            leading: Icon(
-                              Icons.person,
-                              color: Colors.teal,
-                            ),
-                            trailing: Icon(Icons.arrow_forward_ios,
-                                color: Colors.teal),
-                            onTap: () {
-                              setState(() {
-                                selectedPatient = patient;
-                              });
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _filteredPatients.length,
+                            itemBuilder: (context, index) {
+                              final patient = _filteredPatients[index];
+                              final isSelected = selectedPatient == patient;
+                              return Container(
+                                margin: EdgeInsets.symmetric(vertical: 4.0),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? Colors.teal[50]
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    if (isSelected)
+                                      BoxShadow(
+                                        color: Colors.teal.withOpacity(0.3),
+                                        blurRadius: 8,
+                                        spreadRadius: 2,
+                                      ),
+                                  ],
+                                ),
+                                child: ListTile(
+                                  title: Text(
+                                    patient.firstName! +
+                                        " " +
+                                        patient.lastName!,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14),
+                                  ),
+                                  subtitle: Text(
+                                    'Phone: ${patient.phoneNumber}',
+                                    style: TextStyle(color: Colors.grey[700]),
+                                  ),
+                                  leading: Icon(
+                                    Icons.person,
+                                    color: Colors.teal,
+                                  ),
+                                  trailing: Icon(Icons.arrow_forward_ios,
+                                      color: Colors.teal),
+                                  onTap: () {
+                                    setState(() {
+                                      selectedPatient = patient;
+                                    });
+                                  },
+                                ),
+                              );
                             },
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: selectedPatient == null
-                ? Center(
-                    child: Text(
-                      'Select a patient to view details',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                    ),
-                  )
-                : PatientDetailWidget(patient: selectedPatient!),
-          ),
-        ],
+                ),
+                Expanded(
+                  flex: 4,
+                  child: selectedPatient == null
+                      ? Center(
+                          child: Text(
+                            'Select a patient to view details',
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.grey[700]),
+                          ),
+                        )
+                      : PatientDetailWidget(patient: selectedPatient!),
+                ),
+              ],
+            );
+          } else if (state is MedicalInformationError) {
+            return Center(child: Text('Error: ${state.message}'));
+          } else {
+            return Center(child: Text('Unknown state'));
+          }
+        },
       ),
     );
   }

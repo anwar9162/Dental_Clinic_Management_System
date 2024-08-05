@@ -107,11 +107,10 @@ class CustomNavigationDrawer extends StatelessWidget {
               onMenuTap(
                 '/patientrecord',
                 arguments: Patient(
-                  id: '1',
-                  name: 'John Doe',
+                  firstName: "Kibrom",
+                  lastName: "Adinew",
+                  phoneNumber: "0712345678",
                   firstVisitDate: DateTime(2023, 1, 1),
-                  lastTreatment: 'Cleaning',
-                  currentAppointmentReason: 'Routine Checkup',
                 ),
               );
             },

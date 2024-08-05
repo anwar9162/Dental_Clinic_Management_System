@@ -42,7 +42,7 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime visitDate = widget.patient.firstVisitDate;
+    DateTime visitDate = widget.patient.firstVisitDate!;
     int daysSinceFirstVisit = DateTime.now().difference(visitDate).inDays;
 
     return Padding(
@@ -82,7 +82,7 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    patient.name,
+                    patient.firstName!,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -91,11 +91,9 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
                   ),
                   SizedBox(height: 12),
                   _buildInfoRow('First Visit:',
-                      '${patient.firstVisitDate.toLocal()}'.split(' ')[0]),
-                  _buildInfoRow('Last Treatment:',
-                      patient.lastTreatment ?? "No treatment"),
-                  _buildInfoRow(
-                      'Current Appointment:', patient.currentAppointmentReason),
+                      '${patient.firstVisitDate!.toLocal()}'.split(' ')[0]),
+                  _buildInfoRow('Last Treatment:', "No treatment"),
+                  _buildInfoRow('Current Appointment:', "Routine check"),
                   _buildInfoRow(
                       'Days Since First Visit:', '$daysSinceFirstVisit days'),
                 ],

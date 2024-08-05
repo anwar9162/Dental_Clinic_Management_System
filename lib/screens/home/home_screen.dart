@@ -11,50 +11,49 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final List<Appointment> _appointments = [
+    Appointment(
+      id: '1',
+      patientName: 'Kibrom Adinew',
+      date: DateTime.now(),
+      firstVisitDate: DateTime(2024, 6, 25),
+      lastTreatment: 'Brace',
+      currentAppointmentReason: 'Emergency Consultation',
+      description: 'Routine Checkup',
+      doctorName: 'Dr. Smith',
+    ),
+    Appointment(
+      id: '2',
+      patientName: 'Matebe Assfaw',
+      date: DateTime.now(),
+      description: 'Tooth Extraction',
+      doctorName: 'Dr. Johnson',
+      firstVisitDate: DateTime(2024, 6, 25),
+      lastTreatment: 'Brace',
+      currentAppointmentReason: 'Emergency Consultation',
+    ),
+  ];
+
+  final List<Patient> _walkInPatients = [
+    Patient(
+      firstName: "Kibrom",
+      lastName: "Adinew",
+      phoneNumber: "0712345678",
+      firstVisitDate: DateTime(2024, 6, 25),
+    ),
+  ];
+
+  final List<Patient> _newPatients = [
+    Patient(
+      firstName: "Kibrom",
+      lastName: "Adinew",
+      phoneNumber: "0712345678",
+      firstVisitDate: DateTime(2024, 6, 25),
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final List<Appointment> _appointments = [
-      Appointment(
-        id: '1',
-        patientName: 'Kibrom Adinew',
-        date: DateTime.now(),
-        firstVisitDate: DateTime(2024, 6, 25),
-        lastTreatment: 'Brace',
-        currentAppointmentReason: 'Emergency Consultation',
-        description: 'Routine Checkup',
-        doctorName: 'Dr. Smith',
-      ),
-      Appointment(
-        id: '2',
-        patientName: 'Matebe Assfaw',
-        date: DateTime.now(),
-        description: 'Tooth Extraction',
-        doctorName: 'Dr. Johnson',
-        firstVisitDate: DateTime(2024, 6, 25),
-        lastTreatment: 'Brace',
-        currentAppointmentReason: 'Emergency Consultation',
-      ),
-    ];
-
-    final List<Patient> _walkInPatients = [
-      Patient(
-        id: '5',
-        name: 'Anwar Ahmed',
-        firstVisitDate: DateTime(2024, 6, 25),
-        lastTreatment: 'Brace',
-        currentAppointmentReason: 'Emergency Consultation',
-      ),
-    ];
-
-    final List<Patient> _newPatients = [
-      Patient(
-        id: '6',
-        name: 'Abraham Worku',
-        firstVisitDate: DateTime(2024, 6, 25),
-        currentAppointmentReason: 'New patient consultation',
-      ),
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
@@ -73,10 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     _buildInfoCard(
                       context,
-                      title: 'Today\'s Appoinment',
+                      title: 'Today\'s Appointment',
                       count: _appointments.length,
                       icon: Icons.person,
-                      color: Color.fromARGB(255, 0, 0, 0),
+                      color: Colors.black,
                     ),
                     _buildInfoCard(
                       context,
@@ -102,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     _buildDetailCard(
                       context,
-                      title: 'Today\'s Apoointment',
+                      title: 'Today\'s Appointment',
                       appointments: _appointments,
                     ),
                     _buildDetailCard(
@@ -182,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
           gradient: LinearGradient(
             colors: [
               Color.fromARGB(255, 252, 252, 252),
-              Color.fromARGB(255, 198, 243, 211)!
+              Color.fromARGB(255, 198, 243, 211),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -229,10 +228,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       final patient =
                           patients![index - (appointments?.length ?? 0)];
                       return _buildListTile(
-                        patient.name,
-                        'Last Treatment: ${patient.lastTreatment}',
-                        'Current Appointment: ${patient.currentAppointmentReason}',
+                        patient.firstName ?? 'Unknown',
                         'Days Since First Visit: ${_daysSinceFirstVisit(patient.firstVisitDate)}',
+                        '', // Add placeholders for empty subtitles
+                        '',
                       );
                     }
                   },

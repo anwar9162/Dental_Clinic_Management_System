@@ -25,22 +25,23 @@ class PatientImage {
 }
 
 class Patient {
-  final String id;
-  final String name;
-  final DateTime firstVisitDate;
-  final String? lastTreatment;
-  final String currentAppointmentReason;
+  final String? id;
+  final String? firstName;
+  final String? lastName;
+  final String? phoneNumber;
+  final DateTime? firstVisitDate;
+
   final List<Tooth>? dentalChart;
   final List<PatientImage>?
       progressImages; // Optional: Images showing the progress of teeth
   final List<PatientImage>? xrayImages; // Optional: X-ray images
 
   Patient({
-    required this.id,
-    required this.name,
-    required this.firstVisitDate,
-    this.lastTreatment,
-    required this.currentAppointmentReason,
+    this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.phoneNumber,
+    this.firstVisitDate,
     this.dentalChart,
     this.progressImages,
     this.xrayImages,
@@ -49,11 +50,10 @@ class Patient {
 
 // Sample data with image assets
 final Patient mockPatient = Patient(
-  id: "12",
-  name: "Kibrom Adinew",
+  firstName: "Kibrom",
+  lastName: "Adinew",
+  phoneNumber: "0712345678",
   firstVisitDate: DateTime(2023, 1, 15),
-  lastTreatment: "Filling",
-  currentAppointmentReason: "Routine Check-up",
   dentalChart: [
     Tooth(number: 1, notes: "No issues", isUpper: true, type: "Molar"),
     Tooth(number: 2, notes: "Needs filling", isUpper: true, type: "Molar"),
@@ -104,11 +104,10 @@ final Patient mockPatient = Patient(
 );
 
 final Patient anotherMockPatient = Patient(
-  id: "13",
-  name: "Anwar Ahmed",
+  firstName: "Anwar",
+  lastName: "Ahmed",
+  phoneNumber: "0712345678",
   firstVisitDate: DateTime(2022, 11, 20),
-  lastTreatment: "Extraction",
-  currentAppointmentReason: "Follow-up",
   dentalChart: [
     Tooth(number: 1, notes: "Needs filling", isUpper: true, type: "Molar"),
     Tooth(number: 2, notes: "Needs filling", isUpper: true, type: "Molar"),
@@ -159,11 +158,10 @@ final Patient anotherMockPatient = Patient(
 );
 
 final Patient anotherMockPatient3 = Patient(
-  id: "14",
-  name: "Abraham Worku",
+  firstName: "Abraham",
+  lastName: "Worku",
+  phoneNumber: "0712345678",
   firstVisitDate: DateTime(2024, 8, 13),
-  lastTreatment: "Brace",
-  currentAppointmentReason: "Follow-up",
   dentalChart: [
     Tooth(number: 1, notes: "No issues", isUpper: true, type: "Molar"),
     Tooth(number: 2, notes: "No issues", isUpper: true, type: "Molar"),

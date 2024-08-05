@@ -46,32 +46,28 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
   ];
   List<Patient> _patients = [
     Patient(
-      id: '1',
-      name: 'John Doe',
+      firstName: "Kibrom",
+      lastName: "Adinew",
+      phoneNumber: "0712345678",
       firstVisitDate: DateTime(2023, 9, 11),
-      lastTreatment: 'Cleaning',
-      currentAppointmentReason: 'Brace',
     ),
     Patient(
-      id: '2',
-      name: 'Jane Doe',
+      firstName: "Kibrom",
+      lastName: "Adinew",
+      phoneNumber: "0712345678",
       firstVisitDate: DateTime(2022, 5, 20),
-      lastTreatment: 'Root Canal',
-      currentAppointmentReason: 'Checkup',
     ),
     Patient(
-      id: '3',
-      name: 'Alice Smith',
+      firstName: "Kibrom",
+      lastName: "Adinew",
+      phoneNumber: "0712345678",
       firstVisitDate: DateTime(2021, 8, 15),
-      lastTreatment: 'Fillings',
-      currentAppointmentReason: 'Pain in tooth',
     ),
     Patient(
-      id: '4',
-      name: 'Bob Johnson',
+      firstName: "Kibrom",
+      lastName: "Adinew",
+      phoneNumber: "0712345678",
       firstVisitDate: DateTime(2020, 11, 30),
-      lastTreatment: 'Extraction',
-      currentAppointmentReason: 'Consultation for braces',
     ),
   ];
   Patient? _selectedPatient;
@@ -107,7 +103,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
       setState(() {
         Appointment newAppointment = Appointment(
           id: DateTime.now().toString(),
-          patientName: _selectedPatient!.name,
+          patientName: _selectedPatient!.firstName!,
           date: _selectedDay!,
           description: 'New Appointment',
           doctorName: 'Dr. Smith',
@@ -328,7 +324,8 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                           _selectedPatient = newValue;
                         });
                       },
-                      itemAsString: (Patient patient) => patient.name,
+                      itemAsString: (Patient patient) =>
+                          patient.firstName! + " " + patient.lastName!,
                       selectedItem: _selectedPatient,
                     ),
                   ),
