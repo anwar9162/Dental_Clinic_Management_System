@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 
 class AddArrivedPatientScreen extends StatefulWidget {
   final VoidCallback onClose;
+  final List<Map<String, dynamic>> patients;
 
-  const AddArrivedPatientScreen({Key? key, required this.onClose})
-      : super(key: key);
+  const AddArrivedPatientScreen({
+    Key? key,
+    required this.onClose,
+    required this.patients,
+  }) : super(key: key);
 
   @override
   _AddArrivedPatientScreenState createState() =>
@@ -17,26 +21,25 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
   final _notesController = TextEditingController();
   String? _selectedPatient;
   String _searchQuery = '';
+  late List<Map<String, dynamic>> _patients;
 
-  // Sample patient data
-  final List<Map<String, String>> _patients = [
-    {'name': 'John Doe', 'phone': '123-456-7890'},
-    {'name': 'Jane Smith', 'phone': '987-654-3210'},
-    {'name': 'Alice Johnson', 'phone': '555-666-7777'},
-    // Add more patient records here
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _patients = widget.patients; // Initialize _patients with widget.patients
+  }
 
-  List<Map<String, String>> get _filteredPatients {
-    if (_searchQuery.isEmpty) {
-      return [];
+  List<Map<String, dynamic>> get _filteredPatients {
+    final query = _searchQuery.toLowerCase();
+    if (query.isEmpty) {
+      return _patients;
+    } else {
+      return _patients.where((patient) {
+        final name = '${patient['firstName']} ${patient['lastName']}';
+        final phone = patient['phoneNumber'] ?? '';
+        return name.toLowerCase().contains(query) || phone.contains(query);
+      }).toList();
     }
-    return _patients.where((patient) {
-      final patientName = patient['name']?.toLowerCase() ?? '';
-      final patientPhone = patient['phone']?.toLowerCase() ?? '';
-      final searchQuery = _searchQuery.toLowerCase();
-      return patientName.contains(searchQuery) ||
-          patientPhone.contains(searchQuery);
-    }).toList();
   }
 
   void _submitForm() {
@@ -156,14 +159,19 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
     if (_selectedPatient != null) {
       final selectedPatientName = _selectedPatient?.split(' (')[0] ?? '';
       final selectedPatient = _patients.firstWhere(
-          (patient) => patient['name'] == selectedPatientName,
-          orElse: () => {'name': 'Unknown', 'phone': ''});
+        (patient) =>
+            '${patient['firstName']} ${patient['lastName']}' ==
+            selectedPatientName,
+        orElse: () =>
+            {'firstName': 'Unknown', 'lastName': '', 'phoneNumber': ''},
+      );
       return Card(
         margin: EdgeInsets.symmetric(vertical: 8),
         elevation: 4,
         child: ListTile(
-          title: Text(selectedPatient['name'] ?? 'No Name'),
-          subtitle: Text(selectedPatient['phone'] ?? 'No Phone'),
+          title: Text(
+              '${selectedPatient['firstName']} ${selectedPatient['lastName']}'),
+          subtitle: Text(selectedPatient['phoneNumber'] ?? 'No Phone'),
           trailing: IconButton(
             icon: Icon(Icons.clear, color: Colors.red),
             onPressed: () {
@@ -207,24 +215,25 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
 
     return Column(
       children: filteredPatients.map((patient) {
-        final patientName = patient['name'] ?? '';
-        final patientPhone = patient['phone'] ?? '';
+        final patientName = '${patient['firstName']} ${patient['lastName']}';
+        final patientPhone = patient['phoneNumber'] ?? '';
         return Card(
-            margin: EdgeInsets.symmetric(vertical: 4),
-            elevation: 4,
-            child: ListTile(
-              title: Text(patientName),
-              subtitle: Text(patientPhone),
-              onTap: () {
-                setState(() {
-                  _selectedPatient = '$patientName ($patientPhone)';
-                  _searchQuery =
-                      patientName; // Set search query to selected patient
-                });
-              },
-              selected: _selectedPatient == '$patientName ($patientPhone)',
-              selectedTileColor: Colors.blue[50],
-            ));
+          margin: EdgeInsets.symmetric(vertical: 4),
+          elevation: 4,
+          child: ListTile(
+            title: Text(patientName),
+            subtitle: Text(patientPhone),
+            onTap: () {
+              setState(() {
+                _selectedPatient = '$patientName ($patientPhone)';
+                _searchQuery =
+                    patientName; // Set search query to selected patient
+              });
+            },
+            selected: _selectedPatient == '$patientName ($patientPhone)',
+            selectedTileColor: Colors.blue[50],
+          ),
+        );
       }).toList(),
     );
   }

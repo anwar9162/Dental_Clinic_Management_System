@@ -79,7 +79,9 @@ class _PatientListScreenState extends State<PatientListScreen> {
                   ? AddPatientScreen(onClose: _toggleAddPatientScreen)
                   : _showAddArrivedPatientScreen
                       ? AddArrivedPatientScreen(
-                          onClose: _toggleAddArrivedPatientScreen)
+                          onClose: _toggleAddArrivedPatientScreen,
+                          patients: _patients,
+                        )
                       : PaymentDataScreen(
                           onClose: _togglePaymentDataScreen,
                           patients: _patients,
