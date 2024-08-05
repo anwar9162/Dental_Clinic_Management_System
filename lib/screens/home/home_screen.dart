@@ -73,10 +73,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     _buildInfoCard(
                       context,
-                      title: 'Expected Patients',
+                      title: 'Today\'s Appoinment',
                       count: _appointments.length,
                       icon: Icons.person,
-                      color: Colors.teal,
+                      color: Color.fromARGB(255, 0, 0, 0),
                     ),
                     _buildInfoCard(
                       context,
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     _buildDetailCard(
                       context,
-                      title: 'Today\'s Expected Patients',
+                      title: 'Today\'s Apoointment',
                       appointments: _appointments,
                     ),
                     _buildDetailCard(
@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
           gradient: LinearGradient(
             colors: [
               Color.fromARGB(255, 252, 252, 252),
-              Color.fromARGB(255, 6, 216, 69)!
+              Color.fromARGB(255, 198, 243, 211)!
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
