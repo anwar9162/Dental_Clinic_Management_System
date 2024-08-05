@@ -19,6 +19,9 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
   final _formKey = GlobalKey<FormState>();
   final _arrivalTimeController = TextEditingController();
   final _notesController = TextEditingController();
+  final _searchQueryController =
+      TextEditingController(); // Initialize TextEditingController here
+
   String? _selectedPatient;
   String _searchQuery = '';
   late List<Map<String, dynamic>> _patients;
@@ -27,6 +30,19 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
   void initState() {
     super.initState();
     _patients = widget.patients; // Initialize _patients with widget.patients
+    _searchQueryController.addListener(() {
+      setState(() {
+        _searchQuery = _searchQueryController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchQueryController.dispose();
+    _arrivalTimeController.dispose();
+    _notesController.dispose();
+    super.dispose();
   }
 
   List<Map<String, dynamic>> get _filteredPatients {
@@ -124,16 +140,10 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
 
   Widget _buildSearchField() {
     return TextField(
-      controller: TextEditingController(text: _searchQuery),
+      controller: _searchQueryController, // Use existing controller
       onChanged: (query) {
         setState(() {
           _searchQuery = query;
-          if (_selectedPatient != null) {
-            final selectedPatientName = _selectedPatient?.split(' (')[0] ?? '';
-            if (selectedPatientName.isNotEmpty) {
-              _searchQuery = selectedPatientName;
-            }
-          }
         });
       },
       decoration: InputDecoration(
@@ -146,6 +156,7 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
                 icon: Icon(Icons.clear),
                 onPressed: () {
                   setState(() {
+                    _searchQueryController.clear(); // Clear the controller
                     _searchQuery = '';
                   });
                 },
