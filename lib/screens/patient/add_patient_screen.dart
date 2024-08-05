@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../patient/patient_bloc/add_patient_bloc.dart';
 import '../patient/patient_bloc/add_patient_event.dart';
 import '../patient/patient_bloc/add_patient_state.dart';
-
 import '../../services/patient_api_service.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
@@ -82,6 +81,7 @@ class _AddPatientFormState extends State<_AddPatientForm> {
           Center(
             child: Container(
               constraints: BoxConstraints(maxWidth: 600),
+              padding: const EdgeInsets.all(16.0),
               decoration: _boxDecoration,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -121,23 +121,14 @@ class _AddPatientFormState extends State<_AddPatientForm> {
             ),
           ),
           if (_isLoading)
-            Center(
-              child: Container(
-                color: Colors.black
-                    .withOpacity(0.4), // Slightly transparent background
-                child: Center(
-                  child: LoadingIndicator(
-                    indicatorType: Indicator
-                        .ballPulse, // Change this to your desired indicator type
-                    colors: [
-                      Colors.blue,
-                      Colors.green,
-                      Colors.red
-                    ], // Add more colors if desired
-                    strokeWidth: 2,
-                    backgroundColor:
-                        Colors.transparent, // Transparent background
-                  ),
+            Container(
+              color: Colors.black.withOpacity(0.4),
+              child: Center(
+                child: LoadingIndicator(
+                  indicatorType: Indicator.ballPulse,
+                  colors: [Colors.blue, Colors.green, Colors.red],
+                  strokeWidth: 2,
+                  backgroundColor: Colors.transparent,
                 ),
               ),
             ),
@@ -148,7 +139,7 @@ class _AddPatientFormState extends State<_AddPatientForm> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -181,81 +172,108 @@ class _AddPatientFormState extends State<_AddPatientForm> {
 
   Widget _buildLabeledTextField(String label, TextEditingController controller,
       {TextInputType keyboardType = TextInputType.text}) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _buildLabel(label),
-        SizedBox(width: 16),
-        Expanded(
-          child: TextFormField(
-            controller: controller,
-            keyboardType: keyboardType,
-            decoration: _inputDecoration,
-            validator: (value) => _validateField(value, label),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 150,
+            child: Text(
+              label,
+              style: _labelTextStyle,
+            ),
           ),
-        ),
-      ],
+          SizedBox(width: 16),
+          Expanded(
+            child: TextFormField(
+              controller: controller,
+              keyboardType: keyboardType,
+              decoration: _inputDecoration,
+              validator: (value) => _validateField(value, label),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildLabeledDropdownField(
       String label, TextEditingController controller, List<String> options) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _buildLabel(label),
-        SizedBox(width: 16),
-        Expanded(
-          child: DropdownButtonFormField<String>(
-            value: controller.text.isEmpty ? null : controller.text,
-            items: options.map((option) {
-              return DropdownMenuItem<String>(
-                value: option,
-                child: Text(option),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                controller.text = value!;
-              });
-            },
-            decoration: _inputDecoration,
-            validator: (value) => _validateField(value, label),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 150,
+            child: Text(
+              label,
+              style: _labelTextStyle,
+            ),
           ),
-        ),
-      ],
+          SizedBox(width: 16),
+          Expanded(
+            child: DropdownButtonFormField<String>(
+              value: controller.text.isEmpty ? null : controller.text,
+              items: options.map((option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  controller.text = value!;
+                });
+              },
+              decoration: _inputDecoration,
+              validator: (value) => _validateField(value, label),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildLabeledDateField(
       String label, TextEditingController controller) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _buildLabel(label),
-        SizedBox(width: 16),
-        Expanded(
-          child: TextFormField(
-            controller: controller,
-            readOnly: true,
-            onTap: () async {
-              final pickedDate = await showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(1900),
-                lastDate: DateTime.now(),
-              );
-              if (pickedDate != null) {
-                setState(() {
-                  controller.text = _formatDate(pickedDate);
-                });
-              }
-            },
-            decoration: _inputDecoration,
-            validator: (value) => _validateField(value, label),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 150,
+            child: Text(
+              label,
+              style: _labelTextStyle,
+            ),
           ),
-        ),
-      ],
+          SizedBox(width: 16),
+          Expanded(
+            child: TextFormField(
+              controller: controller,
+              readOnly: true,
+              onTap: () async {
+                final pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime.now(),
+                );
+                if (pickedDate != null) {
+                  setState(() {
+                    controller.text = _formatDate(pickedDate);
+                  });
+                }
+              },
+              decoration: _inputDecoration,
+              validator: (value) => _validateField(value, label),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -265,28 +283,32 @@ class _AddPatientFormState extends State<_AddPatientForm> {
       children: [
         TextButton(
           onPressed: widget.onClose,
+          style: TextButton.styleFrom(
+            backgroundColor: const Color.fromARGB(
+                255, 251, 251, 251), // Subtle grey color for cancel
+            textStyle: TextStyle(fontSize: 16),
+          ),
           child: Text('Cancel'),
         ),
         SizedBox(width: 16),
         ElevatedButton(
           onPressed: _submitForm,
-          child: Text('Add Patient'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(
+                255, 157, 192, 221), // Vibrant blue color for add patient
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            elevation: 5,
+          ),
+          child: Text('Add Patient', style: TextStyle(fontSize: 16)),
         ),
       ],
     );
   }
 
   // Helper Methods
-  Widget _buildLabel(String label) {
-    return SizedBox(
-      width: 150,
-      child: Text(
-        label,
-        style: _labelTextStyle,
-      ),
-    );
-  }
-
   String? _validateField(String? value, String label) {
     if (value == null || value.isEmpty) {
       return 'Please enter $label';
