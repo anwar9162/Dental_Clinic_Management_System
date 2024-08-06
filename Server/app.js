@@ -1,5 +1,6 @@
 const express = require("express");
 const connectDB = require("./config/db");
+const path = require("path"); // Add this line
 const cors = require("cors");
 const patientRoutes = require("./routes/patientRoutes");
 const doctorRoutes = require("./routes/doctorRoutes");
@@ -15,6 +16,9 @@ connectDB();
 
 // Middleware
 app.use(express.json());
+
+// Serve static files from the 'public' directory
+app.use("/images", express.static(path.join(__dirname, "Images")));
 
 // Routes
 app.use("/api/patients", patientRoutes);

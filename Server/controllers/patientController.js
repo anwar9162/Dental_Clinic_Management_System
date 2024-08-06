@@ -270,12 +270,12 @@ const addProgressImages = async (req, res) => {
 
     console.log("Valid dateCaptured:", dateCaptured);
 
-    // Map uploaded files to include dateCaptured
+    // Map uploaded files to include dateCaptured and only filename
     const images = req.files.map((file) => {
       console.log("Processing file:", file.originalname);
       return {
         dateCaptured: new Date(dateCaptured),
-        assetPath: file.path,
+        assetPath: file.filename, // Store only the filename
         type: file.mimetype, // MIME type of the uploaded file
       };
     });
@@ -314,12 +314,12 @@ const addXrayImages = async (req, res) => {
 
     console.log("Valid dateCaptured:", dateCaptured);
 
-    // Map uploaded files to include dateCaptured and MIME type
+    // Map uploaded files to include dateCaptured and only filename
     const images = req.files.map((file) => {
       console.log("Processing file:", file.originalname);
       return {
         dateCaptured: new Date(dateCaptured),
-        assetPath: file.path,
+        assetPath: file.filename, // Store only the filename
         type: file.mimetype, // MIME type of the uploaded file
       };
     });
@@ -334,6 +334,7 @@ const addXrayImages = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 module.exports = {
   getAllPatients,
   getPatientById,
