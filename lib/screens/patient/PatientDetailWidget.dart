@@ -238,7 +238,8 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
                 itemBuilder: (context, index) {
                   final image = _progressImages[index];
                   return HoverImage(
-                    imagePath: image.assetPath,
+                    imagePath:
+                        'http://localhost:5000/images/${image.assetPath}', // Use URL
                     dateCaptured: image.dateCaptured,
                   );
                 },
@@ -307,7 +308,8 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
                 itemBuilder: (context, index) {
                   final image = _xrayImages[index];
                   return HoverImage(
-                    imagePath: image.assetPath,
+                    imagePath:
+                        'http://localhost:5000/images/${image.assetPath}', // Use URL
                     dateCaptured: image.dateCaptured,
                   );
                 },
@@ -325,7 +327,7 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
 }
 
 class HoverImage extends StatefulWidget {
-  final String imagePath;
+  final String imagePath; // This should be the URL of the image
   final DateTime dateCaptured;
 
   HoverImage({required this.imagePath, required this.dateCaptured});
@@ -369,7 +371,8 @@ class _HoverImageState extends State<HoverImage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16.0),
                 image: DecorationImage(
-                  image: AssetImage(widget.imagePath),
+                  image:
+                      NetworkImage(widget.imagePath), // Updated to NetworkImage
                   fit: BoxFit.cover,
                 ),
                 boxShadow: _isHovering
@@ -402,7 +405,8 @@ class _HoverImageState extends State<HoverImage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16.0),
                       image: DecorationImage(
-                        image: AssetImage(widget.imagePath),
+                        image: NetworkImage(
+                            widget.imagePath), // Updated to NetworkImage
                         fit: BoxFit.cover,
                       ),
                     ),
