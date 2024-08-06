@@ -30,7 +30,6 @@ class Patient {
   final String? lastName;
   final String? phoneNumber;
   final DateTime? firstVisitDate;
-
   final List<Tooth>? dentalChart;
   final List<PatientImage>?
       progressImages; // Optional: Images showing the progress of teeth
@@ -46,6 +45,38 @@ class Patient {
     this.progressImages,
     this.xrayImages,
   });
+
+  factory Patient.fromJson(Map<String, dynamic> json) {
+    return Patient(
+      id: json['_id'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+      phoneNumber: json['phoneNumber'],
+      firstVisitDate: json['dateOfBirth'] != null
+          ? DateTime.parse(json['dateOfBirth'])
+          : null,
+      dentalChart: (json['dentalChart'] as List<dynamic>?)
+          ?.map((item) => Tooth(
+                number: item['number'],
+                notes: item['notes'],
+                isUpper: item['isUpper'],
+                type: item['type'],
+              ))
+          .toList(),
+      progressImages: (json['progressImages'] as List<dynamic>?)
+          ?.map((item) => PatientImage(
+                dateCaptured: DateTime.parse(item['dateCaptured']),
+                assetPath: item['assetPath'],
+              ))
+          .toList(),
+      xrayImages: (json['xrayImages'] as List<dynamic>?)
+          ?.map((item) => PatientImage(
+                dateCaptured: DateTime.parse(item['dateCaptured']),
+                assetPath: item['assetPath'],
+              ))
+          .toList(),
+    );
+  }
 }
 
 // Sample data with image assets

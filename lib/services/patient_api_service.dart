@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config/constants.dart';
+import 'package:http_parser/http_parser.dart'; // Import for MediaType
+
+import 'dart:io';
+import 'package:mime/mime.dart'; // Import the mime package
 
 class PatientApiService {
   final String baseUrl;
@@ -161,12 +165,30 @@ class PatientApiService {
   }
 
   Future<void> addProgressImages(
-      String id, List<Map<String, dynamic>> images) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/patients/$id/progress-images'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'progressImages': images}),
-    );
+      String id, List<File> imageFiles, String dateCaptured) async {
+    var uri = Uri.parse('$baseUrl/patients/$id/progress-images');
+    var request = http.MultipartRequest('POST', uri);
+
+    // Add the dateCaptured field
+    request.fields['dateCaptured'] = dateCaptured;
+
+    // Add files
+    for (var file in imageFiles) {
+      final mimeType = lookupMimeType(file.path);
+      final mediaType = mimeType != null
+          ? MediaType.parse(mimeType)
+          : MediaType('application', 'octet-stream');
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'progressImages',
+          await file.readAsBytes(),
+          filename: file.uri.pathSegments.last,
+          contentType: mediaType,
+        ),
+      );
+    }
+
+    var response = await request.send();
 
     if (response.statusCode != 201) {
       throw Exception('Failed to add progress images');
@@ -174,15 +196,33 @@ class PatientApiService {
   }
 
   Future<void> addXrayImages(
-      String id, List<Map<String, dynamic>> images) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/patients/$id/xray-images'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'xrayImages': images}),
-    );
+      String id, List<File> imageFiles, String dateCaptured) async {
+    var uri = Uri.parse('$baseUrl/patients/$id/xray-images');
+    var request = http.MultipartRequest('POST', uri);
+
+    // Add the dateCaptured field
+    request.fields['dateCaptured'] = dateCaptured;
+
+    // Add files
+    for (var file in imageFiles) {
+      final mimeType = lookupMimeType(file.path);
+      final mediaType = mimeType != null
+          ? MediaType.parse(mimeType)
+          : MediaType('application', 'octet-stream');
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'xrayImages',
+          await file.readAsBytes(),
+          filename: file.uri.pathSegments.last,
+          contentType: mediaType,
+        ),
+      );
+    }
+
+    var response = await request.send();
 
     if (response.statusCode != 201) {
-      throw Exception('Failed to add xray images');
+      throw Exception('Failed to add x-ray images');
     }
   }
 }

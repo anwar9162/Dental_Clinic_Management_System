@@ -1,4 +1,5 @@
 const express = require("express");
+const upload = require("../helpers/uploadHelper"); // Import the upload helper
 const {
   getAllPatients,
   getPatientById,
@@ -25,16 +26,23 @@ router.post("/", createPatient);
 router.put("/:id", updatePatient);
 router.delete("/:id", deletePatient);
 
-router.post('/:id/dental-chart', addDentalChartEntry);
-router.get('/:id/dental-chart', getDentalChart);
-router.delete('/:id/dental-chart/:toothNumber/:entryId', deleteDentalChartEntry);
-router.put('/:id/dental-chart/:toothNumber/:entryId', updateDentalChartEntry);
+router.post("/:id/dental-chart", addDentalChartEntry);
+router.get("/:id/dental-chart", getDentalChart);
+router.delete(
+  "/:id/dental-chart/:toothNumber/:entryId",
+  deleteDentalChartEntry
+);
+router.put("/:id/dental-chart/:toothNumber/:entryId", updateDentalChartEntry);
 
-router.post('/:id/payments', addPayment); // Route to add payment
-router.put('/:id/payments/:paymentId', updatePayment); // Route to update payment
+router.post("/:id/payments", addPayment);
+router.put("/:id/payments/:paymentId", updatePayment);
 
-router.post('/:id/progress-images', addProgressImages); // Route to add progress images
-router.post('/:id/xray-images', addXrayImages); // Route to add xray images
-
+// Use multer middleware for file uploads and include dateCaptured in request body
+router.post(
+  "/:id/progress-images",
+  upload.array("progressImages"),
+  addProgressImages
+);
+router.post("/:id/xray-images", upload.array("xrayImages"), addXrayImages);
 
 module.exports = router;

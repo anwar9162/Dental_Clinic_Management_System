@@ -42,8 +42,9 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime visitDate = widget.patient.firstVisitDate!;
-    int daysSinceFirstVisit = DateTime.now().difference(visitDate).inDays;
+    final firstVisitDate = widget.patient.firstVisitDate ?? DateTime.now();
+    final daysSinceFirstVisit =
+        DateTime.now().difference(firstVisitDate).inDays;
 
     return Padding(
       padding: const EdgeInsets.all(12.0),
@@ -53,7 +54,7 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
           children: [
             _buildPatientInfoSection(widget.patient, daysSinceFirstVisit),
             SizedBox(height: 16),
-            _buildDentalChartSection(widget.patient.dentalChart ?? []),
+            //   _buildDentalChartSection(widget.patient.dentalChart ?? []),
             SizedBox(height: 16),
             _buildProgressImagesSection(),
             SizedBox(height: 16),
@@ -65,6 +66,8 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
   }
 
   Widget _buildPatientInfoSection(Patient patient, int daysSinceFirstVisit) {
+    final firstVisitDate = patient.firstVisitDate ?? DateTime.now();
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -82,7 +85,7 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    patient.firstName!,
+                    '${patient.firstName} ${patient.lastName}',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -91,7 +94,7 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
                   ),
                   SizedBox(height: 12),
                   _buildInfoRow('First Visit:',
-                      '${patient.firstVisitDate!.toLocal()}'.split(' ')[0]),
+                      DateFormat('yyyy-MM-dd').format(firstVisitDate)),
                   _buildInfoRow('Last Treatment:', "No treatment"),
                   _buildInfoRow('Current Appointment:', "Routine check"),
                   _buildInfoRow(

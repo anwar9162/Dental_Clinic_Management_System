@@ -1,5 +1,3 @@
-// controllers/patientController.js
-
 const Patient = require("../models/Patient");
 
 // Get all patients
@@ -24,6 +22,7 @@ const getPatientById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 // Get patient by phone
 const getPatientByPhone = async (req, res) => {
   try {
@@ -38,6 +37,7 @@ const getPatientByPhone = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 // Create new patient
 const createPatient = async (req, res) => {
   try {
@@ -202,6 +202,7 @@ const updateDentalChartEntry = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 // Add a payment to a patient's record
 const addPayment = async (req, res) => {
   try {
@@ -219,6 +220,7 @@ const addPayment = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 // Update the status and reason of a payment
 const updatePayment = async (req, res) => {
   try {
@@ -245,48 +247,93 @@ const updatePayment = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-// Add progress images to a patient's record
 const addProgressImages = async (req, res) => {
+  console.log("Received request to add progress images.");
+
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
+      console.log("Patient not found.");
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    const { progressImages } = req.body; // Array of progress image objects
-    if (Array.isArray(progressImages)) {
-      patient.progressImages.push(...progressImages);
-      await patient.save();
-      res.status(201).json({ message: "Progress images added", patient });
-    } else {
-      res.status(400).json({ message: "Invalid data format" });
+    console.log("Patient found:", patient._id);
+
+    // Extract dateCaptured from the request body
+    const { dateCaptured } = req.body;
+
+    // Validate dateCaptured
+    if (!dateCaptured || isNaN(new Date(dateCaptured).getTime())) {
+      console.log("Invalid dateCaptured format:", dateCaptured);
+      return res.status(400).json({ message: "Invalid dateCaptured format" });
     }
+
+    console.log("Valid dateCaptured:", dateCaptured);
+
+    // Map uploaded files to include dateCaptured
+    const images = req.files.map((file) => {
+      console.log("Processing file:", file.originalname);
+      return {
+        dateCaptured: new Date(dateCaptured),
+        assetPath: file.path,
+        type: file.mimetype, // MIME type of the uploaded file
+      };
+    });
+
+    patient.progressImages.push(...images);
+    await patient.save();
+
+    console.log("Progress images added successfully.");
+    res.status(201).json({ message: "Progress images added", patient });
   } catch (error) {
+    console.error("Error adding progress images:", error);
     res.status(500).json({ error: error.message });
   }
 };
-// Add xray images to a patient's record
+
 const addXrayImages = async (req, res) => {
+  console.log("Received request to add x-ray images.");
+
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
+      console.log("Patient not found.");
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    const { xrayImages } = req.body; // Array of xray image objects
-    if (Array.isArray(xrayImages)) {
-      patient.xrayImages.push(...xrayImages);
-      await patient.save();
-      res.status(201).json({ message: "Xray images added", patient });
-    } else {
-      res.status(400).json({ message: "Invalid data format" });
+    console.log("Patient found:", patient._id);
+
+    // Extract dateCaptured from the request body
+    const { dateCaptured } = req.body;
+
+    // Validate dateCaptured
+    if (!dateCaptured || isNaN(new Date(dateCaptured).getTime())) {
+      console.log("Invalid dateCaptured format:", dateCaptured);
+      return res.status(400).json({ message: "Invalid dateCaptured format" });
     }
+
+    console.log("Valid dateCaptured:", dateCaptured);
+
+    // Map uploaded files to include dateCaptured and MIME type
+    const images = req.files.map((file) => {
+      console.log("Processing file:", file.originalname);
+      return {
+        dateCaptured: new Date(dateCaptured),
+        assetPath: file.path,
+        type: file.mimetype, // MIME type of the uploaded file
+      };
+    });
+
+    patient.xrayImages.push(...images);
+    await patient.save();
+
+    console.log("X-ray images added successfully.");
+    res.status(201).json({ message: "X-ray images added", patient });
   } catch (error) {
+    console.error("Error adding x-ray images:", error);
     res.status(500).json({ error: error.message });
   }
 };
-
 module.exports = {
   getAllPatients,
   getPatientById,

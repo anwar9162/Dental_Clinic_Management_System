@@ -21,13 +21,8 @@ class MedicalInformationBloc
     emit(MedicalInformationLoading());
     try {
       final patientsJson = await apiService.getAllPatients();
-      final patients = patientsJson
-          .map((json) => Patient(
-              id: json['_id'],
-              firstName: json['firstName'],
-              lastName: json['lastName'],
-              phoneNumber: json['phoneNumber']))
-          .toList();
+      final patients =
+          patientsJson.map((json) => Patient.fromJson(json)).toList();
       emit(MedicalInformationLoaded(patients));
     } catch (e) {
       emit(MedicalInformationError(e.toString()));
