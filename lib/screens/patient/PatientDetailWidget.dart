@@ -185,6 +185,7 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
     );
   }
 
+// Inside PatientDetailWidget
   Widget _buildProgressImagesSection() {
     return Card(
       elevation: 6,
@@ -210,11 +211,16 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
                 ),
                 TextButton(
                   onPressed: () {
-                    showAddImageDialog(context, (newImage) {
-                      setState(() {
-                        _progressImages.add(newImage);
-                      });
-                    });
+                    showAddImageDialog(
+                      context,
+                      widget.patient,
+                      (newImage) {
+                        setState(() {
+                          _progressImages.add(newImage);
+                        });
+                      },
+                      true, // Indicates progress image
+                    );
                   },
                   child: Text(
                     'Add Image',
@@ -280,11 +286,16 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
                 ),
                 TextButton(
                   onPressed: () {
-                    showAddImageDialog(context, (newImage) {
-                      setState(() {
-                        _xrayImages.add(newImage);
-                      });
-                    });
+                    showAddImageDialog(
+                      context,
+                      widget.patient,
+                      (newImage) {
+                        setState(() {
+                          _xrayImages.add(newImage);
+                        });
+                      },
+                      false, // Indicates X-ray image
+                    );
                   },
                   child: Text(
                     'Add Image',

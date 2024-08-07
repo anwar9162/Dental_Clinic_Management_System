@@ -293,6 +293,8 @@ const addProgressImages = async (req, res) => {
 
 const addXrayImages = async (req, res) => {
   console.log("Received request to add x-ray images.");
+  console.log("Request files:", req.files); // Debugging output
+
 
   try {
     const patient = await Patient.findById(req.params.id);
