@@ -22,25 +22,66 @@ class DoctorDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Name: $name',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Center(
+              child: Hero(
+                tag: 'doctor-avatar',
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundColor: Color(0xFF6ABEDC),
+                  child: Text(
+                    name.isNotEmpty ? name[0] : '?',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
             ),
-            SizedBox(height: 10),
-            Text(
-              'Specialty: $specialty',
-              style: TextStyle(fontSize: 18),
-            ),
-            Text(
-              'Phone: $phone',
-              style: TextStyle(fontSize: 18),
-            ),
-            Text(
-              'Gender: $gender',
-              style: TextStyle(fontSize: 18),
+            SizedBox(height: 20),
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 8,
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    _buildInfoRow(Icons.person, name),
+                    _buildInfoRow(Icons.local_hospital, specialty),
+                    _buildInfoRow(Icons.phone, phone),
+                    _buildInfoRow(Icons.transgender, gender),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        children: [
+          Icon(icon, color: Color(0xFF6ABEDC), size: 24),
+          SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

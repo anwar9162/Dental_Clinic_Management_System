@@ -48,75 +48,71 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
       appBar: AppBar(
         title: const Text('Add Doctor'),
         backgroundColor: Color(0xFF6ABEDC),
+        elevation: 0,
+        centerTitle: true,
       ),
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _specialtyController,
-                decoration: const InputDecoration(labelText: 'Specialty'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the specialty';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _genderController,
-                decoration: const InputDecoration(labelText: 'Gender'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the gender';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Phone'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the phone';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _addressController,
-                decoration: const InputDecoration(labelText: 'Address'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter address';
-                  }
-                  return null;
-                },
-              ),
+              _buildTextField(_nameController, 'Name', Icons.person),
+              _buildTextField(
+                  _specialtyController, 'Specialty', Icons.local_hospital),
+              _buildTextField(_genderController, 'Gender', Icons.transgender),
+              _buildTextField(_phoneController, 'Phone', Icons.phone),
+              _buildTextField(_addressController, 'Address', Icons.location_on),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submitForm,
                 child: const Text('Add Doctor'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF6ABEDC), // Button color
-                  foregroundColor: Colors.white, // Text color
+                  backgroundColor: Color(0xFF6ABEDC),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 5,
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+      TextEditingController controller, String labelText, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon, color: Color(0xFF6ABEDC)),
+          labelText: labelText,
+          labelStyle: TextStyle(color: Color(0xFF6ABEDC)),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF6ABEDC), width: 2.0),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade300, width: 1.0),
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter $labelText';
+          }
+          return null;
+        },
       ),
     );
   }

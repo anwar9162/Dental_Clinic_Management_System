@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart'; // Import the package
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'add_doctor_screen.dart';
 import 'doctor_detail_screen.dart';
 import 'blocs/doctor_bloc.dart';
@@ -52,12 +52,18 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
       builder: (context) => AlertDialog(
         title: Text('Delete Doctor'),
         content: Text('Are you sure you want to delete this doctor?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
             child: Text('Cancel'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.red,
+              minimumSize: Size(80, 36),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -65,6 +71,11 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
               context.read<DoctorBloc>().add(DeleteDoctor(id));
             },
             child: Text('Delete'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Color(0xFF6ABEDC),
+              minimumSize: Size(80, 36),
+            ),
           ),
         ],
       ),
@@ -77,14 +88,24 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
       appBar: AppBar(
         title: const Text('Doctors List'),
         backgroundColor: Color(0xFF6ABEDC),
+        elevation: 0,
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              // Implement search functionality if needed
+            },
+          ),
+        ],
       ),
       body: BlocBuilder<DoctorBloc, DoctorState>(
         builder: (context, state) {
           if (state is DoctorLoading) {
             return Center(
               child: SpinKitFadingCircle(
-                color: Colors.blue, // Customize the color
-                size: 50.0, // Customize the size
+                color: Color(0xFF6ABEDC),
+                size: 40.0, // Reduced size
               ),
             );
           } else if (state is DoctorsLoaded) {
@@ -99,17 +120,32 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                       return Card(
                         margin: const EdgeInsets.symmetric(
                             vertical: 4.0, horizontal: 8.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         elevation: 2,
-                        color: Colors.white,
                         child: ListTile(
+                          contentPadding: EdgeInsets.all(8), // Reduced padding
+                          leading: CircleAvatar(
+                            radius: 24, // Smaller avatar
+                            backgroundColor: Color(0xFF6ABEDC),
+                            child: Text(
+                              doctor['name']![0],
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16, // Smaller font size
+                              ),
+                            ),
+                          ),
                           title: Text(
                             doctor['name']!,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                           subtitle: Text(
                             doctor['specialty']!,
-                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 12),
                           ),
                           onTap: () => _selectDoctor(doctor['_id']!),
                           trailing: Row(
@@ -117,10 +153,12 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                             children: [
                               IconButton(
                                 icon: Icon(Icons.edit),
+                                color: Colors.orange,
                                 onPressed: () => _editDoctor(doctor['_id']!),
                               ),
                               IconButton(
                                 icon: Icon(Icons.delete),
+                                color: Colors.red,
                                 onPressed: () => _deleteDoctor(doctor['_id']!),
                               ),
                             ],
@@ -139,8 +177,8 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                             if (state is DoctorDetailLoading) {
                               return Center(
                                 child: SpinKitFadingCircle(
-                                  color: Colors.blue, // Customize the color
-                                  size: 50.0, // Customize the size
+                                  color: Color(0xFF6ABEDC),
+                                  size: 40.0, // Reduced size
                                 ),
                               );
                             } else if (state is DoctorDetailLoaded) {
@@ -153,7 +191,10 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                               );
                             } else {
                               return const Center(
-                                child: Text('Select a doctor to see details'),
+                                child: Text(
+                                  'Select a doctor to see details',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
                               );
                             }
                           },
@@ -162,16 +203,27 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
               ],
             );
           } else if (state is DoctorError) {
-            return Center(child: Text(state.message));
+            return Center(
+              child: Text(
+                state.message,
+                style: TextStyle(color: Colors.red),
+              ),
+            );
           } else {
-            return Center(child: Text('No doctors available.'));
+            return Center(
+              child: Text(
+                'No doctors available.',
+                style: TextStyle(color: Colors.grey),
+              ),
+            );
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddDoctorScreen,
         tooltip: 'Add Doctor',
-        child: const Icon(Icons.add),
+        backgroundColor: Color(0xFF6ABEDC),
+        child: const Icon(Icons.add, size: 28), // Slightly smaller icon
       ),
     );
   }
