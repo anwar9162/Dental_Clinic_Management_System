@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+// doctor_state.dart
 
 abstract class DoctorState extends Equatable {
   @override
@@ -9,6 +10,10 @@ class DoctorInitial extends DoctorState {}
 
 class DoctorLoading extends DoctorState {}
 
+class DoctorListLoading extends DoctorState {}
+
+class DoctorDetailLoading extends DoctorState {}
+
 class DoctorsLoaded extends DoctorState {
   final List<Map<String, dynamic>> doctors;
 
@@ -18,10 +23,10 @@ class DoctorsLoaded extends DoctorState {
   List<Object?> get props => [doctors];
 }
 
-class DoctorLoaded extends DoctorState {
+class DoctorDetailLoaded extends DoctorState {
   final Map<String, dynamic> doctor;
 
-  DoctorLoaded(this.doctor);
+  DoctorDetailLoaded(this.doctor);
 
   @override
   List<Object?> get props => [doctor];
@@ -35,3 +40,9 @@ class DoctorError extends DoctorState {
   @override
   List<Object?> get props => [message];
 }
+
+class DoctorAdded extends DoctorState {}
+
+class DoctorDeleteSuccess extends DoctorState {} // New state for delete success
+
+

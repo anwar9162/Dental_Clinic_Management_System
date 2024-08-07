@@ -14,14 +14,18 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
   final _specialtyController = TextEditingController();
   final _genderController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _addressController = TextEditingController();
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       final doctorData = {
         'name': _nameController.text,
         'specialty': _specialtyController.text,
-        'gender': _genderController.text,
-        'phone': _phoneController.text,
+        'contactInfo': {
+          'gender': _genderController.text,
+          'phone': _phoneController.text,
+          'address': _addressController.text,
+        },
       };
       context.read<DoctorBloc>().add(AddDoctor(doctorData));
       Navigator.pop(context);
@@ -34,6 +38,7 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
     _specialtyController.dispose();
     _genderController.dispose();
     _phoneController.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
@@ -86,6 +91,16 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the phone';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _addressController,
+                decoration: const InputDecoration(labelText: 'Address'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter address';
                   }
                   return null;
                 },

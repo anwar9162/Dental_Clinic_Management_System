@@ -23,20 +23,20 @@ class DoctorDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Name: ${name ?? 'N/A'}', // Handle potential null
+              'Name: $name',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             Text(
-              'Specialty: ${specialty ?? 'N/A'}', // Handle potential null
+              'Specialty: $specialty',
               style: TextStyle(fontSize: 18),
             ),
             Text(
-              'Phone: ${phone ?? 'N/A'}', // Handle potential null
+              'Phone: $phone',
               style: TextStyle(fontSize: 18),
             ),
             Text(
-              'Gender: ${gender ?? 'N/A'}', // Handle potential null
+              'Gender: $gender',
               style: TextStyle(fontSize: 18),
             ),
           ],
