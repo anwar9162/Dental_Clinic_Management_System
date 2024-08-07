@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'add_doctor_screen.dart';
 import 'doctor_detail_screen.dart';
+import 'blocs/doctor_bloc.dart';
+import 'blocs/doctor_event.dart';
+import 'blocs/doctor_state.dart';
 
 class DoctorListScreen extends StatefulWidget {
   @override
@@ -8,26 +12,21 @@ class DoctorListScreen extends StatefulWidget {
 }
 
 class _DoctorListScreenState extends State<DoctorListScreen> {
-  final List<Map<String, String>> _doctors = [
-    {'name': 'Dr. John Smith', 'specialty': 'Orthodontist'},
-    {'name': 'Dr. Jane Doe', 'specialty': 'Periodontist'},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    context.read<DoctorBloc>().add(FetchAllDoctors());
+  }
 
-  Map<String, String>? _selectedDoctor;
-  bool _isAddingDoctor = false;
-
-  void _selectDoctor(Map<String, String> doctor) {
-    setState(() {
-      _selectedDoctor = doctor;
-      _isAddingDoctor = false;
-    });
+  void _selectDoctor(String id) {
+    context.read<DoctorBloc>().add(FetchDoctorById(id));
   }
 
   void _showAddDoctorScreen() {
-    setState(() {
-      _isAddingDoctor = true;
-      _selectedDoctor = null;
-    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddDoctorScreen()),
+    ).then((_) => context.read<DoctorBloc>().add(FetchAllDoctors()));
   }
 
   @override
@@ -35,50 +34,70 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Doctors List'),
-        //centerTitle: true,
         backgroundColor: Color(0xFF6ABEDC),
       ),
       body: Row(
         children: [
-          // Narrowed doctor list
           Expanded(
             flex: 1,
-            child: ListView.builder(
-              itemCount: _doctors.length,
-              itemBuilder: (context, index) {
-                final doctor = _doctors[index];
-                final isSelected = _selectedDoctor == doctor;
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                      vertical: 4.0, horizontal: 8.0),
-                  elevation: isSelected ? 6 : 2,
-                  color: isSelected ? Colors.blue.shade50 : Colors.white,
-                  child: ListTile(
-                    title: Text(
-                      doctor['name']!,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    subtitle:
-                        Text(doctor['specialty']!, textAlign: TextAlign.center),
-                    onTap: () => _selectDoctor(doctor),
-                  ),
-                );
+            child: BlocBuilder<DoctorBloc, DoctorState>(
+              builder: (context, state) {
+                if (state is DoctorLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is DoctorsLoaded) {
+                  return ListView.builder(
+                    itemCount: state.doctors.length,
+                    itemBuilder: (context, index) {
+                      final doctor = state.doctors[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 8.0),
+                        elevation: 2,
+                        color: Colors.white,
+                        child: ListTile(
+                          title: Text(
+                            doctor['name']!,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                          subtitle: Text(
+                            doctor['specialty']!,
+                            textAlign: TextAlign.center,
+                          ),
+                          onTap: () => _selectDoctor(
+                              doctor['_id']!), // Assuming '_id' is the ID field
+                        ),
+                      );
+                    },
+                  );
+                } else if (state is DoctorError) {
+                  return Center(child: Text(state.message));
+                } else {
+                  return Center(child: Text('No doctors available.'));
+                }
               },
             ),
           ),
-          // Expanded details area
           Expanded(
             flex: 2,
-            child: _isAddingDoctor
-                ? AddDoctorScreen()
-                : _selectedDoctor == null
-                    ? const Center(
-                        child: Text('Select a doctor to see details'))
-                    : DoctorDetailScreen(
-                        name: _selectedDoctor!['name']!,
-                        specialty: _selectedDoctor!['specialty']!,
-                      ),
+            child: BlocBuilder<DoctorBloc, DoctorState>(
+              builder: (context, state) {
+                if (state is DoctorLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is DoctorLoaded) {
+                  final doctor = state.doctor;
+                  return DoctorDetailScreen(
+                    name: doctor['name']!,
+                    specialty: doctor['specialty']!,
+                    gender: doctor['gender']!,
+                    phone: doctor['phone']!,
+                  );
+                } else {
+                  return const Center(
+                      child: Text('Select a doctor to see details'));
+                }
+              },
+            ),
           ),
         ],
       ),
