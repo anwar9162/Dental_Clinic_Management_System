@@ -33,7 +33,7 @@ const createAppointment = async (req, res) => {
 
 const updateAppointment = async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, newNotes } = req.body; // Assume newNotes is an array of note objects
 
   try {
     const appointment = await Appointment.findById(id);
@@ -41,23 +41,40 @@ const updateAppointment = async (req, res) => {
       return res.status(404).json({ message: 'Appointment not found' });
     }
 
-    appointment.status = status;
+    // Update the status
+    if (status) {
+      appointment.status = status;
 
-    await appointment.save();
-
-    if (status === 'Completed') {
-      const patientRecord = await Patient.findById(appointment.patient);
-      if (patientRecord) {
-        patientRecord.visitHistory.push(appointment._id);
-        await patientRecord.save();
+      // If status is changed to 'Completed', update patient visit history
+      if (status === 'Completed') {
+        const patientRecord = await Patient.findById(appointment.patient);
+        if (patientRecord) {
+          patientRecord.visitHistory.push(appointment._id);
+          await patientRecord.save();
+        }
       }
     }
 
+    // Add new notes
+    if (newNotes && Array.isArray(newNotes)) {
+      appointment.notes.push(...newNotes.map(note => ({
+        content: note.content,
+        createdAt: note.createdAt || Date.now(), // Use provided createdAt or default to now
+      })));
+    }
+
+    // Save the updated appointment
+    await appointment.save();
+
     res.status(200).json(appointment);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
+
 
 const deleteAppointment = async (req, res) => {
   try {

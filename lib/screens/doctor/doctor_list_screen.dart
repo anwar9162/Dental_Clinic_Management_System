@@ -158,7 +158,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                               ),
                               IconButton(
                                 icon: Icon(Icons.delete),
-                                color: Colors.red,
+                                color: const Color.fromARGB(255, 41, 36, 36),
                                 onPressed: () => _deleteDoctor(doctor['_id']!),
                               ),
                             ],
