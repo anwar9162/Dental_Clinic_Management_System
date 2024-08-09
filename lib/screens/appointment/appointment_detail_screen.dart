@@ -36,8 +36,6 @@ class AppointmentDetailScreen extends StatelessWidget {
                     Icons.person, 'Patient Name: ${appointment.patientName}'),
                 _buildDetailRow(Icons.calendar_today,
                     'Date: ${appointment.date.toLocal().toString().split(' ')[0]}'),
-                _buildDetailRow(Icons.description,
-                    'Description: ${appointment.description}'),
                 _buildDetailRow(Icons.medical_services,
                     'Doctor Name: ${appointment.doctorName}'),
                 SizedBox(height: 20),

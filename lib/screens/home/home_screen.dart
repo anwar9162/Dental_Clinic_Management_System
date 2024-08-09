@@ -19,14 +19,12 @@ class _HomeScreenState extends State<HomeScreen> {
       firstVisitDate: DateTime(2024, 6, 25),
       lastTreatment: 'Brace',
       currentAppointmentReason: 'Emergency Consultation',
-      description: 'Routine Checkup',
       doctorName: 'Dr. Smith',
     ),
     Appointment(
       id: '2',
       patientName: 'Matebe Assfaw',
       date: DateTime.now(),
-      description: 'Tooth Extraction',
       doctorName: 'Dr. Johnson',
       firstVisitDate: DateTime(2024, 6, 25),
       lastTreatment: 'Brace',
@@ -75,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: 'Today\'s Appointment',
                       count: _appointments.length,
                       icon: Icons.person,
-                      color: Colors.black,
+                      color: Colors.red,
                     ),
                     _buildInfoCard(
                       context,
@@ -131,10 +129,10 @@ class _HomeScreenState extends State<HomeScreen> {
       required Color color}) {
     return Card(
       elevation: 6,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      color: color,
+      shape: CircleBorder(
+          // borderRadius: BorderRadius.circular(15),
+          ),
+      color: Colors.transparent,
       child: Container(
         padding: EdgeInsets.all(20),
         child: Column(
@@ -155,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               '$count',
               style: TextStyle(
-                color: Colors.white,
+                color: color,
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
               ),

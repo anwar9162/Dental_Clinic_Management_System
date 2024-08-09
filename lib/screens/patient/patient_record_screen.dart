@@ -151,13 +151,11 @@ class PatientRecordScreen extends StatelessWidget {
           id: '1',
           patientName: patient.firstName!,
           date: DateTime.now().subtract(Duration(days: 30)),
-          description: 'Routine Checkup',
           doctorName: 'Dr. Smith'),
       Appointment(
           id: '2',
           patientName: patient.firstName!,
           date: DateTime.now().subtract(Duration(days: 60)),
-          description: 'Tooth Extraction',
           doctorName: 'Dr. Johnson'),
     ];
 
@@ -179,7 +177,7 @@ class PatientRecordScreen extends StatelessWidget {
         children: appointments.map((appointment) {
           return ListTile(
             title: Text(
-              appointment.description,
+              appointment.patientName,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.blueGrey[900],

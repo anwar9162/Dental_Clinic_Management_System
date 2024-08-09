@@ -13,7 +13,7 @@ class AddAppointmentScreen extends StatefulWidget {
 class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
   final _patientNameController = TextEditingController();
-  final _descriptionController = TextEditingController();
+
   final _doctorNameController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
 
@@ -22,7 +22,7 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
     super.initState();
     if (widget.appointment != null) {
       _patientNameController.text = widget.appointment!.patientName;
-      _descriptionController.text = widget.appointment!.description;
+
       _doctorNameController.text = widget.appointment!.doctorName;
       _selectedDate = widget.appointment!.date;
     }
@@ -34,7 +34,6 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
         id: widget.appointment?.id ?? DateTime.now().toString(),
         patientName: _patientNameController.text,
         date: _selectedDate,
-        description: _descriptionController.text,
         doctorName: _doctorNameController.text,
       );
       Navigator.pop(context, newAppointment);
@@ -66,21 +65,6 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the patient name';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.description),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
                   }
                   return null;
                 },

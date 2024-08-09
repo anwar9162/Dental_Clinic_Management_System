@@ -35,9 +35,6 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
                         .contains(searchQuery.toLowerCase()) ||
                     appointment.doctorName
                         .toLowerCase()
-                        .contains(searchQuery.toLowerCase()) ||
-                    appointment.description
-                        .toLowerCase()
                         .contains(searchQuery.toLowerCase());
               }).toList();
 
@@ -142,7 +139,6 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
           DataColumn2(label: Text('ID'), size: ColumnSize.S),
           DataColumn2(label: Text('Patient Name')),
           DataColumn2(label: Text('Date')),
-          DataColumn2(label: Text('Description')),
           DataColumn2(label: Text('Doctor Name')),
           DataColumn2(label: Text('Actions')),
         ],
@@ -161,7 +157,6 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
               DataCell(Text(appointment.patientName)),
               DataCell(
                   Text(appointment.date.toLocal().toString().split(' ')[0])),
-              DataCell(Text(appointment.description)),
               DataCell(Text(appointment.doctorName)),
               DataCell(_buildActionButtons(context, appointment, provider)),
             ],
@@ -215,8 +210,6 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
               Icons.person, 'Patient Name: ${appointment.patientName}'),
           _buildDetailRow(Icons.calendar_today,
               'Date: ${appointment.date.toLocal().toString().split(' ')[0]}'),
-          _buildDetailRow(
-              Icons.description, 'Description: ${appointment.description}'),
           _buildDetailRow(
               Icons.medical_services, 'Doctor Name: ${appointment.doctorName}'),
           SizedBox(height: 10),

@@ -14,7 +14,7 @@ class AppointmentCard extends StatelessWidget {
         onTap: onTap,
         title: Text(appointment.patientName),
         subtitle:
-            Text('${appointment.description} with ${appointment.doctorName}'),
+            Text('${appointment.patientName} with ${appointment.doctorName}'),
         trailing: Text('${appointment.date.toLocal()}'.split(' ')[0]),
       ),
     );
