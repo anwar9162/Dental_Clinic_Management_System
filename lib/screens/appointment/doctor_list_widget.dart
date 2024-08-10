@@ -15,6 +15,7 @@ class DoctorListWidget extends StatefulWidget {
 
 class _DoctorListWidgetState extends State<DoctorListWidget> {
   final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _allDoctors = [];
   List<Map<String, dynamic>> _filteredDoctors = [];
 
   @override
@@ -28,7 +29,7 @@ class _DoctorListWidgetState extends State<DoctorListWidget> {
   void _onSearchChanged() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      _filteredDoctors = _filteredDoctors.where((doctor) {
+      _filteredDoctors = _allDoctors.where((doctor) {
         final name = doctor['name'].toLowerCase();
         return name.contains(query);
       }).toList();
@@ -44,8 +45,10 @@ class _DoctorListWidgetState extends State<DoctorListWidget> {
         } else if (state is DoctorError) {
           return Center(child: Text('Error: ${state.message}'));
         } else if (state is DoctorsLoaded) {
-          if (_filteredDoctors.isEmpty) {
-            _filteredDoctors = state.doctors;
+          // Store all doctors only when they are loaded
+          if (_allDoctors.isEmpty) {
+            _allDoctors = state.doctors;
+            _filteredDoctors = _allDoctors; // Initialize filtered list
           }
 
           return Container(
