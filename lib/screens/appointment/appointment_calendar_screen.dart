@@ -9,7 +9,10 @@ import '../patient/patient_bloc/patient_bloc.dart';
 import '../patient/patient_bloc/patient_event.dart';
 import '../doctor/blocs/doctor_bloc.dart';
 import '../doctor/blocs/doctor_event.dart';
-import 'confirm_appointment_screen.dart'; // Import your dialog
+import 'blocs/appointment_bloc.dart';
+import 'blocs/appointment_event.dart';
+import 'blocs/appointment_state.dart';
+import 'confirm_appointment_screen.dart';
 
 class AppointmentCalendarScreen extends StatefulWidget {
   @override
@@ -21,17 +24,19 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   Patient? _selectedPatient;
-  Map<String, dynamic>? _selectedDoctor;
+  Map<String, dynamic>?
+      _selectedDoctor; // Changed doctorId to a map for flexibility
   Appointment? _selectedAppointment;
 
   String? _appointmentReason;
-  List<String> _notes = [];
+  List<Note> _notes = []; // Changed this to List<Note>
 
   Map<DateTime, List<Appointment>> _groupedAppointments = {};
 
   @override
   void initState() {
     super.initState();
+    // Load patients and doctors on initialization
     context.read<PatientBloc>().add(LoadPatients());
     context.read<DoctorBloc>().add(FetchAllDoctors());
   }
@@ -45,6 +50,11 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
   }
 
   void _addNewAppointment() {
+    print("Creating appointment...");
+
+    print('Selected Patient: $_selectedPatient');
+    print('Selected Doctor: $_selectedDoctor');
+
     if (_selectedPatient != null &&
         _selectedDay != null &&
         _selectedDoctor != null) {
@@ -54,20 +64,33 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         selectedDoctor: _selectedDoctor!,
         selectedDate: _selectedDay!,
         appointmentReason: _appointmentReason ?? 'General Checkup',
-        notes: _notes,
+        notes: _notes
+            .map((note) => note.content)
+            .toList(), // Convert List<Note> to List<String>
         onConfirm: () {
           // Create a new appointment
           Appointment newAppointment = Appointment(
-            id: _selectedPatient!.id!,
-            patientName: _selectedPatient!.firstName!,
+            id: _selectedPatient!.id!, // Use patient's ID
             date: _selectedDay!,
-            doctorName: _selectedDoctor!['name']!,
+            doctorid: _selectedDoctor!['_id'], // Use doctor's ID
+            patientName:
+                '${_selectedPatient!.firstName} ${_selectedPatient!.lastName}', // Get the patient name
             appointmentReason: _appointmentReason ?? 'General Checkup',
-            notes: _notes,
+            notes: _notes, // Keep this as List<Note> for Appointment
+            // Include patient and doctor fields if your API requires it
+            patient: _selectedPatient!
+                .id, // Assuming patient is required in your API
+            doctor: _selectedDoctor![
+                '_id'], // Assuming doctor is required in your API
           );
-          // Add the new appointment to your data source
+
           _groupAppointments(); // Re-group appointments
           _resetSelection(); // Reset selections
+
+          // Dispatch CreateAppointment event to the AppointmentBloc
+          context
+              .read<AppointmentBloc>()
+              .add(CreateAppointment(newAppointment));
 
           // Optionally show a success message
           ScaffoldMessenger.of(context).showSnackBar(
@@ -75,20 +98,32 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
           );
         },
       );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select a patient, doctor, and date.')),
+      );
     }
   }
 
   void _resetSelection() {
-    _selectedPatient = null;
-    _selectedDoctor = null;
-    _appointmentReason = null;
-    _notes.clear();
-    _selectedAppointment = null;
+    setState(() {
+      _selectedPatient = null;
+      _selectedDoctor = null;
+      _appointmentReason = null;
+      _notes.clear(); // Clear the notes list
+      _selectedAppointment = null;
+    });
   }
 
   void _addNote() {
     setState(() {
-      _notes.add('');
+      _notes.add(Note(content: '')); // Initialize with an empty note
+    });
+  }
+
+  void _removeNote(int index) {
+    setState(() {
+      _notes.removeAt(index); // Remove the specified note
     });
   }
 
@@ -200,7 +235,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                         return ListTile(
                           contentPadding: EdgeInsets.symmetric(vertical: 8.0),
                           title: Text(
-                            appointment.patientName,
+                            appointment.patientName!,
                             style: TextStyle(fontWeight: FontWeight.normal),
                           ),
                           leading: Icon(Icons.access_time, color: Colors.teal),
@@ -212,14 +247,15 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                             icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
                               setState(() {
-                                // Remove appointment from your data source
+                                // After deleting, regroup appointments
                                 _groupAppointments();
                               });
                             },
                           ),
                           onTap: () {
                             setState(() {
-                              _selectedAppointment = appointment;
+                              _selectedAppointment =
+                                  appointment; // Set selected appointment
                             });
                           },
                         );
@@ -244,6 +280,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Patient selection
                       Container(
                         height: MediaQuery.of(context).size.height * 0.2,
                         child: PatientListWidget(
@@ -255,6 +292,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                         ),
                       ),
                       SizedBox(height: 16.0),
+                      // Doctor selection
                       Container(
                         height: MediaQuery.of(context).size.height * 0.2,
                         child: DoctorListWidget(
@@ -266,6 +304,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                         ),
                       ),
                       SizedBox(height: 16.0),
+                      // Display selected patient info
                       if (_selectedPatient != null) ...[
                         Text(
                           'Patient: ${_selectedPatient!.firstName} ${_selectedPatient!.lastName}, Patient ID: ${_selectedPatient!.id!}',
@@ -273,6 +312,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                         ),
                         SizedBox(height: 8.0),
                       ],
+                      // Display selected doctor info
                       if (_selectedDoctor != null) ...[
                         Text(
                           'Doctor: ${_selectedDoctor!['name']}, Doctor ID: ${_selectedDoctor!['_id']}',
@@ -280,45 +320,74 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                         ),
                         SizedBox(height: 8.0),
                       ],
-                      TextFormField(
+                      TextField(
                         decoration: InputDecoration(
                           labelText: 'Appointment Reason',
                           border: OutlineInputBorder(),
                         ),
                         onChanged: (value) {
-                          _appointmentReason = value;
+                          setState(() {
+                            _appointmentReason = value;
+                          });
                         },
                       ),
                       SizedBox(height: 16.0),
-                      ElevatedButton(
-                        onPressed: _addNote,
-                        child: Text('Add Note'),
-                      ),
-                      for (int i = 0; i < _notes.length; i++)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: TextFormField(
-                            initialValue: _notes[i],
-                            decoration: InputDecoration(
-                              labelText: 'Note ${i + 1}',
-                              border: OutlineInputBorder(),
-                            ),
-                            onChanged: (value) {
-                              _notes[i] = value;
-                            },
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Notes:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          ..._notes.asMap().entries.map((entry) {
+                            int index = entry.key;
+                            Note note = entry.value;
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      decoration: InputDecoration(
+                                        labelText: 'Note ${index + 1}',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _notes[index] = Note(
+                                              content:
+                                                  value); // Update the note
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () =>
+                                        _removeNote(index), // Remove the note
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          ElevatedButton.icon(
+                            icon: Icon(Icons.add, color: Colors.white),
+                            label: Text('Add Note'),
+                            onPressed: _addNote,
                           ),
-                        ),
-                      SizedBox(height: 16.0),
+                        ],
+                      ),
+                      SizedBox(height: 24.0),
                       ElevatedButton(
                         onPressed: _addNewAppointment,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrange,
+                          backgroundColor: Color(0xFF6ABEDC),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24.0, vertical: 12.0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        child: Center(
                           child: Text(
                             'Add Appointment',
                             style: TextStyle(fontSize: 16.0),

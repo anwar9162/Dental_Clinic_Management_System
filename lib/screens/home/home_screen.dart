@@ -217,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (index < (appointments?.length ?? 0)) {
                       final appointment = appointments![index];
                       return _buildListTile(
-                        appointment.patientName,
+                        appointment.patientName!,
                         'Last Treatment: ${appointment.lastTreatment}',
                         'Current Appointment: ${appointment.currentAppointmentReason}',
                         'Days Since First Visit: ${_daysSinceFirstVisit(appointment.firstVisitDate)}',

@@ -24,6 +24,7 @@ const getAppointmentById = async (req, res) => {
 
 const createAppointment = async (req, res) => {
   try {
+    console.log('Creating appointment');
     const newAppointment = await appointmentService.createAppointment(req.body);
     res.status(201).json(newAppointment);
   } catch (error) {
@@ -98,14 +99,6 @@ const getTodaysAppointments = async (req, res) => {
   }
 };
 
-const getArrivedPatients = async (req, res) => {
-  try {
-    const patients = await appointmentService.getArrivedPatients();
-    res.status(200).json(patients);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 const getVisitHistory = async (req, res) => {
   const { patientId } = req.params;
@@ -120,10 +113,6 @@ const getVisitHistory = async (req, res) => {
   }
 };
 
-
-
-
-
 module.exports = {
   getAllAppointments,
   getAppointmentById,
@@ -131,7 +120,5 @@ module.exports = {
   updateAppointment,
   deleteAppointment,
   getTodaysAppointments,
-  getArrivedPatients,
   getVisitHistory,
-
 };

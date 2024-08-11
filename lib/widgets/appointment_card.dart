@@ -12,7 +12,7 @@ class AppointmentCard extends StatelessWidget {
     return Card(
       child: ListTile(
         onTap: onTap,
-        title: Text(appointment.patientName),
+        title: Text(appointment.patientName!),
         subtitle:
             Text('${appointment.patientName} with ${appointment.doctorName}'),
         trailing: Text('${appointment.date.toLocal()}'.split(' ')[0]),

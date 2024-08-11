@@ -1,22 +1,82 @@
+import 'dart:convert';
+
+class Note {
+  String content;
+  DateTime createdAt;
+
+  Note({required this.content, DateTime? createdAt})
+      : createdAt = createdAt ?? DateTime.now();
+
+  Map<String, dynamic> toJson() {
+    return {
+      'content': content,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
+  factory Note.fromJson(Map<String, dynamic> json) {
+    return Note(
+      content: json['content'],
+      createdAt: DateTime.parse(json['createdAt']),
+    );
+  }
+}
+
 class Appointment {
   final String id;
-  final String patientName;
+  final String? patientName; // Add this line
   final DateTime date;
-
-  final String doctorName;
+  final String? doctorName;
+  final String? doctorid;
   final String? appointmentReason;
-  final List? notes;
+  final List<Note>? notes;
   final DateTime? firstVisitDate;
   final String? lastTreatment;
   final String? currentAppointmentReason;
-  Appointment(
-      {required this.id,
-      required this.patientName,
-      required this.date,
-      required this.doctorName,
-      this.firstVisitDate,
-      this.lastTreatment,
-      this.currentAppointmentReason,
-      this.appointmentReason,
-      this.notes});
+
+  Appointment({
+    required this.id,
+    this.patientName, // Add this line
+    required this.date,
+    this.doctorName,
+    this.doctorid,
+    this.appointmentReason,
+    this.notes,
+    this.firstVisitDate,
+    this.lastTreatment,
+    this.currentAppointmentReason,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'patientName': patientName, // Add this line
+      'date': date.toIso8601String(),
+      'doctorName': doctorName,
+      'doctorid': doctorid,
+      'appointmentReason': appointmentReason,
+      'notes': notes?.map((note) => note.toJson()).toList(),
+      'firstVisitDate': firstVisitDate?.toIso8601String(),
+      'lastTreatment': lastTreatment,
+      'currentAppointmentReason': currentAppointmentReason,
+    };
+  }
+
+  factory Appointment.fromJson(Map<String, dynamic> json) {
+    return Appointment(
+      id: json['_id'],
+      patientName: json['patientName'], // Add this line
+      date: DateTime.parse(json['date']),
+      doctorName: json['doctorName'],
+      doctorid: json['doctorid'], // Make sure this matches your JSON structure
+      appointmentReason: json['appointmentReason'],
+      notes: json['notes'] != null
+          ? List<Note>.from(json['notes'].map((note) => Note.fromJson(note)))
+          : null,
+      firstVisitDate: json['firstVisitDate'] != null
+          ? DateTime.parse(json['firstVisitDate'])
+          : null,
+      lastTreatment: json['lastTreatment'],
+      currentAppointmentReason: json['currentAppointmentReason'],
+    );
+  }
 }

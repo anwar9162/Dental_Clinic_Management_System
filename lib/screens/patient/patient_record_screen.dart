@@ -177,7 +177,7 @@ class PatientRecordScreen extends StatelessWidget {
         children: appointments.map((appointment) {
           return ListTile(
             title: Text(
-              appointment.patientName,
+              appointment.patientName!,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.blueGrey[900],

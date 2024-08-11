@@ -30,10 +30,10 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
             builder: (context, provider, child) {
               final filteredAppointments =
                   provider.appointments.where((appointment) {
-                return appointment.patientName
+                return appointment.patientName!
                         .toLowerCase()
                         .contains(searchQuery.toLowerCase()) ||
-                    appointment.doctorName
+                    appointment.doctorName!
                         .toLowerCase()
                         .contains(searchQuery.toLowerCase());
               }).toList();
@@ -154,10 +154,10 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
             },
             cells: [
               DataCell(Text(appointment.id)),
-              DataCell(Text(appointment.patientName)),
+              DataCell(Text(appointment.patientName!)),
               DataCell(
                   Text(appointment.date.toLocal().toString().split(' ')[0])),
-              DataCell(Text(appointment.doctorName)),
+              DataCell(Text(appointment.doctorName!)),
               DataCell(_buildActionButtons(context, appointment, provider)),
             ],
           );

@@ -1,134 +1,56 @@
 import 'package:flutter/material.dart';
-import '../../models/appointment_model.dart';
 import '../../models/patient_model.dart';
+import '../../models/appointment_model.dart';
 
-Future<void> showConfirmAppointmentDialog({
+void showConfirmAppointmentDialog({
   required BuildContext context,
   required Patient selectedPatient,
-  required Map<String, dynamic> selectedDoctor,
+  required Map<String, dynamic> selectedDoctor, // Map to hold doctor info
   required DateTime selectedDate,
   required String appointmentReason,
-  required List<String> notes,
-  required Function onConfirm,
+  required List<String> notes, // List<String> to hold notes
+  required VoidCallback onConfirm,
 }) {
-  return showDialog<void>(
+  print("Dialog is being shown."); // Add this line
+
+  showDialog(
     context: context,
-    barrierDismissible: false, // User must tap button to close
-    builder: (BuildContext dialogContext) {
+    builder: (BuildContext context) {
       return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
+        title: Text('Confirm Appointment'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+                'Patient: ${selectedPatient.firstName} ${selectedPatient.lastName}'),
+            SizedBox(height: 8.0),
+            Text('Doctor: ${selectedDoctor['name']}'),
+            SizedBox(height: 8.0),
+            Text('Date: ${selectedDate.toLocal().toString().split(' ')[0]}'),
+            SizedBox(height: 8.0),
+            Text('Reason: ASDF'),
+            SizedBox(height: 8.0),
+            Text('Notes:'),
+            ...notes.map((note) => Text('- $note')).toList(),
+          ],
         ),
-        title: Text(
-          'Confirm Appointment',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Color(0xFF6ABEDC), // Using your specified color
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: [
-              _buildPatientInfo(selectedPatient),
-              Divider(color: Colors.grey[300]), // Light divider color
-              _buildDoctorInfo(selectedDoctor),
-              Divider(color: Colors.grey[300]),
-              _buildAppointmentDetails(selectedDate, appointmentReason, notes),
-            ],
-          ),
-        ),
-        actions: [
+        actions: <Widget>[
           TextButton(
+            child: Text('Cancel'),
             onPressed: () {
-              Navigator.of(dialogContext).pop(); // Close the dialog
+              Navigator.of(context).pop();
             },
-            child: Text(
-              'Cancel',
-              style:
-                  TextStyle(color: Colors.grey[700]), // Subtle color for cancel
-            ),
           ),
-          TextButton(
+          ElevatedButton(
+            child: Text('Confirm'),
             onPressed: () {
-              onConfirm(); // Call the confirmation function
-              Navigator.of(dialogContext).pop(); // Close the dialog
+              onConfirm();
+              Navigator.of(context).pop();
             },
-            style: TextButton.styleFrom(
-              backgroundColor:
-                  Color(0xFF6ABEDC), // Button color using your specified color
-              foregroundColor: Colors.white, // Text color
-            ),
-            child: Text(
-              'Confirm',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
           ),
         ],
       );
     },
-  );
-}
-
-Widget _buildPatientInfo(Patient patient) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Patient Information',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-          color: Color(0xFF6ABEDC), // Using your specified color
-        ),
-      ),
-      SizedBox(height: 8),
-      Text('Name: ${patient.firstName} ${patient.lastName}'),
-      Text('Patient ID: ${patient.id}'),
-      SizedBox(height: 12),
-    ],
-  );
-}
-
-Widget _buildDoctorInfo(Map<String, dynamic> doctor) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Doctor Information',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-          color: Color(0xFF6ABEDC), // Using your specified color
-        ),
-      ),
-      SizedBox(height: 8),
-      Text('Name: ${doctor['name']}'),
-      Text('Doctor ID: ${doctor['_id']}'),
-      SizedBox(height: 12),
-    ],
-  );
-}
-
-Widget _buildAppointmentDetails(
-    DateTime date, String reason, List<String> notes) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Appointment Details',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-          color: Color(0xFF6ABEDC), // Using your specified color
-        ),
-      ),
-      SizedBox(height: 8),
-      Text('Date: ${date.toLocal().toString().split(' ')[0]}'),
-      Text('Reason: $reason'),
-      SizedBox(height: 8),
-      Text('Notes:', style: TextStyle(fontWeight: FontWeight.bold)),
-      ...notes.map((note) => Text('• $note')).toList(),
-    ],
   );
 }

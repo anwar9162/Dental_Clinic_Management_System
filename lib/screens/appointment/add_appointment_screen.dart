@@ -21,9 +21,9 @@ class _AddAppointmentScreenState extends State<AddAppointmentScreen> {
   void initState() {
     super.initState();
     if (widget.appointment != null) {
-      _patientNameController.text = widget.appointment!.patientName;
+      _patientNameController.text = widget.appointment!.patientName!;
 
-      _doctorNameController.text = widget.appointment!.doctorName;
+      _doctorNameController.text = widget.appointment!.doctorName!;
       _selectedDate = widget.appointment!.date;
     }
   }

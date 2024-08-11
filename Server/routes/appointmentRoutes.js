@@ -6,7 +6,7 @@ const {
   updateAppointment,
   deleteAppointment,
   getTodaysAppointments,
-  getArrivedPatients,
+
   getVisitHistory,
 } = require('../controllers/appointmentController');
 
@@ -20,7 +20,6 @@ router.delete('/:id', deleteAppointment);
 
 // New routes for the additional functionalities
 router.get('/today/appointments', getTodaysAppointments);
-router.get('/today/arrived', getArrivedPatients);
 router.get('/history/:patientId', getVisitHistory);
 
 module.exports = router;
