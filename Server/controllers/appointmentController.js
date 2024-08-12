@@ -1,6 +1,6 @@
-const appointmentService = require('../services/appointmentService');
-const Appointment = require('../models/Appointment');
-const Patient = require('../models/Patient');
+const appointmentService = require("../services/appointmentService");
+const Appointment = require("../models/Appointment");
+const Patient = require("../models/Patient");
 const getAllAppointments = async (req, res) => {
   try {
     const appointments = await appointmentService.getAllAppointments();
@@ -12,9 +12,11 @@ const getAllAppointments = async (req, res) => {
 
 const getAppointmentById = async (req, res) => {
   try {
-    const appointment = await appointmentService.getAppointmentById(req.params.id);
+    const appointment = await appointmentService.getAppointmentById(
+      req.params.id
+    );
     if (!appointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
+      return res.status(404).json({ message: "Appointment not found" });
     }
     res.status(200).json(appointment);
   } catch (error) {
@@ -24,7 +26,8 @@ const getAppointmentById = async (req, res) => {
 
 const createAppointment = async (req, res) => {
   try {
-    console.log('Creating appointment');
+    console.log("Creating appointment");
+    console.log(`Body: ${JSON.stringify(req.body)}`);
     const newAppointment = await appointmentService.createAppointment(req.body);
     res.status(201).json(newAppointment);
   } catch (error) {
@@ -39,7 +42,7 @@ const updateAppointment = async (req, res) => {
   try {
     const appointment = await Appointment.findById(id);
     if (!appointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
+      return res.status(404).json({ message: "Appointment not found" });
     }
 
     // Update the status
@@ -47,7 +50,7 @@ const updateAppointment = async (req, res) => {
       appointment.status = status;
 
       // If status is changed to 'Completed', update patient visit history
-      if (status === 'Completed') {
+      if (status === "Completed") {
         const patientRecord = await Patient.findById(appointment.patient);
         if (patientRecord) {
           patientRecord.visitHistory.push(appointment._id);
@@ -58,10 +61,12 @@ const updateAppointment = async (req, res) => {
 
     // Add new notes
     if (newNotes && Array.isArray(newNotes)) {
-      appointment.notes.push(...newNotes.map(note => ({
-        content: note.content,
-        createdAt: note.createdAt || Date.now(), // Use provided createdAt or default to now
-      })));
+      appointment.notes.push(
+        ...newNotes.map((note) => ({
+          content: note.content,
+          createdAt: note.createdAt || Date.now(), // Use provided createdAt or default to now
+        }))
+      );
     }
 
     // Save the updated appointment
@@ -70,20 +75,19 @@ const updateAppointment = async (req, res) => {
     res.status(200).json(appointment);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-
-
-
 const deleteAppointment = async (req, res) => {
   try {
-    const appointment = await appointmentService.deleteAppointment(req.params.id);
+    const appointment = await appointmentService.deleteAppointment(
+      req.params.id
+    );
     if (!appointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
+      return res.status(404).json({ message: "Appointment not found" });
     }
-    res.status(200).json({ message: 'Appointment deleted' });
+    res.status(200).json({ message: "Appointment deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -91,7 +95,6 @@ const deleteAppointment = async (req, res) => {
 
 const getTodaysAppointments = async (req, res) => {
   try {
-    
     const appointments = await appointmentService.getTodaysAppointments();
     res.status(200).json(appointments);
   } catch (error) {
@@ -99,13 +102,12 @@ const getTodaysAppointments = async (req, res) => {
   }
 };
 
-
 const getVisitHistory = async (req, res) => {
   const { patientId } = req.params;
   try {
-    const patient = await Patient.findById(patientId).populate('visitHistory');
+    const patient = await Patient.findById(patientId).populate("visitHistory");
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(404).json({ message: "Patient not found" });
     }
     res.status(200).json(patient.visitHistory);
   } catch (error) {

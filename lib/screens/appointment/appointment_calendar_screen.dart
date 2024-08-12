@@ -50,11 +50,6 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
   }
 
   void _addNewAppointment() {
-    print("Creating appointment...");
-
-    print('Selected Patient: $_selectedPatient');
-    print('Selected Doctor: $_selectedDoctor');
-
     if (_selectedPatient != null &&
         _selectedDay != null &&
         _selectedDoctor != null) {
@@ -68,7 +63,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
             .map((note) => note.content)
             .toList(), // Convert List<Note> to List<String>
         onConfirm: () {
-          // Create a new appointment
+          // Create a new appointment with List<Note>
           Appointment newAppointment = Appointment(
             id: _selectedPatient!.id!, // Use patient's ID
             date: _selectedDay!,
@@ -76,16 +71,12 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
             patientName:
                 '${_selectedPatient!.firstName} ${_selectedPatient!.lastName}', // Get the patient name
             appointmentReason: _appointmentReason ?? 'General Checkup',
-            notes: _notes, // Keep this as List<Note> for Appointment
-            // Include patient and doctor fields if your API requires it
+            notes: _notes, // Pass List<Note> directly
             patient: _selectedPatient!
                 .id, // Assuming patient is required in your API
             doctor: _selectedDoctor![
                 '_id'], // Assuming doctor is required in your API
           );
-
-          _groupAppointments(); // Re-group appointments
-          _resetSelection(); // Reset selections
 
           // Dispatch CreateAppointment event to the AppointmentBloc
           context
