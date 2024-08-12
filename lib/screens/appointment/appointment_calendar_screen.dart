@@ -13,6 +13,7 @@ import 'blocs/appointment_bloc.dart';
 import 'blocs/appointment_event.dart';
 import 'blocs/appointment_state.dart';
 import 'confirm_appointment_screen.dart';
+import 'package:logger/logger.dart';
 
 class AppointmentCalendarScreen extends StatefulWidget {
   @override
@@ -21,15 +22,16 @@ class AppointmentCalendarScreen extends StatefulWidget {
 }
 
 class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
+  final Logger _logger = Logger(); // Logger instance
+
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   Patient? _selectedPatient;
-  Map<String, dynamic>?
-      _selectedDoctor; // Changed doctorId to a map for flexibility
+  Map<String, dynamic>? _selectedDoctor;
   Appointment? _selectedAppointment;
 
   String? _appointmentReason;
-  List<Note> _notes = []; // Changed this to List<Note>
+  List<Note> _notes = [];
 
   Map<DateTime, List<Appointment>> _groupedAppointments = {};
 
@@ -39,14 +41,45 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
     // Load patients and doctors on initialization
     context.read<PatientBloc>().add(LoadPatients());
     context.read<DoctorBloc>().add(FetchAllDoctors());
+
+    // Fetch all appointments
+    context.read<AppointmentBloc>().add(FetchAllAppointments());
   }
 
-  void _groupAppointments() {
-    // Populate _groupedAppointments based on your actual data source
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<AppointmentBloc>().stream.listen((state) {
+      if (state is AppointmentLoaded) {
+        _logger
+            .i('Appointments loaded with ${state.appointments.length} items');
+        _groupAppointments(state.appointments);
+      } else if (state is AppointmentError) {
+        _logger.e('Error loading appointments: ${state.message}');
+      }
+    });
+  }
+
+  void _groupAppointments(List<Appointment> appointments) {
+    final grouped = <DateTime, List<Appointment>>{};
+    for (var appointment in appointments) {
+      final date = DateTime(
+          appointment.date.year, appointment.date.month, appointment.date.day);
+      if (grouped[date] == null) {
+        grouped[date] = [];
+      }
+      grouped[date]!.add(appointment);
+    }
+    setState(() {
+      _groupedAppointments = grouped;
+      _logger.i(
+          'Appointments grouped by date: ${_groupedAppointments.keys.length} unique dates');
+    });
   }
 
   List<Appointment> _getAppointmentsForDay(DateTime day) {
-    return _groupedAppointments[day] ?? [];
+    final date = DateTime(day.year, day.month, day.day);
+    return _groupedAppointments[date] ?? [];
   }
 
   void _addNewAppointment() {
@@ -59,62 +92,50 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         selectedDoctor: _selectedDoctor!,
         selectedDate: _selectedDay!,
         appointmentReason: _appointmentReason ?? 'General Checkup',
-        notes: _notes
-            .map((note) => note.content)
-            .toList(), // Convert List<Note> to List<String>
+        notes: _notes.map((note) => note.content).toList(),
         onConfirm: () {
-          // Create a new appointment with List<Note>
           Appointment newAppointment = Appointment(
-            id: _selectedPatient!.id!, // Use patient's ID
+            id: _selectedPatient!.id!,
             date: _selectedDay!,
-            doctorid: _selectedDoctor!['_id'], // Use doctor's ID
+            doctorid: _selectedDoctor!['_id'],
             patientName:
-                '${_selectedPatient!.firstName} ${_selectedPatient!.lastName}', // Get the patient name
+                '${_selectedPatient!.firstName} ${_selectedPatient!.lastName}',
             appointmentReason: _appointmentReason ?? 'General Checkup',
-            notes: _notes, // Pass List<Note> directly
-            patient: _selectedPatient!
-                .id, // Assuming patient is required in your API
-            doctor: _selectedDoctor![
-                '_id'], // Assuming doctor is required in your API
+            notes: _notes,
+            patient: _selectedPatient!.id,
+            doctor: _selectedDoctor!['_id'],
           );
 
-          // Dispatch CreateAppointment event to the AppointmentBloc
           context
               .read<AppointmentBloc>()
               .add(CreateAppointment(newAppointment));
 
-          // Optionally show a success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Appointment confirmed!')),
           );
+          _logger.i('New appointment created: ${newAppointment.id}');
         },
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please select a patient, doctor, and date.')),
       );
+      _logger.w(
+          'Failed to add new appointment: Missing patient, doctor, or date.');
     }
-  }
-
-  void _resetSelection() {
-    setState(() {
-      _selectedPatient = null;
-      _selectedDoctor = null;
-      _appointmentReason = null;
-      _notes.clear(); // Clear the notes list
-      _selectedAppointment = null;
-    });
   }
 
   void _addNote() {
     setState(() {
-      _notes.add(Note(content: '')); // Initialize with an empty note
+      _notes.add(Note(content: ''));
+      _logger.i('New note added.');
     });
   }
 
   void _removeNote(int index) {
     setState(() {
-      _notes.removeAt(index); // Remove the specified note
+      _notes.removeAt(index);
+      _logger.i('Note removed at index: $index');
     });
   }
 
@@ -145,6 +166,11 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                           _selectedDay = selectedDay;
                           _focusedDay = focusedDay;
                         });
+                        _logger.i(
+                            'Day selected: ${selectedDay.toLocal().toString().split(' ')[0]}');
+                        // Optionally log the number of appointments for the selected day
+                        _logger.i(
+                            'Appointments for ${selectedDay.toLocal().toString().split(' ')[0]}: ${_getAppointmentsForDay(selectedDay).length}');
                       },
                       eventLoader: _getAppointmentsForDay,
                       calendarStyle: CalendarStyle(
@@ -223,11 +249,26 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                       itemBuilder: (context, index) {
                         final appointment =
                             _getAppointmentsForDay(_selectedDay!)[index];
+                        final patientDetails = appointment.patientDetails;
+                        final doctorDetails = appointment.doctorDetails;
+
+                        // Build patient and doctor details text
+                        final patientText = patientDetails != null
+                            ? '${patientDetails.firstName} ${patientDetails.lastName} (Phone: ${patientDetails.phoneNumber})'
+                            : 'No Patient Info';
+
+                        final doctorText = doctorDetails != null
+                            ? 'Doctor: ${doctorDetails.name} (Phone: ${doctorDetails.contactInfo.phone})'
+                            : 'No Doctor Info';
+
                         return ListTile(
                           contentPadding: EdgeInsets.symmetric(vertical: 8.0),
                           title: Text(
-                            appointment.patientName!,
+                            patientText,
                             style: TextStyle(fontWeight: FontWeight.normal),
+                          ),
+                          subtitle: Text(
+                            '$doctorText\nReason: ${appointment.appointmentReason ?? 'No Reason'}',
                           ),
                           leading: Icon(Icons.access_time, color: Colors.teal),
                           tileColor: Colors.grey.shade100,
@@ -237,17 +278,27 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                           trailing: IconButton(
                             icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
+                              // Add logic to handle appointment deletion
                               setState(() {
-                                // After deleting, regroup appointments
-                                _groupAppointments();
+                                // Example: Removing an appointment from the grouped map
+                                _groupedAppointments[_selectedDay]
+                                    ?.removeAt(index);
+                                if (_groupedAppointments[_selectedDay]
+                                        ?.isEmpty ??
+                                    false) {
+                                  _groupedAppointments.remove(_selectedDay);
+                                }
                               });
+                              _logger
+                                  .i('Appointment deleted: ${appointment.id}');
                             },
                           ),
                           onTap: () {
                             setState(() {
-                              _selectedAppointment =
-                                  appointment; // Set selected appointment
+                              _selectedAppointment = appointment;
                             });
+                            _logger
+                                .i('Appointment selected: ${appointment.id}');
                           },
                         );
                       },
@@ -279,6 +330,8 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                             setState(() {
                               _selectedPatient = patient;
                             });
+                            _logger.i(
+                                'Patient selected: ${patient.firstName} ${patient.lastName}');
                           },
                         ),
                       ),
@@ -291,6 +344,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                             setState(() {
                               _selectedDoctor = doctor;
                             });
+                            _logger.i('Doctor selected: ${doctor['name']}');
                           },
                         ),
                       ),
@@ -344,17 +398,16 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
                                       ),
                                       onChanged: (value) {
                                         setState(() {
-                                          _notes[index] = Note(
-                                              content:
-                                                  value); // Update the note
+                                          _notes[index] = Note(content: value);
                                         });
+                                        _logger
+                                            .i('Note updated at index: $index');
                                       },
                                     ),
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () =>
-                                        _removeNote(index), // Remove the note
+                                    onPressed: () => _removeNote(index),
                                   ),
                                 ],
                               ),

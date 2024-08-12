@@ -1,6 +1,7 @@
 const appointmentService = require("../services/appointmentService");
 const Appointment = require("../models/Appointment");
 const Patient = require("../models/Patient");
+
 const getAllAppointments = async (req, res) => {
   try {
     const appointments = await appointmentService.getAllAppointments();

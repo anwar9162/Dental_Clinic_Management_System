@@ -153,7 +153,7 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
               });
             },
             cells: [
-              DataCell(Text(appointment.id)),
+              DataCell(Text(appointment.patient!)),
               DataCell(Text(appointment.patientName!)),
               DataCell(
                   Text(appointment.date.toLocal().toString().split(' ')[0])),
@@ -187,7 +187,7 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
         IconButton(
           icon: Icon(Icons.delete, color: Colors.red),
           onPressed: () {
-            provider.deleteAppointment(appointment.id);
+            provider.deleteAppointment(appointment.patient!);
           },
         ),
       ],

@@ -13,8 +13,12 @@ class AppointmentService {
     final response = await http.get(Uri.parse('$baseUrl/appointments'));
 
     if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.body);
-      return jsonResponse.map((data) => Appointment.fromJson(data)).toList();
+      print('Response Body: ${response.body}');
+      List jsonResponse = json.decode(response.body) as List;
+      return jsonResponse.map((data) {
+        print('Parsed Data: $data');
+        return Appointment.fromJson(data as Map<String, dynamic>);
+      }).toList();
     } else {
       throw Exception('Failed to load appointments');
     }
