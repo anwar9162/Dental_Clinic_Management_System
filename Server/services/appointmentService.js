@@ -1,7 +1,7 @@
 const Appointment = require("../models/Appointment");
 
 const getAllAppointments = async () => {
-  return await Appointment.find();
+  return await Appointment.find().populate('patient').populate('doctor');
 };
 
 const getAppointmentById = async (id) => {
