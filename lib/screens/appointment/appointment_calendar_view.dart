@@ -5,7 +5,7 @@ import '../../models/patient_model.dart';
 import 'patient_list_widget.dart';
 import 'doctor_list_widget.dart';
 
-class AppointmentCalendarView extends StatelessWidget {
+class AppointmentCalendarView extends StatefulWidget {
   final DateTime focusedDay;
   final DateTime? selectedDay;
   final Map<DateTime, List<Appointment>> groupedAppointments;
@@ -22,8 +22,7 @@ class AppointmentCalendarView extends StatelessWidget {
   final Function(int) onRemoveNote;
   final Function onAddNewAppointment;
   final Function(Appointment) onAppointmentTap;
-  final Function(String)
-      onDeleteAppointment; // Callback for deleting appointments
+  final Function(String) onDeleteAppointment;
 
   const AppointmentCalendarView({
     Key? key,
@@ -43,8 +42,30 @@ class AppointmentCalendarView extends StatelessWidget {
     required this.onRemoveNote,
     required this.onAddNewAppointment,
     required this.onAppointmentTap,
-    required this.onDeleteAppointment, // Initialize delete callback
+    required this.onDeleteAppointment,
   }) : super(key: key);
+
+  @override
+  _AppointmentCalendarViewState createState() =>
+      _AppointmentCalendarViewState();
+}
+
+class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
+  late TextEditingController _appointmentReasonController;
+
+  @override
+  void initState() {
+    super.initState();
+    _appointmentReasonController = TextEditingController(
+      text: widget.appointmentReason,
+    );
+  }
+
+  @override
+  void dispose() {
+    _appointmentReasonController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +86,11 @@ class AppointmentCalendarView extends StatelessWidget {
                     child: TableCalendar(
                       firstDay: DateTime.utc(2020, 10, 16),
                       lastDay: DateTime.utc(2030, 3, 14),
-                      focusedDay: focusedDay,
+                      focusedDay: widget.focusedDay,
                       selectedDayPredicate: (day) =>
-                          isSameDay(selectedDay, day),
-                      onDaySelected: onDaySelected,
-                      eventLoader: getAppointmentsForDay,
+                          isSameDay(widget.selectedDay, day),
+                      onDaySelected: widget.onDaySelected,
+                      eventLoader: widget.getAppointmentsForDay,
                       calendarStyle: CalendarStyle(
                         todayDecoration: BoxDecoration(
                           color: Colors.teal,
@@ -98,7 +119,7 @@ class AppointmentCalendarView extends StatelessWidget {
                       calendarBuilders: CalendarBuilders(
                         markerBuilder: (context, date, events) {
                           final appointmentCount =
-                              groupedAppointments[date]?.length ?? 0;
+                              widget.groupedAppointments[date]?.length ?? 0;
                           if (appointmentCount > 0) {
                             return Positioned(
                               right: 0,
@@ -128,11 +149,11 @@ class AppointmentCalendarView extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (selectedDay != null) ...[
+                if (widget.selectedDay != null) ...[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      '${getAppointmentsForDay(selectedDay!).length} Appointment(s) on ${selectedDay!.toLocal().toString().split(' ')[0]}',
+                      '${widget.getAppointmentsForDay(widget.selectedDay!).length} Appointment(s) on ${widget.selectedDay!.toLocal().toString().split(' ')[0]}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.0,
@@ -142,10 +163,12 @@ class AppointmentCalendarView extends StatelessWidget {
                   Expanded(
                     child: ListView.builder(
                       padding: EdgeInsets.all(8.0),
-                      itemCount: getAppointmentsForDay(selectedDay!).length,
+                      itemCount: widget
+                          .getAppointmentsForDay(widget.selectedDay!)
+                          .length,
                       itemBuilder: (context, index) {
-                        final appointment =
-                            getAppointmentsForDay(selectedDay!)[index];
+                        final appointment = widget
+                            .getAppointmentsForDay(widget.selectedDay!)[index];
                         final patientDetails = appointment.patientDetails;
                         final doctorDetails = appointment.doctorDetails;
 
@@ -176,10 +199,10 @@ class AppointmentCalendarView extends StatelessWidget {
                             icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
                               // Use the onDeleteAppointment callback to delete the appointment
-                              onDeleteAppointment(appointment.id!);
+                              widget.onDeleteAppointment(appointment.id!);
                             },
                           ),
-                          onTap: () => onAppointmentTap(appointment),
+                          onTap: () => widget.onAppointmentTap(appointment),
                         );
                       },
                     ),
@@ -206,7 +229,7 @@ class AppointmentCalendarView extends StatelessWidget {
                       Container(
                         height: MediaQuery.of(context).size.height * 0.2,
                         child: PatientListWidget(
-                          onPatientSelected: onPatientSelected,
+                          onPatientSelected: widget.onPatientSelected,
                         ),
                       ),
                       SizedBox(height: 16.0),
@@ -214,22 +237,22 @@ class AppointmentCalendarView extends StatelessWidget {
                       Container(
                         height: MediaQuery.of(context).size.height * 0.2,
                         child: DoctorListWidget(
-                          onDoctorSelected: onDoctorSelected,
+                          onDoctorSelected: widget.onDoctorSelected,
                         ),
                       ),
                       SizedBox(height: 16.0),
                       // Display selected patient info
-                      if (selectedPatient != null) ...[
+                      if (widget.selectedPatient != null) ...[
                         Text(
-                          'Patient: ${selectedPatient!.firstName} ${selectedPatient!.lastName}, Patient ID: ${selectedPatient!.id!}',
+                          'Patient: ${widget.selectedPatient!.firstName} ${widget.selectedPatient!.lastName}, Patient ID: ${widget.selectedPatient!.id!}',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 8.0),
                       ],
                       // Display selected doctor info
-                      if (selectedDoctor != null) ...[
+                      if (widget.selectedDoctor != null) ...[
                         Text(
-                          'Doctor: ${selectedDoctor!['name']}, Doctor ID: ${selectedDoctor!['_id']}',
+                          'Doctor: ${widget.selectedDoctor!['name']}, Doctor ID: ${widget.selectedDoctor!['_id']}',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 8.0),
@@ -239,14 +262,13 @@ class AppointmentCalendarView extends StatelessWidget {
                           labelText: 'Appointment Reason',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: onAppointmentReasonChanged,
-                        controller:
-                            TextEditingController(text: appointmentReason),
+                        onChanged: widget.onAppointmentReasonChanged,
+                        controller: _appointmentReasonController,
                       ),
                       SizedBox(height: 16.0),
                       Column(
                         children: [
-                          ...notes.asMap().entries.map((entry) {
+                          ...widget.notes.asMap().entries.map((entry) {
                             final index = entry.key;
                             final note = entry.value;
                             return ListTile(
@@ -255,26 +277,26 @@ class AppointmentCalendarView extends StatelessWidget {
                                     labelText: 'Note ${index + 1}'),
                                 onChanged: (value) {
                                   // Update note content
-                                  notes[index] = Note(content: value);
+                                  widget.notes[index] = Note(content: value);
                                 },
                                 controller:
                                     TextEditingController(text: note.content),
                               ),
                               trailing: IconButton(
                                 icon: Icon(Icons.delete),
-                                onPressed: () => onRemoveNote(index),
+                                onPressed: () => widget.onRemoveNote(index),
                               ),
                             );
                           }).toList(),
                           ElevatedButton(
-                            onPressed: () => onAddNote(),
+                            onPressed: () => widget.onAddNote(),
                             child: Text('Add Note'),
                           ),
                         ],
                       ),
                       SizedBox(height: 24.0),
                       ElevatedButton(
-                        onPressed: () => onAddNewAppointment(),
+                        onPressed: () => widget.onAddNewAppointment(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF6ABEDC),
                           padding: EdgeInsets.symmetric(
