@@ -46,6 +46,9 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       final appointment =
           await _appointmentService.createAppointment(event.appointment);
       emit(AppointmentSuccess(appointment));
+
+      // Optionally fetch all appointments after creating a new one
+      emit(AppointmentLoaded(await _appointmentService.getAllAppointments()));
     } catch (e) {
       emit(AppointmentError('Failed to create appointment: ${e.toString()}'));
     }

@@ -33,6 +33,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  bson:
+    dependency: "direct main"
+    description:
+      name: bson
+      sha256: "5a286c4cb9944ab21287579d1f664eb8300daa91d80938349b1a244d165a6ba5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.4"
   characters:
     dependency: transitive
     description:
@@ -89,6 +97,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.15"
+  decimal:
+    dependency: transitive
+    description:
+      name: decimal
+      sha256: "24a261d5d5c87e86c7651c417a5dbdf8bcd7080dd592533910e8d0505a279f21"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.3"
   device_info_plus:
     dependency: transitive
     description:
@@ -504,6 +520,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.14"
+  packages_extensions:
+    dependency: transitive
+    description:
+      name: packages_extensions
+      sha256: "268108a92be955e33a58cf6492e289e43ef55a50c89fa64947f032f5cefeb3fc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   path:
     dependency: transitive
     description:
@@ -600,6 +624,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  power_extensions:
+    dependency: transitive
+    description:
+      name: power_extensions
+      sha256: ad0e8b2420090d996fe8b7fd32cdf02b9b924b6d4fc0fb0b559ff6aa5e24d5b0
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
   provider:
     dependency: "direct main"
     description:
@@ -608,6 +640,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.2"
+  rational:
+    dependency: transitive
+    description:
+      name: rational
+      sha256: cb808fb6f1a839e6fc5f7d8cb3b0a10e1db48b3be102de73938c627f0b636336
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.3"
   simple_gesture_detector:
     dependency: transitive
     description:

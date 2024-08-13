@@ -30,8 +30,17 @@ const createAppointment = async (req, res) => {
     console.log("Creating appointment");
     console.log(`Body: ${JSON.stringify(req.body)}`);
     const newAppointment = await appointmentService.createAppointment(req.body);
+
+    // Check if newAppointment has the required fields populated
+    if (!newAppointment) {
+      console.error("No appointment created");
+      return res.status(500).json({ error: "Appointment not created" });
+    }
+
     res.status(201).json(newAppointment);
+    console.log(`Response: ${JSON.stringify(newAppointment)}`);
   } catch (error) {
+    console.error("Error creating appointment:", error);
     res.status(500).json({ error: error.message });
   }
 };

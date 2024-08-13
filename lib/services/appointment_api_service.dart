@@ -35,14 +35,23 @@ class AppointmentService {
   }
 
   Future<Appointment> createAppointment(Appointment appointment) async {
-    print('Creating appointment with data: ${appointment.toJson()}');
+    // Prepare the custom JSON body for the API request
+    final Map<String, dynamic> body = {
+      'patient': appointment.patient,
+      'doctor': appointment.doctor,
+      'date': appointment.date.toIso8601String(),
+      'appointmentReason': appointment.appointmentReason,
+      'notes': appointment.notes?.map((note) => note.toJson()).toList() ?? [],
+    };
+
+    print('Creating appointment with data: $body'); // Print the custom body
 
     final response = await http.post(
       Uri.parse('$baseUrl/appointments'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: json.encode(appointment.toJson()),
+      body: json.encode(body), // Use the custom body here
     );
 
     if (response.statusCode == 201) {

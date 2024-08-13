@@ -10,7 +10,15 @@ const getAppointmentById = async (id) => {
 
 const createAppointment = async (appointmentData) => {
   const newAppointment = new Appointment(appointmentData);
-  return await newAppointment.save();
+  const savedAppointment = await newAppointment.save();
+
+  const populatedAppointment = await Appointment.findById(savedAppointment._id)
+    .populate('patient') // Ensure 'patient' is a valid reference
+    .populate('doctor');  // Ensure 'doctor' is a valid reference
+
+  console.log('Populated Appointment:', populatedAppointment); // Debug line
+
+  return populatedAppointment; // Return the populated appointment
 };
 
 const updateAppointment = async (id, appointmentData) => {

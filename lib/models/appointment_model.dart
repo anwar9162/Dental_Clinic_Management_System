@@ -20,14 +20,14 @@ class Note {
     return Note(
       content: json['content'] as String? ?? '',
       createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
+          ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
           : DateTime.now(),
     );
   }
 }
 
 class Appointment {
-  final String id;
+  final String? id;
   final String? patientName;
   final String? doctorName;
   final String? doctorid;
@@ -46,7 +46,7 @@ class Appointment {
   final DateTime? updatedAt;
 
   Appointment({
-    required this.id,
+    this.id,
     this.patientDetails,
     this.patientName,
     this.doctorName,
@@ -68,13 +68,13 @@ class Appointment {
   Map<String, dynamic> toJson() {
     return {
       '_id': id,
-      'patientDetails': patientDetails?.toJson(),
-      'doctorDetails': doctorDetails?.toJson(),
+      'patientDetails': patientDetails?.toJson() ?? {},
+      'doctorDetails': doctorDetails?.toJson() ?? {},
       'date': date.toIso8601String(),
       'patient': patient,
       'doctor': doctor,
       'appointmentReason': appointmentReason,
-      'notes': notes?.map((note) => note.toJson()).toList(),
+      'notes': notes?.map((note) => note.toJson()).toList() ?? [],
       'firstVisitDate': firstVisitDate?.toIso8601String(),
       'lastTreatment': lastTreatment,
       'currentAppointmentReason': currentAppointmentReason,
@@ -93,24 +93,25 @@ class Appointment {
       doctorDetails: json['doctor'] != null
           ? DoctorDetails.fromJson(json['doctor'] as Map<String, dynamic>)
           : null,
-      date: DateTime.parse(
-          json['date'] as String? ?? DateTime.now().toIso8601String()),
+      date: DateTime.tryParse(
+              json['date'] as String? ?? DateTime.now().toIso8601String()) ??
+          DateTime.now(),
       appointmentReason: json['appointmentReason'] as String?,
       notes: json['notes'] != null
           ? List<Note>.from((json['notes'] as List)
               .map((note) => Note.fromJson(note as Map<String, dynamic>)))
-          : null,
+          : [],
       firstVisitDate: json['firstVisitDate'] != null
-          ? DateTime.parse(json['firstVisitDate'] as String)
+          ? DateTime.tryParse(json['firstVisitDate'] as String) ?? null
           : null,
       lastTreatment: json['lastTreatment'] as String?,
       currentAppointmentReason: json['currentAppointmentReason'] as String?,
       status: json['status'] as String?,
       createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
+          ? DateTime.tryParse(json['createdAt'] as String) ?? null
           : null,
       updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'] as String)
+          ? DateTime.tryParse(json['updatedAt'] as String) ?? null
           : null,
     );
   }
@@ -121,7 +122,7 @@ class PatientDetails {
   final String firstName;
   final String lastName;
   final String phoneNumber;
-  final String gender; // Fixed casing
+  final String gender;
   final DateTime dateOfBirth;
   final String address;
   final List<dynamic> visitHistory;
@@ -153,7 +154,7 @@ class PatientDetails {
       'firstName': firstName,
       'lastName': lastName,
       'phoneNumber': phoneNumber,
-      'gender': gender, // Fixed casing
+      'gender': gender,
       'dateOfBirth': dateOfBirth.toIso8601String(),
       'address': address,
       'visitHistory': visitHistory,
@@ -172,8 +173,9 @@ class PatientDetails {
       lastName: json['lastName'] as String? ?? '',
       phoneNumber: json['phoneNumber'] as String? ?? '',
       gender: json['gender'] as String? ?? '',
-      dateOfBirth: DateTime.parse(
-          json['dateOfBirth'] as String? ?? DateTime.now().toIso8601String()),
+      dateOfBirth: DateTime.tryParse(json['dateOfBirth'] as String? ??
+              DateTime.now().toIso8601String()) ??
+          DateTime.now(),
       address: json['address'] as String? ?? '',
       visitHistory: List<dynamic>.from(json['visitHistory'] as List? ?? []),
       medicalHistory: List<dynamic>.from(json['medicalHistory'] as List? ?? []),
@@ -220,19 +222,19 @@ class DoctorDetails {
 
 class ContactInfo {
   final String phone;
-  final String gender; // Fixed casing
+  final String gender;
   final String address;
 
   ContactInfo({
     required this.phone,
-    required this.gender, // Fixed casing
+    required this.gender,
     required this.address,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'phone': phone,
-      'gender': gender, // Fixed casing
+      'gender': gender,
       'address': address,
     };
   }
