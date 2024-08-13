@@ -22,6 +22,8 @@ class AppointmentCalendarView extends StatelessWidget {
   final Function(int) onRemoveNote;
   final Function onAddNewAppointment;
   final Function(Appointment) onAppointmentTap;
+  final Function(String)
+      onDeleteAppointment; // Callback for deleting appointments
 
   const AppointmentCalendarView({
     Key? key,
@@ -41,6 +43,7 @@ class AppointmentCalendarView extends StatelessWidget {
     required this.onRemoveNote,
     required this.onAddNewAppointment,
     required this.onAppointmentTap,
+    required this.onDeleteAppointment, // Initialize delete callback
   }) : super(key: key);
 
   @override
@@ -172,8 +175,8 @@ class AppointmentCalendarView extends StatelessWidget {
                           trailing: IconButton(
                             icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
-                              // Add logic to handle appointment deletion
-                              // Logic for deletion can be added here
+                              // Use the onDeleteAppointment callback to delete the appointment
+                              onDeleteAppointment(appointment.id!);
                             },
                           ),
                           onTap: () => onAppointmentTap(appointment),

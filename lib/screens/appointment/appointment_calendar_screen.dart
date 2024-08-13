@@ -135,8 +135,6 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
           context
               .read<AppointmentBloc>()
               .add(CreateAppointment(newAppointment));
-          // Fetch all appointments to update the UI
-          context.read<AppointmentBloc>().add(FetchAllAppointments());
         },
       );
     } else {
@@ -152,10 +150,9 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
     setState(() {
       final newNote = Note(content: '');
       _notes.add(newNote);
-      _logger.i(
-          'New note added: ${newNote.toJson()}'); // Log the new note's content
-      _logger.i(
-          'Current notes: ${_notes.map((note) => note.toJson()).toList()}'); // Log all notes
+      _logger.i('New note added: ${newNote.toJson()}');
+      _logger
+          .i('Current notes: ${_notes.map((note) => note.toJson()).toList()}');
     });
   }
 
@@ -164,6 +161,12 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
       _notes.removeAt(index);
       _logger.i('Note removed at index: $index');
     });
+  }
+
+  void _deleteAppointment(String appointmentId) {
+    context.read<AppointmentBloc>().add(DeleteAppointment(appointmentId));
+    // Optionally fetch all appointments to update the UI
+    context.read<AppointmentBloc>().add(FetchAllAppointments());
   }
 
   @override
@@ -210,6 +213,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         });
         _logger.i('Appointment selected: ${appointment.id}');
       },
+      onDeleteAppointment: _deleteAppointment, // Pass the delete callback
     );
   }
 }

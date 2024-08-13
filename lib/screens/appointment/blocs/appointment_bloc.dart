@@ -71,7 +71,10 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
     emit(AppointmentLoading());
     try {
       await _appointmentService.deleteAppointment(event.id);
-      emit(AppointmentInitial()); // Optionally refresh or notify deletion
+
+      // Fetch all appointments after deletion
+      final appointments = await _appointmentService.getAllAppointments();
+      emit(AppointmentLoaded(appointments));
     } catch (e) {
       emit(AppointmentError('Failed to delete appointment: ${e.toString()}'));
     }
