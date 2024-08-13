@@ -237,44 +237,35 @@ class AppointmentCalendarView extends StatelessWidget {
                           border: OutlineInputBorder(),
                         ),
                         onChanged: onAppointmentReasonChanged,
+                        controller:
+                            TextEditingController(text: appointmentReason),
                       ),
                       SizedBox(height: 16.0),
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Notes:',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
                           ...notes.asMap().entries.map((entry) {
-                            int index = entry.key;
-                            Note note = entry.value;
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      decoration: InputDecoration(
-                                        labelText: 'Note ${index + 1}',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      onChanged: (value) {
-                                        // Update note in parent
-                                      },
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () => onRemoveNote(index),
-                                  ),
-                                ],
+                            final index = entry.key;
+                            final note = entry.value;
+                            return ListTile(
+                              title: TextField(
+                                decoration: InputDecoration(
+                                    labelText: 'Note ${index + 1}'),
+                                onChanged: (value) {
+                                  // Update note content
+                                  notes[index] = Note(content: value);
+                                },
+                                controller:
+                                    TextEditingController(text: note.content),
+                              ),
+                              trailing: IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () => onRemoveNote(index),
                               ),
                             );
                           }).toList(),
-                          ElevatedButton.icon(
-                            icon: Icon(Icons.add, color: Colors.white),
-                            label: Text('Add Note'),
+                          ElevatedButton(
                             onPressed: () => onAddNote(),
+                            child: Text('Add Note'),
                           ),
                         ],
                       ),

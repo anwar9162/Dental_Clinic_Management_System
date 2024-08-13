@@ -69,7 +69,6 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         setState(() {
           _selectedPatient = null;
           _selectedDoctor = null;
-
           _appointmentReason = null;
           _notes.clear();
         });
@@ -106,6 +105,10 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
     if (_selectedPatient != null &&
         _selectedDay != null &&
         _selectedDoctor != null) {
+      // Log the notes before creating the appointment
+      _logger.i(
+          'Notes before creating appointment: ${_notes.map((note) => note.content).toList()}');
+
       showConfirmAppointmentDialog(
         context: context,
         selectedPatient: _selectedPatient!,
@@ -124,6 +127,9 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
             patient: _selectedPatient!.id,
             doctor: _selectedDoctor!['_id'],
           );
+
+          // Log the new appointment details
+          _logger.i('Creating new appointment: ${newAppointment.toJson()}');
 
           // Dispatch the CreateAppointment event
           context
@@ -144,8 +150,12 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
 
   void _addNote() {
     setState(() {
-      _notes.add(Note(content: ''));
-      _logger.i('New note added.');
+      final newNote = Note(content: '');
+      _notes.add(newNote);
+      _logger.i(
+          'New note added: ${newNote.toJson()}'); // Log the new note's content
+      _logger.i(
+          'Current notes: ${_notes.map((note) => note.toJson()).toList()}'); // Log all notes
     });
   }
 
