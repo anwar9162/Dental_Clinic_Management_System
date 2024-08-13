@@ -17,6 +17,7 @@ class AppointmentCalendarView extends StatefulWidget {
   final Function(Map<String, dynamic>) onDoctorSelected;
   final String? appointmentReason;
   final Function(String) onAppointmentReasonChanged;
+
   final List<Note> notes;
   final Function onAddNote;
   final Function(int) onRemoveNote;
@@ -57,7 +58,7 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
   void initState() {
     super.initState();
     _appointmentReasonController = TextEditingController(
-      text: widget.appointmentReason,
+      text: widget.appointmentReason ?? '',
     );
   }
 
@@ -65,6 +66,14 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
   void dispose() {
     _appointmentReasonController.dispose();
     super.dispose();
+  }
+
+  void _clearAppointmentReason() {
+    setState(() {
+      _appointmentReasonController.clear(); // Clear the controller's text
+      widget
+          .onAppointmentReasonChanged(''); // Update the state via the callback
+    });
   }
 
   @override
@@ -118,15 +127,19 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                       ),
                       calendarBuilders: CalendarBuilders(
                         markerBuilder: (context, date, events) {
-                          final appointmentCount =
-                              widget.groupedAppointments[date]?.length ?? 0;
+                          final normalizedDate = _normalizeDate(date);
+                          final appointmentCount = widget
+                                  .groupedAppointments[normalizedDate]
+                                  ?.length ??
+                              0;
+
                           if (appointmentCount > 0) {
                             return Positioned(
-                              right: 0,
-                              bottom: 0,
+                              right: 22.0,
+                              bottom: 15.0,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.teal,
+                                  color: Color.fromARGB(255, 255, 230, 38),
                                   shape: BoxShape.circle,
                                 ),
                                 padding: EdgeInsets.all(4.0),
@@ -134,8 +147,9 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                                   child: Text(
                                     appointmentCount.toString(),
                                     style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12.0,
+                                      color:
+                                          const Color.fromARGB(255, 20, 17, 17),
+                                      fontSize: 16.0,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -172,7 +186,6 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                         final patientDetails = appointment.patientDetails;
                         final doctorDetails = appointment.doctorDetails;
 
-                        // Build patient and doctor details text
                         final patientText = patientDetails != null
                             ? '${patientDetails.firstName} ${patientDetails.lastName} (Phone: ${patientDetails.phoneNumber})'
                             : 'No Patient Info';
@@ -198,7 +211,6 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                           trailing: IconButton(
                             icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
-                              // Use the onDeleteAppointment callback to delete the appointment
                               widget.onDeleteAppointment(appointment.id!);
                             },
                           ),
@@ -225,7 +237,6 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Patient selection
                       Container(
                         height: MediaQuery.of(context).size.height * 0.2,
                         child: PatientListWidget(
@@ -233,7 +244,6 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                         ),
                       ),
                       SizedBox(height: 16.0),
-                      // Doctor selection
                       Container(
                         height: MediaQuery.of(context).size.height * 0.2,
                         child: DoctorListWidget(
@@ -241,7 +251,6 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                         ),
                       ),
                       SizedBox(height: 16.0),
-                      // Display selected patient info
                       if (widget.selectedPatient != null) ...[
                         Text(
                           'Patient: ${widget.selectedPatient!.firstName} ${widget.selectedPatient!.lastName}, Patient ID: ${widget.selectedPatient!.id!}',
@@ -249,7 +258,6 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                         ),
                         SizedBox(height: 8.0),
                       ],
-                      // Display selected doctor info
                       if (widget.selectedDoctor != null) ...[
                         Text(
                           'Doctor: ${widget.selectedDoctor!['name']}, Doctor ID: ${widget.selectedDoctor!['_id']}',
@@ -258,12 +266,12 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                         SizedBox(height: 8.0),
                       ],
                       TextField(
+                        controller: _appointmentReasonController,
                         decoration: InputDecoration(
                           labelText: 'Appointment Reason',
                           border: OutlineInputBorder(),
                         ),
                         onChanged: widget.onAppointmentReasonChanged,
-                        controller: _appointmentReasonController,
                       ),
                       SizedBox(height: 16.0),
                       Column(
@@ -321,5 +329,9 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
         ],
       ),
     );
+  }
+
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
   }
 }

@@ -23,8 +23,7 @@ class AppointmentCalendarScreen extends StatefulWidget {
 }
 
 class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
-  final Logger _logger = Logger(); // Logger instance
-
+  final Logger _logger = Logger();
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   Patient? _selectedPatient;
@@ -34,11 +33,12 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
   String? _appointmentReason;
   List<Note> _notes = [];
   Map<DateTime, List<Appointment>> _groupedAppointments = {};
+  final TextEditingController _appointmentReasonController =
+      TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // Load patients and doctors on initialization
     context.read<PatientBloc>().add(LoadPatients());
     context.read<DoctorBloc>().add(FetchAllDoctors());
     context.read<AppointmentBloc>().add(FetchAllAppointments());
@@ -56,8 +56,6 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         _logger.e('Error loading appointments: ${state.message}');
       } else if (state is AppointmentSuccess) {
         _logger.i('Appointment successfully created: ${state.appointment.id}');
-
-        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Appointment created successfully!'),
@@ -69,21 +67,37 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         setState(() {
           _selectedPatient = null;
           _selectedDoctor = null;
-          _appointmentReason = null;
           _notes.clear();
+          _appointmentReason = '';
         });
 
-        // Fetch all appointments to update the UI
+        // Explicitly clear the TextEditingController and synchronize with _appointmentReason
+        _appointmentReasonController.clear();
+        setState(() {
+          _appointmentReason = _appointmentReasonController.text;
+        });
+
+        // Fetch updated appointments
         context.read<AppointmentBloc>().add(FetchAllAppointments());
       }
     });
   }
 
+  void _updateAppointmentReason(String value) {
+    setState(() {
+      _appointmentReason = value;
+      _appointmentReasonController.text = value;
+    });
+  }
+
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
   void _groupAppointments(List<Appointment> appointments) {
     final grouped = <DateTime, List<Appointment>>{};
     for (var appointment in appointments) {
-      final date = DateTime(
-          appointment.date.year, appointment.date.month, appointment.date.day);
+      final date = _normalizeDate(appointment.date);
       if (grouped[date] == null) {
         grouped[date] = [];
       }
@@ -97,7 +111,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
   }
 
   List<Appointment> _getAppointmentsForDay(DateTime day) {
-    final date = DateTime(day.year, day.month, day.day);
+    final date = _normalizeDate(day);
     return _groupedAppointments[date] ?? [];
   }
 
@@ -105,7 +119,6 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
     if (_selectedPatient != null &&
         _selectedDay != null &&
         _selectedDoctor != null) {
-      // Log the notes before creating the appointment
       _logger.i(
           'Notes before creating appointment: ${_notes.map((note) => note.content).toList()}');
 
@@ -128,10 +141,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
             doctor: _selectedDoctor!['_id'],
           );
 
-          // Log the new appointment details
           _logger.i('Creating new appointment: ${newAppointment.toJson()}');
-
-          // Dispatch the CreateAppointment event
           context
               .read<AppointmentBloc>()
               .add(CreateAppointment(newAppointment));
@@ -151,8 +161,6 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
       final newNote = Note(content: '');
       _notes.add(newNote);
       _logger.i('New note added: ${newNote.toJson()}');
-      _logger
-          .i('Current notes: ${_notes.map((note) => note.toJson()).toList()}');
     });
   }
 
@@ -165,7 +173,6 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
 
   void _deleteAppointment(String appointmentId) {
     context.read<AppointmentBloc>().add(DeleteAppointment(appointmentId));
-    // Optionally fetch all appointments to update the UI
     context.read<AppointmentBloc>().add(FetchAllAppointments());
   }
 
@@ -198,11 +205,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         _logger.i('Doctor selected: ${doctor['name']}');
       },
       appointmentReason: _appointmentReason,
-      onAppointmentReasonChanged: (value) {
-        setState(() {
-          _appointmentReason = value;
-        });
-      },
+      onAppointmentReasonChanged: _updateAppointmentReason,
       notes: _notes,
       onAddNote: _addNote,
       onRemoveNote: _removeNote,
@@ -213,7 +216,7 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         });
         _logger.i('Appointment selected: ${appointment.id}');
       },
-      onDeleteAppointment: _deleteAppointment, // Pass the delete callback
+      onDeleteAppointment: _deleteAppointment,
     );
   }
 }
