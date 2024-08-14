@@ -214,7 +214,8 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
         setState(() {
           _selectedAppointment = appointment;
         });
-        _logger.i('Appointment selected: ${appointment.id}');
+        _logger.i(
+            'Appointment selected: ${(appointment.patientDetails!).toJson()}');
       },
       onDeleteAppointment: _deleteAppointment,
     );

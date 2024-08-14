@@ -26,7 +26,7 @@ class CustomNavigationDrawer extends StatelessWidget {
               color: primaryColor, // Match the drawer color
             ),
             child: Text(
-              'Dental Management',
+              'DentAssist',
               style: TextStyle(
                 color: Colors.white, // Text color
                 fontSize: 24,

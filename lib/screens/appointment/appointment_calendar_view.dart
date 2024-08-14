@@ -102,7 +102,7 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                       eventLoader: widget.getAppointmentsForDay,
                       calendarStyle: CalendarStyle(
                         todayDecoration: BoxDecoration(
-                          color: Colors.teal,
+                          color: const Color.fromARGB(255, 162, 224, 218),
                           shape: BoxShape.circle,
                         ),
                         selectedDecoration: BoxDecoration(
@@ -253,15 +253,15 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
                       SizedBox(height: 16.0),
                       if (widget.selectedPatient != null) ...[
                         Text(
-                          'Patient: ${widget.selectedPatient!.firstName} ${widget.selectedPatient!.lastName}, Patient ID: ${widget.selectedPatient!.id!}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          'Patient: ${widget.selectedPatient!.firstName} ${widget.selectedPatient!.lastName}',
+                          style: TextStyle(fontWeight: FontWeight.normal),
                         ),
                         SizedBox(height: 8.0),
                       ],
                       if (widget.selectedDoctor != null) ...[
                         Text(
-                          'Doctor: ${widget.selectedDoctor!['name']}, Doctor ID: ${widget.selectedDoctor!['_id']}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          'Doctor: ${widget.selectedDoctor!['name']}',
+                          style: TextStyle(fontWeight: FontWeight.normal),
                         ),
                         SizedBox(height: 8.0),
                       ],
