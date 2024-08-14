@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../models/appointment_model.dart';
 import '../../providers/appointment_provider.dart';
 import './appointment_calendar_screen.dart';
-import '../../widgets/navigation_drawer.dart';
 
 class AppointmentListScreen extends StatefulWidget {
   @override
@@ -153,11 +152,10 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
               });
             },
             cells: [
-              DataCell(Text(appointment.patient!)),
-              DataCell(Text(appointment.patientName!)),
-              DataCell(
-                  Text(appointment.date.toLocal().toString().split(' ')[0])),
-              DataCell(Text(appointment.doctorName!)),
+              DataCell(Text('1')),
+              DataCell(Text('Anwar')),
+              DataCell(Text('2024-08-12')),
+              DataCell(Text('Anwar')),
               DataCell(_buildActionButtons(context, appointment, provider)),
             ],
           );
@@ -206,12 +204,10 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
-          _buildDetailRow(
-              Icons.person, 'Patient Name: ${appointment.patientName}'),
+          _buildDetailRow(Icons.person, 'Patient Name: Anwar'),
           _buildDetailRow(Icons.calendar_today,
               'Date: ${appointment.date.toLocal().toString().split(' ')[0]}'),
-          _buildDetailRow(
-              Icons.medical_services, 'Doctor Name: ${appointment.doctorName}'),
+          _buildDetailRow(Icons.medical_services, 'Doctor Name: Anwar'),
           SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
