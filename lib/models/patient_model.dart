@@ -29,6 +29,9 @@ class Patient {
   final String? firstName;
   final String? lastName;
   final String? phoneNumber;
+  final String? gender;
+  final DateTime? dateOfBirth;
+  final String? Address;
   final DateTime? firstVisitDate;
   final List<Tooth>? dentalChart;
   final List<PatientImage>?
@@ -40,6 +43,9 @@ class Patient {
     required this.firstName,
     required this.lastName,
     required this.phoneNumber,
+    this.gender,
+    this.dateOfBirth,
+    this.Address,
     this.firstVisitDate,
     this.dentalChart,
     this.progressImages,
@@ -52,6 +58,11 @@ class Patient {
       firstName: json['firstName'],
       lastName: json['lastName'],
       phoneNumber: json['phoneNumber'],
+      gender: json['Gender'],
+      dateOfBirth: json['dateOfBirth'] != null
+          ? DateTime.parse(json['dateOfBirth'])
+          : null,
+      Address: json['Address'],
       firstVisitDate: json['dateOfBirth'] != null
           ? DateTime.parse(json['dateOfBirth'])
           : null,
