@@ -66,7 +66,8 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
   }
 
   Widget _buildPatientInfoSection(Patient patient, int daysSinceFirstVisit) {
-    final firstVisitDate = patient.firstVisitDate ?? DateTime.now();
+    final DateFormat dateFormat =
+        DateFormat('yyyy-MM-dd'); // Adjust the format as needed
 
     return Card(
       elevation: 4,
@@ -93,12 +94,15 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
                     ),
                   ),
                   SizedBox(height: 12),
-                  _buildInfoRow('First Visit:',
-                      DateFormat('yyyy-MM-dd').format(firstVisitDate)),
-                  _buildInfoRow('Last Treatment:', "No treatment"),
-                  _buildInfoRow('Current Appointment:', "Routine check"),
+                  _buildInfoRow('Phone:', patient.phoneNumber!),
+                  _buildInfoRow('Gender:', patient.gender!),
                   _buildInfoRow(
-                      'Days Since First Visit:', '$daysSinceFirstVisit days'),
+                    'DoB:',
+                    patient.dateOfBirth != null
+                        ? dateFormat.format(patient.dateOfBirth!)
+                        : 'N/A',
+                  ),
+                  _buildInfoRow('Address', patient.Address!),
                 ],
               ),
             ),
