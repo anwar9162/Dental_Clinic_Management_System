@@ -46,6 +46,7 @@ const createAppointment = async (req, res) => {
 };
 
 const updateAppointment = async (req, res) => {
+  console.log("Reached here");
   const { id } = req.params;
   const { status, newNotes } = req.body; // Assume newNotes is an array of note objects
 

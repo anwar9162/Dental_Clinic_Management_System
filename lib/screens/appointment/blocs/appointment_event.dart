@@ -26,16 +26,6 @@ class CreateAppointment extends AppointmentEvent {
   List<Object?> get props => [appointment];
 }
 
-class UpdateAppointment extends AppointmentEvent {
-  final String id;
-  final Appointment appointment;
-
-  UpdateAppointment(this.id, this.appointment);
-
-  @override
-  List<Object?> get props => [id, appointment];
-}
-
 class DeleteAppointment extends AppointmentEvent {
   final String id;
 

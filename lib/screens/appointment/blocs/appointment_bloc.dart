@@ -10,7 +10,6 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
     on<FetchAllAppointments>(_onFetchAllAppointments);
     on<FetchAppointmentById>(_onFetchAppointmentById);
     on<CreateAppointment>(_onCreateAppointment);
-    on<UpdateAppointment>(_onUpdateAppointment);
     on<DeleteAppointment>(_onDeleteAppointment);
     on<FetchTodaysAppointments>(_onFetchTodaysAppointments);
     on<FetchVisitHistory>(_onFetchVisitHistory);
@@ -51,18 +50,6 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       emit(AppointmentLoaded(await _appointmentService.getAllAppointments()));
     } catch (e) {
       emit(AppointmentError('Failed to create appointment: ${e.toString()}'));
-    }
-  }
-
-  Future<void> _onUpdateAppointment(
-      UpdateAppointment event, Emitter<AppointmentState> emit) async {
-    emit(AppointmentLoading());
-    try {
-      final appointment = await _appointmentService.updateAppointment(
-          event.id, event.appointment);
-      emit(AppointmentSuccess(appointment));
-    } catch (e) {
-      emit(AppointmentError('Failed to update appointment: ${e.toString()}'));
     }
   }
 

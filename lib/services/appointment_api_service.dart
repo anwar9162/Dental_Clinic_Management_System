@@ -62,24 +62,33 @@ class AppointmentService {
     }
   }
 
-  Future<Appointment> updateAppointment(
-      String id, Appointment appointment) async {
+  Future<void> updateAppointment(
+      String id, String status, List<Note> newNotes) async {
+    print('Updating appointment with ID: $id');
+    print('Base URL: $baseUrl');
+    print('Request Body: ${json.encode({
+          'status': status,
+          'newNotes': newNotes.map((note) => note.toJson()).toList(),
+        })}');
+
     final response = await http.put(
       Uri.parse('$baseUrl/appointments/$id'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: json.encode({
-        'appointmentReason': appointment.appointmentReason,
-        'notes': appointment.notes?.map((note) => note.toJson()).toList(),
-        // Include other fields you want to update
+        'status': status,
+        'newNotes': newNotes.map((note) => note.toJson()).toList(),
       }),
     );
 
     if (response.statusCode == 200) {
-      return Appointment.fromJson(json.decode(response.body));
+      print('Appointment updated successfully');
     } else {
-      throw Exception('Failed to update appointment');
+      print('Failed to update appointment: ${response.body}');
+      final errorResponse = json.decode(response.body);
+      throw Exception(
+          'Failed to update appointment: ${errorResponse['message']}');
     }
   }
 

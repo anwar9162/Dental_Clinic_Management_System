@@ -31,6 +31,7 @@ migrate_working_dir/
 .pub/
 /build/
 /Server/Images
+/Server/.env
 
 # Symbolication related
 app.*.symbols
