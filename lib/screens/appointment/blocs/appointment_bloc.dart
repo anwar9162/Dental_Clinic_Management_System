@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../services/appointment_api_service.dart';
 import 'appointment_event.dart';
 import 'appointment_state.dart';
+import '../../../models/appointment_model.dart';
 
 class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
   final AppointmentService _appointmentService;
@@ -46,8 +47,13 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
           await _appointmentService.createAppointment(event.appointment);
       emit(AppointmentSuccess(appointment));
 
-      // Optionally fetch all appointments after creating a new one
-      emit(AppointmentLoaded(await _appointmentService.getAllAppointments()));
+      // Update the loaded state with the newly created appointment
+      if (state is AppointmentLoaded) {
+        final currentState = state as AppointmentLoaded;
+        final updatedAppointments =
+            List<Appointment>.from(currentState.appointments)..add(appointment);
+        emit(AppointmentLoaded(updatedAppointments));
+      }
     } catch (e) {
       emit(AppointmentError('Failed to create appointment: ${e.toString()}'));
     }
@@ -55,13 +61,17 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
 
   Future<void> _onDeleteAppointment(
       DeleteAppointment event, Emitter<AppointmentState> emit) async {
-    emit(AppointmentLoading());
     try {
       await _appointmentService.deleteAppointment(event.id);
 
-      // Fetch all appointments after deletion
-      final appointments = await _appointmentService.getAllAppointments();
-      emit(AppointmentLoaded(appointments));
+      // Update the state by removing the deleted appointment
+      if (state is AppointmentLoaded) {
+        final currentState = state as AppointmentLoaded;
+        final updatedAppointments =
+            List<Appointment>.from(currentState.appointments)
+              ..removeWhere((appointment) => appointment.id == event.id);
+        emit(AppointmentLoaded(updatedAppointments));
+      }
     } catch (e) {
       emit(AppointmentError('Failed to delete appointment: ${e.toString()}'));
     }

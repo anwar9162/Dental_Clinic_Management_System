@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:data_table_2/data_table_2.dart';
 import '../../models/appointment_model.dart';
 import 'blocs/appointment_bloc.dart';
@@ -34,9 +35,7 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
       ),
       body: BlocBuilder<AppointmentBloc, AppointmentState>(
         builder: (context, state) {
-          if (state is AppointmentLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is AppointmentError) {
+          if (state is AppointmentError) {
             return Center(child: Text('Error: ${state.message}'));
           } else if (state is AppointmentLoaded) {
             final filteredAppointments =
@@ -61,7 +60,12 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
               ],
             );
           } else {
-            return Center(child: Text('No appointments available.'));
+            return Center(
+              child: SpinKitFadingCircle(
+                color: Colors.teal,
+                size: 50.0,
+              ),
+            );
           }
         },
       ),

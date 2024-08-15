@@ -10,6 +10,8 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
     on<FetchAllDoctors>(_onFetchAllDoctors);
     on<AddDoctor>(_onAddDoctor);
     on<DeleteDoctor>(_onDeleteDoctor);
+    on<FetchDoctorById>(
+        _onFetchDoctorById); // Add this to fetch a single doctor
   }
 
   Future<void> _onFetchAllDoctors(
@@ -24,11 +26,12 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
   }
 
   Future<void> _onAddDoctor(AddDoctor event, Emitter<DoctorState> emit) async {
-    emit(DoctorLoading());
+    emit(DoctorLoading()); // Emit loading state
     try {
       await apiService.createDoctor(event.doctorData);
       final doctors = await apiService.getAllDoctors();
-      emit(DoctorsLoaded(doctors));
+      emit(DoctorAdded()); // Emit success state
+      emit(DoctorsLoaded(doctors)); // Refresh doctor list
     } catch (e) {
       emit(DoctorError(e.toString()));
     }
@@ -36,11 +39,22 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
 
   Future<void> _onDeleteDoctor(
       DeleteDoctor event, Emitter<DoctorState> emit) async {
-    emit(DoctorLoading()); // Emit loading state while deleting
+    emit(DoctorLoading());
     try {
       await apiService.deleteDoctor(event.id);
-      add(FetchAllDoctors()); // Fetch all doctors to refresh the list
-      emit(DoctorDeleteSuccess()); // Emit success state after reload
+      emit(DoctorDeleteSuccess());
+      add(FetchAllDoctors()); // Refresh doctor list
+    } catch (e) {
+      emit(DoctorError(e.toString()));
+    }
+  }
+
+  Future<void> _onFetchDoctorById(
+      FetchDoctorById event, Emitter<DoctorState> emit) async {
+    emit(DoctorDetailLoading());
+    try {
+      final doctor = await apiService.getDoctorById(event.id);
+      emit(DoctorDetailLoaded(doctor));
     } catch (e) {
       emit(DoctorError(e.toString()));
     }

@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-// doctor_state.dart
 
 abstract class DoctorState extends Equatable {
   @override
@@ -41,8 +40,20 @@ class DoctorError extends DoctorState {
   List<Object?> get props => [message];
 }
 
-class DoctorAdded extends DoctorState {}
+class DoctorAdded extends DoctorState {
+  final String message; // Optional, for success message
 
-class DoctorDeleteSuccess extends DoctorState {} // New state for delete success
+  DoctorAdded([this.message = 'Doctor added successfully']);
 
+  @override
+  List<Object?> get props => [message];
+}
 
+class DoctorDeleteSuccess extends DoctorState {
+  final String message; // Optional, for success message
+
+  DoctorDeleteSuccess([this.message = 'Doctor deleted successfully']);
+
+  @override
+  List<Object?> get props => [message];
+}
