@@ -3,77 +3,123 @@ import 'package:intl/intl.dart';
 import 'build_info_row.dart'; // Import the new file
 import '../../models/patient_model.dart';
 
-class PatientInfoSection extends StatelessWidget {
+class PatientInfoSection extends StatefulWidget {
   final Patient patient;
 
   PatientInfoSection({required this.patient});
 
   @override
+  _PatientInfoSectionState createState() => _PatientInfoSectionState();
+}
+
+class _PatientInfoSectionState extends State<PatientInfoSection> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
-    final cardStatus = patient.cardStatus;
+    final cardStatus = widget.patient.cardStatus;
 
-    return Card(
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildProfileImage(),
-            SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildName(patient.firstName, patient.lastName),
-                  SizedBox(height: 16),
-                  _buildInfoRow('Phone:', patient.phoneNumber),
-                  _buildInfoRow('Gender:', patient.gender ?? 'N/A'),
-                  _buildInfoRow(
-                    'DoB:',
-                    patient.dateOfBirth != null
-                        ? dateFormat.format(patient.dateOfBirth!)
-                        : 'N/A',
-                  ),
-                  _buildInfoRow('Address:', patient.address ?? 'N/A'),
-                  _buildInfoRow(
-                    'Card Status:',
-                    cardStatus?.isActive ?? false ? 'Active' : 'Inactive',
-                  ),
-                  _buildInfoRow(
-                    'Expiration Date:',
-                    cardStatus?.expirationDate != null
-                        ? dateFormat.format(cardStatus!.expirationDate!)
-                        : 'N/A',
-                  ),
-                  _buildInfoRow(
-                    'Notes:',
-                    cardStatus?.notes ?? 'None',
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return Material(
+      elevation: 10,
+      borderRadius: BorderRadius.circular(20),
+      shadowColor: Colors.black.withOpacity(0.2),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              _buildHeader(),
+              _isExpanded
+                  ? _buildDetails(dateFormat, cardStatus)
+                  : SizedBox.shrink(),
+              _buildToggleExpandButton(),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      color: Colors.blueGrey[50],
+      child: Row(
+        children: [
+          _buildProfileImage(),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildName(widget.patient.firstName, widget.patient.lastName),
+                SizedBox(height: 8),
+                Text(
+                  widget.patient.phoneNumber ?? 'N/A',
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey[800]),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetails(DateFormat dateFormat, CardStatus? cardStatus) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildInfoRow('Gender:', widget.patient.gender ?? 'N/A'),
+          _buildInfoRow(
+            'DoB:',
+            widget.patient.dateOfBirth != null
+                ? dateFormat.format(widget.patient.dateOfBirth!)
+                : 'N/A',
+          ),
+          _buildInfoRow('Address:', widget.patient.address ?? 'N/A'),
+          _buildInfoRow(
+            'Card Status:',
+            cardStatus?.isActive ?? false ? 'Active' : 'Inactive',
+          ),
+          _buildInfoRow(
+            'Expiration Date:',
+            cardStatus?.expirationDate != null
+                ? dateFormat.format(cardStatus!.expirationDate!)
+                : 'N/A',
+          ),
+          _buildInfoRow(
+            'Notes:',
+            cardStatus?.notes ?? 'None',
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildProfileImage() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12.0),
-      child: Container(
-        width: 120,
-        height: 120,
-        color: Colors.grey[200],
-        child: FittedBox(
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.blueAccent, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipOval(
+        child: Image.asset(
+          'assets/images/user_profile_image.jpg',
           fit: BoxFit.cover,
-          child: Image.asset('assets/images/user_profile_image.jpg'),
         ),
       ),
     );
@@ -83,7 +129,7 @@ class PatientInfoSection extends StatelessWidget {
     return Text(
       '${firstName ?? 'Unknown'} ${lastName ?? 'Patient'}',
       style: TextStyle(
-        fontSize: 26,
+        fontSize: 20,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
       ),
@@ -103,6 +149,7 @@ class PatientInfoSection extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.blueGrey[800],
+                fontSize: 16,
               ),
             ),
           ),
@@ -110,10 +157,44 @@ class PatientInfoSection extends StatelessWidget {
             flex: 2,
             child: Text(
               value,
-              style: TextStyle(color: Colors.blueGrey[600]),
+              style: TextStyle(
+                color: Colors.blueGrey[600],
+                fontSize: 16,
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildToggleExpandButton() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isExpanded = !_isExpanded;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        color: Colors.blueGrey[100],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              _isExpanded ? Icons.expand_less : Icons.expand_more,
+              color: Colors.blueGrey[600],
+            ),
+            SizedBox(width: 8),
+            Text(
+              _isExpanded ? 'Show Less' : 'Show More',
+              style: TextStyle(
+                color: Colors.blueGrey[800],
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'build_info_row.dart'; // Import the new file
+
 import '../../models/patient_model.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class VisitHistorySection extends StatelessWidget {
   final List<Visit>? visits;
