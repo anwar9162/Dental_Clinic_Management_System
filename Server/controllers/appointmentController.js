@@ -60,14 +60,6 @@ const updateAppointment = async (req, res) => {
     if (status) {
       appointment.status = status;
 
-      // If status is changed to 'Completed', update patient visit history
-      if (status === "Completed") {
-        const patientRecord = await Patient.findById(appointment.patient);
-        if (patientRecord) {
-          patientRecord.visitHistory.push(appointment._id);
-          await patientRecord.save();
-        }
-      }
     }
 
     // Add new notes

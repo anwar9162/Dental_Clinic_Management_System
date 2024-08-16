@@ -67,10 +67,10 @@ class _MainScreenState extends State<MainScreen> {
                   case '/add-appointment':
                     builder = (context) => AddAppointmentScreen();
                     break;
-                  case '/patientrecord':
-                    builder = (context) =>
-                        PatientRecordScreen(patient: _arguments as Patient);
-                    break;
+                  //case '/patientrecord':
+                  //builder = (context) =>
+                  //  PatientRecordScreen(patient: _arguments as Patient);
+                  //break;
                   case '/Telemedicine':
                     builder = (context) => TelemedicineScreen();
                     break;

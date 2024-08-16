@@ -110,7 +110,6 @@ class CustomNavigationDrawer extends StatelessWidget {
                   firstName: "Kibrom",
                   lastName: "Adinew",
                   phoneNumber: "0712345678",
-                  firstVisitDate: DateTime(2023, 1, 1),
                 ),
               );
             },

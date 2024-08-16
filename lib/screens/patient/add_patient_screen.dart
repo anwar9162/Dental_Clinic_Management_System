@@ -48,8 +48,8 @@ class _AddPatientFormState extends State<_AddPatientForm> {
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
         'dateOfBirth': _dobController.text,
-        'Gender': _genderController.text,
-        'Address': _addressController.text,
+        'gender': _genderController.text,
+        'address': _addressController.text,
         'patientType': _patientType,
       };
 
@@ -108,7 +108,7 @@ class _AddPatientFormState extends State<_AddPatientForm> {
                                 'Date of Birth', _dobController),
                             SizedBox(height: 16),
                             _buildLabeledTextField(
-                                'Address', _addressController),
+                                'address', _addressController),
                             SizedBox(height: 24),
                             _buildActionButtons(),
                           ],

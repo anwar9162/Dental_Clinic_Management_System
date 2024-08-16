@@ -5,7 +5,7 @@ const getAllPatients = async () => {
 };
 
 const getPatientById = async (id) => {
-  return await Patient.findById(id);
+  return await Patient.findById(id).populate("visitHistory");
 };
 
 const createPatient = async (patientData) => {
@@ -21,10 +21,15 @@ const deletePatient = async (id) => {
   return await Patient.findByIdAndDelete(id);
 };
 
+const updateCardStatus = async (id, cardStatus) => {
+  return await Patient.findByIdAndUpdate(id, { "cardStatus": cardStatus }, { new: true });
+};
+
 module.exports = {
   getAllPatients,
   getPatientById,
   createPatient,
   updatePatient,
   deletePatient,
+  updateCardStatus
 };

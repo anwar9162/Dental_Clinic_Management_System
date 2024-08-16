@@ -1,4 +1,5 @@
 const Patient = require("../models/Patient");
+const Appointment = require("../models/Appointment");
 
 // Get all patients
 const getAllPatients = async (req, res) => {
@@ -13,7 +14,7 @@ const getAllPatients = async (req, res) => {
 // Get patient by ID
 const getPatientById = async (req, res) => {
   try {
-    const patient = await Patient.findById(req.params.id);
+    const patient = await Patient.findById(req.params.id).populate("visitHistory");
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
@@ -37,8 +38,6 @@ const getPatientByPhone = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-// Create new patient
 const createPatient = async (req, res) => {
   try {
     const { phoneNumber } = req.body;
@@ -51,14 +50,26 @@ const createPatient = async (req, res) => {
         .json({ message: "Patient with this phone number already exists" });
     }
 
-    // Create and save the new patient
-    const newPatient = new Patient(req.body);
+    // Calculate expiration date (6 months from now)
+    const sixMonthsFromNow = new Date();
+    sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
+
+    // Create and save the new patient with expiration date
+    const newPatient = new Patient({
+      ...req.body,
+      cardStatus: {
+        isActive: true,
+        expirationDate: sixMonthsFromNow,
+        notes: null
+      }
+    });
     await newPatient.save();
     res.status(201).json(newPatient);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Update patient
 const updatePatient = async (req, res) => {
@@ -247,95 +258,109 @@ const updatePayment = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-const addProgressImages = async (req, res) => {
-  console.log("Received request to add progress images.");
 
+// Add progress images
+const addProgressImages = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
-      console.log("Patient not found.");
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    console.log("Patient found:", patient._id);
-
-    // Extract dateCaptured from the request body
     const { dateCaptured } = req.body;
-
-    // Validate dateCaptured
     if (!dateCaptured || isNaN(new Date(dateCaptured).getTime())) {
-      console.log("Invalid dateCaptured format:", dateCaptured);
       return res.status(400).json({ message: "Invalid dateCaptured format" });
     }
 
-    console.log("Valid dateCaptured:", dateCaptured);
-
-    // Map uploaded files to include dateCaptured and only filename
-    const images = req.files.map((file) => {
-      console.log("Processing file:", file.originalname);
-      return {
-        dateCaptured: new Date(dateCaptured),
-        assetPath: file.filename, // Store only the filename
-        type: file.mimetype, // MIME type of the uploaded file
-      };
-    });
+    const images = req.files.map((file) => ({
+      dateCaptured: new Date(dateCaptured),
+      assetPath: file.filename,
+      type: file.mimetype,
+    }));
 
     patient.progressImages.push(...images);
     await patient.save();
 
-    console.log("Progress images added successfully.");
     res.status(201).json({ message: "Progress images added", patient });
   } catch (error) {
-    console.error("Error adding progress images:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
+// Add x-ray images
 const addXrayImages = async (req, res) => {
-  console.log("Received request to add x-ray images.");
-  console.log("Request files:", req.files); // Debugging output
-
-
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
-      console.log("Patient not found.");
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    console.log("Patient found:", patient._id);
-
-    // Extract dateCaptured from the request body
     const { dateCaptured } = req.body;
-
-    // Validate dateCaptured
     if (!dateCaptured || isNaN(new Date(dateCaptured).getTime())) {
-      console.log("Invalid dateCaptured format:", dateCaptured);
       return res.status(400).json({ message: "Invalid dateCaptured format" });
     }
 
-    console.log("Valid dateCaptured:", dateCaptured);
-
-    // Map uploaded files to include dateCaptured and only filename
-    const images = req.files.map((file) => {
-      console.log("Processing file:", file.originalname);
-      return {
-        dateCaptured: new Date(dateCaptured),
-        assetPath: file.filename, // Store only the filename
-        type: file.mimetype, // MIME type of the uploaded file
-      };
-    });
+    const images = req.files.map((file) => ({
+      dateCaptured: new Date(dateCaptured),
+      assetPath: file.filename,
+      type: file.mimetype,
+    }));
 
     patient.xrayImages.push(...images);
     await patient.save();
 
-    console.log("X-ray images added successfully.");
     res.status(201).json({ message: "X-ray images added", patient });
   } catch (error) {
-    console.error("Error adding x-ray images:", error);
     res.status(500).json({ error: error.message });
   }
 };
+// Add a visit record
+const addVisitRecord = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const visitData = req.body;
+
+    // Find the patient by ID
+    const patient = await Patient.findById(id);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    // Add the new visit record to the visitHistory
+    patient.visitHistory.push(visitData);
+    await patient.save();
+
+    res.status(201).json(patient);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const updateCardStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const cardStatusUpdates = req.body;
+
+    // Find the patient by ID
+    const patient = await Patient.findById(id);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    // Update only the provided fields in the cardStatus
+    if (cardStatusUpdates) {
+      Object.assign(patient.cardStatus, cardStatusUpdates);
+    }
+
+    await patient.save();
+
+    res.status(200).json(patient);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 
 module.exports = {
   getAllPatients,
@@ -352,4 +377,6 @@ module.exports = {
   updatePayment,
   addProgressImages,
   addXrayImages,
+  addVisitRecord,
+  updateCardStatus,
 };

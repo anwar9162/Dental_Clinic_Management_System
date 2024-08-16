@@ -16,7 +16,6 @@ class _HomeScreenState extends State<HomeScreen> {
       id: '1',
       patientName: 'Kibrom Adinew',
       date: DateTime.now(),
-      firstVisitDate: DateTime(2024, 6, 25),
       lastTreatment: 'Brace',
       currentAppointmentReason: 'Emergency Consultation',
       doctorName: 'Dr. Smith',
@@ -26,7 +25,6 @@ class _HomeScreenState extends State<HomeScreen> {
       patientName: 'Matebe Assfaw',
       date: DateTime.now(),
       doctorName: 'Dr. Johnson',
-      firstVisitDate: DateTime(2024, 6, 25),
       lastTreatment: 'Brace',
       currentAppointmentReason: 'Emergency Consultation',
     ),
@@ -37,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
       firstName: "Kibrom",
       lastName: "Adinew",
       phoneNumber: "0712345678",
-      firstVisitDate: DateTime(2024, 6, 25),
     ),
   ];
 
@@ -46,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
       firstName: "Kibrom",
       lastName: "Adinew",
       phoneNumber: "0712345678",
-      firstVisitDate: DateTime(2024, 6, 25),
     ),
   ];
 
@@ -220,14 +216,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         appointment.patientName!,
                         'Last Treatment: ${appointment.lastTreatment}',
                         'Current Appointment: ${appointment.currentAppointmentReason}',
-                        'Days Since First Visit: ${_daysSinceFirstVisit(appointment.firstVisitDate)}',
+                        'Days Since First Visit: ',
                       );
                     } else {
                       final patient =
                           patients![index - (appointments?.length ?? 0)];
                       return _buildListTile(
                         patient.firstName ?? 'Unknown',
-                        'Days Since First Visit: ${_daysSinceFirstVisit(patient.firstVisitDate)}',
+                        'Days Since First Visit: 255 days',
                         '', // Add placeholders for empty subtitles
                         '',
                       );
