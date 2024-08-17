@@ -1,115 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../../models/appointment_model.dart';
 import '../../models/patient_model.dart';
-import '../../widgets/navigation_drawer.dart';
 import '../../utils/constants.dart'; // Import the constants file
+import 'info_card.dart';
+import 'detail_card.dart';
+import '../appointment/blocs/appointment_bloc.dart';
+import '../appointment/blocs/appointment_event.dart';
+import '../appointment/blocs/appointment_state.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final List<Appointment> _appointments = [
-    Appointment(
-      id: '1',
-      patientName: 'Kibrom Adinew',
-      date: DateTime.now(),
-      lastTreatment: 'Brace',
-      currentAppointmentReason: 'Emergency Consultation',
-      doctorName: 'Dr. Smith',
-    ),
-    Appointment(
-      id: '2',
-      patientName: 'Matebe Assfaw',
-      date: DateTime.now(),
-      doctorName: 'Dr. Johnson',
-      lastTreatment: 'Brace',
-      currentAppointmentReason: 'Emergency Consultation',
-    ),
-  ];
-
-  final List<Patient> _walkInPatients = [
-    Patient(
-      firstName: "Kibrom",
-      lastName: "Adinew",
-      phoneNumber: "0712345678",
-    ),
-  ];
-
-  final List<Patient> _newPatients = [
-    Patient(
-      firstName: "Kibrom",
-      lastName: "Adinew",
-      phoneNumber: "0712345678",
-    ),
-  ];
-
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Trigger fetching today's appointments when the widget is built
+    BlocProvider.of<AppointmentBloc>(context).add(FetchTodaysAppointments());
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Dashboard'),
-        centerTitle: true,
-        backgroundColor: Color(0xFF6ABEDC),
-      ),
+      appBar: _buildAppBar(),
       body: Container(
-        color: backgroundColor, // Ensure background color is set correctly
+        color: backgroundColor,
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildInfoCard(
-                      context,
-                      title: 'Today\'s Appointment',
-                      count: _appointments.length,
-                      icon: Icons.person,
-                      color: Colors.red,
-                    ),
-                    _buildInfoCard(
-                      context,
-                      title: 'Walk-In Patients',
-                      count: _walkInPatients.length,
-                      icon: Icons.person_outline,
-                      color: Colors.orange,
-                    ),
-                    _buildInfoCard(
-                      context,
-                      title: 'New Patients',
-                      count: _newPatients.length,
-                      icon: Icons.person_add,
-                      color: Colors.blue,
-                    ),
-                  ],
-                ),
+                _buildInfoCards(context),
                 SizedBox(height: 20),
-                StaggeredGrid.count(
-                  crossAxisCount: 3, // Change to 3 columns
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  children: [
-                    _buildDetailCard(
-                      context,
-                      title: 'Today\'s Appointment',
-                      appointments: _appointments,
-                    ),
-                    _buildDetailCard(
-                      context,
-                      title: 'Today\'s Walk-In Patients',
-                      patients: _walkInPatients,
-                    ),
-                    _buildDetailCard(
-                      context,
-                      title: 'Today\'s New Patients',
-                      patients: _newPatients,
-                    ),
-                  ],
-                ),
+                _buildDetailGrid(context),
               ],
             ),
           ),
@@ -118,160 +36,115 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildInfoCard(BuildContext context,
-      {required String title,
-      required int count,
-      required IconData icon,
-      required Color color}) {
-    return Card(
-      elevation: 6,
-      shape: CircleBorder(
-          // borderRadius: BorderRadius.circular(15),
-          ),
-      color: Colors.transparent,
-      child: Container(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 50, color: Colors.white),
-            SizedBox(height: 10),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 5),
-            Text(
-              '$count',
-              style: TextStyle(
-                color: color,
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Text('Dashboard'),
+      centerTitle: true,
+      backgroundColor: Color(0xFF6ABEDC),
     );
   }
 
-  Widget _buildDetailCard(BuildContext context,
-      {required String title,
-      List<Appointment>? appointments,
-      List<Patient>? patients}) {
-    return Card(
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      margin: EdgeInsets.symmetric(vertical: 10),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromARGB(255, 252, 252, 252),
-              Color.fromARGB(255, 198, 243, 211),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 8,
-              spreadRadius: 2,
-              offset: Offset(0, 2),
+  Widget _buildInfoCards(BuildContext context) {
+    return BlocBuilder<AppointmentBloc, AppointmentState>(
+      builder: (context, state) {
+        if (state is AppointmentLoading) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is AppointmentLoaded) {
+          final appointments = state.appointments;
+          final walkInPatients = [
+            Patient(
+              firstName: "Kibrom",
+              lastName: "Adinew",
+              phoneNumber: "0712345678",
             ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          ]; // Mock data for walk-in patients
+          final newPatients = [
+            Patient(
+              firstName: "Kibrom",
+              lastName: "Adinew",
+              phoneNumber: "0712345678",
+            ),
+          ]; // Mock data for new patients
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
+              InfoCard(
+                title: 'Today\'s Appointment',
+                count: appointments.length,
+                icon: Icons.person,
+                color: Colors.red,
               ),
-              SizedBox(height: 10),
-              Container(
-                height: 200,
-                child: ListView.separated(
-                  separatorBuilder: (context, index) => Divider(),
-                  itemCount:
-                      (appointments?.length ?? 0) + (patients?.length ?? 0),
-                  itemBuilder: (context, index) {
-                    if (index < (appointments?.length ?? 0)) {
-                      final appointment = appointments![index];
-                      return _buildListTile(
-                        appointment.patientName!,
-                        'Last Treatment: ${appointment.lastTreatment}',
-                        'Current Appointment: ${appointment.currentAppointmentReason}',
-                        'Days Since First Visit: ',
-                      );
-                    } else {
-                      final patient =
-                          patients![index - (appointments?.length ?? 0)];
-                      return _buildListTile(
-                        patient.firstName ?? 'Unknown',
-                        'Days Since First Visit: 255 days',
-                        '', // Add placeholders for empty subtitles
-                        '',
-                      );
-                    }
-                  },
-                ),
+              InfoCard(
+                title: 'Walk-In Patients',
+                count: walkInPatients.length,
+                icon: Icons.person_outline,
+                color: Colors.orange,
+              ),
+              InfoCard(
+                title: 'New Patients',
+                count: newPatients.length,
+                icon: Icons.person_add,
+                color: Colors.blue,
               ),
             ],
-          ),
-        ),
-      ),
+          );
+        } else if (state is AppointmentError) {
+          return Text('Error: ${state.message}');
+        } else {
+          return Text('Unexpected state');
+        }
+      },
     );
   }
 
-  Widget _buildListTile(
-      String title, String subtitle1, String subtitle2, String subtitle3) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 4,
-            spreadRadius: 2,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ListTile(
-        leading: Icon(Icons.person, color: Colors.teal),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(subtitle1),
-            Text(subtitle2),
-            Text(subtitle3),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _buildDetailGrid(BuildContext context) {
+    return BlocBuilder<AppointmentBloc, AppointmentState>(
+      builder: (context, state) {
+        if (state is AppointmentLoading) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is AppointmentLoaded) {
+          final appointments = state.appointments;
+          final walkInPatients = [
+            Patient(
+              firstName: "Kibrom",
+              lastName: "Adinew",
+              phoneNumber: "0712345678",
+            ),
+          ]; // Mock data for walk-in patients
+          final newPatients = [
+            Patient(
+              firstName: "Kibrom",
+              lastName: "Adinew",
+              phoneNumber: "0712345678",
+            ),
+          ]; // Mock data for new patients
 
-  int _daysSinceFirstVisit(DateTime? firstVisitDate) {
-    if (firstVisitDate == null) {
-      return 0;
-    }
-    return DateTime.now().difference(firstVisitDate).inDays;
+          return StaggeredGrid.count(
+            crossAxisCount: 3,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            children: [
+              DetailCard(
+                title: 'Today\'s Appointment',
+                appointments: appointments,
+              ),
+              DetailCard(
+                title: 'Today\'s Walk-In Patients',
+                patients: walkInPatients,
+              ),
+              DetailCard(
+                title: 'Today\'s New Patients',
+                patients: newPatients,
+              ),
+            ],
+          );
+        } else if (state is AppointmentError) {
+          return Text('Error: ${state.message}');
+        } else {
+          return Text('Unexpected state');
+        }
+      },
+    );
   }
 }
