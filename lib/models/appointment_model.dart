@@ -38,7 +38,7 @@ class Appointment {
   final DateTime date;
   final String? appointmentReason;
   final List<Note>? notes;
-  final DateTime? firstVisitDate;
+
   final String? lastTreatment;
   final String? currentAppointmentReason;
   final String? status;
@@ -57,7 +57,6 @@ class Appointment {
     required this.date,
     this.appointmentReason,
     this.notes,
-    this.firstVisitDate,
     this.lastTreatment,
     this.currentAppointmentReason,
     this.status,
@@ -75,7 +74,6 @@ class Appointment {
       'doctor': doctor,
       'appointmentReason': appointmentReason,
       'notes': notes?.map((note) => note.toJson()).toList() ?? [],
-      'firstVisitDate': firstVisitDate?.toIso8601String(),
       'lastTreatment': lastTreatment,
       'currentAppointmentReason': currentAppointmentReason,
       'status': status,
@@ -101,9 +99,6 @@ class Appointment {
           ? List<Note>.from((json['notes'] as List)
               .map((note) => Note.fromJson(note as Map<String, dynamic>)))
           : [],
-      firstVisitDate: json['firstVisitDate'] != null
-          ? DateTime.tryParse(json['firstVisitDate'] as String) ?? null
-          : null,
       lastTreatment: json['lastTreatment'] as String?,
       currentAppointmentReason: json['currentAppointmentReason'] as String?,
       status: json['status'] as String?,

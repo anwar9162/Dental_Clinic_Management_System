@@ -96,6 +96,12 @@ const cardStatusSchema = new mongoose.Schema({
   notes: String,
 });
 
+// Define the schema for dynamic fields
+const dynamicFieldSchema = new mongoose.Schema({
+  fieldName: String, // Name of the field, e.g., "Conditions"
+  fieldValue: String, // Value of the field, e.g., "Diabetes"
+});
+
 // Define schema for a visit
 const visitSchema = new mongoose.Schema({
   date: {
@@ -148,8 +154,10 @@ const patientSchema = new mongoose.Schema({
   address: String,
   cardStatus: cardStatusSchema,
   visitHistory: [visitSchema],
-  progressImages: [imageSchema], // Moved here
-  xrayImages: [imageSchema], // Moved here
+  progressImages: [imageSchema],
+  xrayImages: [imageSchema],
+  pastMedicalHistory: [dynamicFieldSchema], // Flexible fields
+  pastDentalHistory: [dynamicFieldSchema], // Flexible fields
 });
 
 const Patient = mongoose.model("Patient", patientSchema);

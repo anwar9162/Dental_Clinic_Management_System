@@ -3,6 +3,8 @@ import 'patient_info_section.dart';
 import 'progress_images_section.dart';
 import 'xray_images_section.dart';
 import 'visit_history_section.dart';
+import 'past_medical_history_section.dart'; // Import the new section
+import 'past_dental_history_section.dart'; // Import the new section
 import '../../models/patient_model.dart';
 import '../../widgets/X-ray-and-progess-imageupload.dart'; // Import the dialog widget
 
@@ -68,6 +70,14 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
             PatientInfoSection(patient: widget.patient),
             SizedBox(height: 16),
             VisitHistorySection(visits: widget.patient.visitHistory),
+            SizedBox(height: 16),
+            PastMedicalHistorySection(
+              pastMedicalHistory: widget.patient.pastMedicalHistory,
+            ),
+            SizedBox(height: 16),
+            PastDentalHistorySection(
+              pastDentalHistory: widget.patient.pastDentalHistory,
+            ),
             SizedBox(height: 16),
             ProgressImagesSection(
               progressImages: _progressImages,

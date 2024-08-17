@@ -17,6 +17,8 @@ const {
   addXrayImages,
   addVisitRecord,
   updateCardStatus,
+  addPastDentalHistory,
+  addPastMedicalHistory,
 } = require("../controllers/patientController");
 
 const router = express.Router();
@@ -46,5 +48,9 @@ router.post("/:id/xray-images", upload.array("xrayImages"), addXrayImages);
 // New routes
 router.post("/:id/visit-records", addVisitRecord);
 router.put("/:id/card-status", updateCardStatus);
+
+// Add past dental/medical history
+router.post("/:id/past-medical-history", addPastMedicalHistory);
+router.post("/:id/past-dental-history", addPastDentalHistory);
 
 module.exports = router;

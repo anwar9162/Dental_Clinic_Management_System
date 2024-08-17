@@ -1,5 +1,3 @@
-// patient_model.dart
-
 import 'dart:convert';
 
 class PatientImage {
@@ -422,6 +420,54 @@ class Payment {
   }
 }
 
+class PastMedicalHistory {
+  final String fieldName;
+  final String fieldValue;
+
+  PastMedicalHistory({
+    required this.fieldName,
+    required this.fieldValue,
+  });
+
+  factory PastMedicalHistory.fromJson(Map<String, dynamic> json) {
+    return PastMedicalHistory(
+      fieldName: json['fieldName'],
+      fieldValue: json['fieldValue'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'fieldName': fieldName,
+      'fieldValue': fieldValue,
+    };
+  }
+}
+
+class PastDentalHistory {
+  final String fieldName;
+  final String fieldValue;
+
+  PastDentalHistory({
+    required this.fieldName,
+    required this.fieldValue,
+  });
+
+  factory PastDentalHistory.fromJson(Map<String, dynamic> json) {
+    return PastDentalHistory(
+      fieldName: json['fieldName'],
+      fieldValue: json['fieldValue'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'fieldName': fieldName,
+      'fieldValue': fieldValue,
+    };
+  }
+}
+
 class Patient {
   final String? id;
   final String firstName;
@@ -434,6 +480,8 @@ class Patient {
   final List<Visit>? visitHistory;
   final List<PatientImage>? progressImages;
   final List<PatientImage>? xrayImages;
+  final List<PastMedicalHistory>? pastMedicalHistory;
+  final List<PastDentalHistory>? pastDentalHistory;
 
   Patient({
     this.id,
@@ -447,6 +495,8 @@ class Patient {
     this.visitHistory,
     this.progressImages,
     this.xrayImages,
+    this.pastMedicalHistory,
+    this.pastDentalHistory,
   });
 
   factory Patient.fromJson(Map<String, dynamic> json) {
@@ -472,6 +522,14 @@ class Patient {
       xrayImages: (json['xrayImages'] as List<dynamic>?)
           ?.map((item) => PatientImage.fromJson(item as Map<String, dynamic>))
           .toList(),
+      pastMedicalHistory: (json['pastMedicalHistory'] as List<dynamic>?)
+          ?.map((item) =>
+              PastMedicalHistory.fromJson(item as Map<String, dynamic>))
+          .toList(),
+      pastDentalHistory: (json['pastDentalHistory'] as List<dynamic>?)
+          ?.map((item) =>
+              PastDentalHistory.fromJson(item as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -488,6 +546,10 @@ class Patient {
       'visitHistory': visitHistory?.map((v) => v.toJson()).toList(),
       'progressImages': progressImages?.map((img) => img.toJson()).toList(),
       'xrayImages': xrayImages?.map((img) => img.toJson()).toList(),
+      'pastMedicalHistory':
+          pastMedicalHistory?.map((history) => history.toJson()).toList(),
+      'pastDentalHistory':
+          pastDentalHistory?.map((history) => history.toJson()).toList(),
     };
   }
 }

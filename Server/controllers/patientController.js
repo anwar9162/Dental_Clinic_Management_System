@@ -358,6 +358,53 @@ const updateCardStatus = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};const addPastMedicalHistory = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const entries = req.body;
+    if (!Array.isArray(entries) || entries.some(entry => !entry.fieldName || !entry.fieldValue)) {
+      return res.status(400).json({ message: "Field name and value are required for each entry" });
+    }
+
+    entries.forEach(entry => {
+      if (entry.fieldName && entry.fieldValue) {
+        patient.pastMedicalHistory.push(entry);
+      }
+    });
+
+    await patient.save();
+    res.status(201).json({ message: "Past medical history added", patient });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+const addPastDentalHistory = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const entries = req.body;
+    if (!Array.isArray(entries) || entries.some(entry => !entry.fieldName || !entry.fieldValue)) {
+      return res.status(400).json({ message: "Field name and value are required for each entry" });
+    }
+
+    entries.forEach(entry => {
+      if (entry.fieldName && entry.fieldValue) {
+        patient.pastDentalHistory.push(entry);
+      }
+    });
+
+    await patient.save();
+    res.status(201).json({ message: "Past dental history added", patient });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 
@@ -379,4 +426,6 @@ module.exports = {
   addXrayImages,
   addVisitRecord,
   updateCardStatus,
+  addPastMedicalHistory,
+  addPastDentalHistory,
 };
