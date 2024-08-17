@@ -12,16 +12,21 @@ class VisitHistorySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final reversedVisits = (visits ?? []).reversed.toList();
 
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: reversedVisits.isEmpty
-            ? _buildNoVisitHistory()
-            : _buildVisitHistory(context, reversedVisits),
+    return Container(
+      width: double.infinity, // Full width of the parent
+      color: Colors.white, // White background for the section
+      child: Card(
+        elevation: 0, // Remove shadow for a flat design
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0), // Rounded corners
+        ),
+        color: Colors.white, // White background for the card
+        child: Padding(
+          padding: const EdgeInsets.all(16.0), // Padding for spacing
+          child: reversedVisits.isEmpty
+              ? _buildNoVisitHistory()
+              : _buildVisitHistory(context, reversedVisits),
+        ),
       ),
     );
   }
@@ -45,9 +50,9 @@ class VisitHistorySection extends StatelessWidget {
       children: [
         Text(
           'Visit History',
-          style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.blueGrey[800],
+                color: Colors.blueGrey[800], // Professional color
               ),
         ),
         SizedBox(height: 12),
@@ -177,15 +182,11 @@ class VisitHistorySection extends StatelessWidget {
   Widget _buildCategoryHeader(String title) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      decoration: BoxDecoration(
-        color: Colors.blueGrey[50],
-        borderRadius: BorderRadius.circular(8),
-      ),
       child: Text(
         title,
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          color: Colors.blueGrey[700],
+          color: Color.fromARGB(255, 49, 190, 255),
           fontSize: 15,
         ),
       ),
