@@ -22,7 +22,21 @@ const deletePatient = async (id) => {
 };
 
 const updateCardStatus = async (id, cardStatus) => {
-  return await Patient.findByIdAndUpdate(id, { "cardStatus": cardStatus }, { new: true });
+  return await Patient.findByIdAndUpdate(
+    id,
+    { cardStatus: cardStatus },
+    { new: true }
+  );
+};
+const getTodaysPatient = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  console.log(today);
+  return await Patient.find({
+    createdAt: { $gte: today, $lt: tomorrow },
+  });
 };
 
 module.exports = {
@@ -31,5 +45,6 @@ module.exports = {
   createPatient,
   updatePatient,
   deletePatient,
-  updateCardStatus
+  updateCardStatus,
+  getTodaysPatient,
 };

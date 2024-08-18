@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'list_tile.dart';
+import 'list_tile.dart'; // Make sure this import is correct
 import '../../models/appointment_model.dart';
 import '../../models/patient_model.dart';
 
@@ -63,22 +63,28 @@ class DetailCard extends StatelessWidget {
                       (appointments?.length ?? 0) + (patients?.length ?? 0),
                   itemBuilder: (context, index) {
                     if (index < (appointments?.length ?? 0)) {
+                      // Handle the appointment item
                       final appointment = appointments![index];
                       return ListTileWidget(
-                        title: appointment.patientDetails!.firstName,
+                        title:
+                            appointment.patientDetails?.firstName ?? 'Unknown',
                         subtitle1:
-                            'Phone number: ${appointment.patientDetails!.phoneNumber}',
-                        subtitle2: 'Current Appointment: ',
-                        subtitle3: 'Days Since First Visit: 50 days',
+                            'Last Name: ${appointment.patientDetails?.lastName ?? 'N/A'}',
+                        subtitle2:
+                            'Gender: ${appointment.patientDetails?.gender ?? 'N/A'}',
+                        subtitle3:
+                            'Date of Birth: ${appointment.patientDetails?.dateOfBirth?.toLocal().toString().split(' ')[0] ?? 'N/A'}',
                       );
                     } else {
-                      final patient =
-                          patients![index - (appointments?.length ?? 0)];
+                      // Handle the patient item
+                      final patientIndex = index - (appointments?.length ?? 0);
+                      final patient = patients![patientIndex];
                       return ListTileWidget(
-                        title: patient.firstName ?? 'Unknown',
-                        subtitle1: 'Days Since First Visit: 300 days',
-                        subtitle2: '', // Add placeholders for empty subtitles
-                        subtitle3: '',
+                        title: patient.firstName,
+                        subtitle1: 'Last Name: ${patient.lastName}',
+                        subtitle2: 'Gender: ${patient.gender ?? 'N/A'}',
+                        subtitle3:
+                            'Date of Birth: ${patient.dateOfBirth?.toLocal().toString().split(' ')[0] ?? 'N/A'}',
                       );
                     }
                   },
@@ -89,12 +95,5 @@ class DetailCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  int _daysSinceFirstVisit(DateTime? firstVisitDate) {
-    if (firstVisitDate == null) {
-      return 0;
-    }
-    return DateTime.now().difference(firstVisitDate).inDays;
   }
 }

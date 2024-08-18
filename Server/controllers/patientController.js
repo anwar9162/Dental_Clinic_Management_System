@@ -1,5 +1,6 @@
 const Patient = require("../models/Patient");
 const Appointment = require("../models/Appointment");
+const patientService = require("../services/patientService");
 
 // Get all patients
 const getAllPatients = async (req, res) => {
@@ -14,7 +15,9 @@ const getAllPatients = async (req, res) => {
 // Get patient by ID
 const getPatientById = async (req, res) => {
   try {
-    const patient = await Patient.findById(req.params.id).populate("visitHistory");
+    const patient = await Patient.findById(req.params.id).populate(
+      "visitHistory"
+    );
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
@@ -60,8 +63,8 @@ const createPatient = async (req, res) => {
       cardStatus: {
         isActive: true,
         expirationDate: sixMonthsFromNow,
-        notes: null
-      }
+        notes: null,
+      },
     });
     await newPatient.save();
     res.status(201).json(newPatient);
@@ -69,7 +72,6 @@ const createPatient = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // Update patient
 const updatePatient = async (req, res) => {
@@ -358,7 +360,8 @@ const updateCardStatus = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};const addPastMedicalHistory = async (req, res) => {
+};
+const addPastMedicalHistory = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
     if (!patient) {
@@ -366,11 +369,16 @@ const updateCardStatus = async (req, res) => {
     }
 
     const entries = req.body;
-    if (!Array.isArray(entries) || entries.some(entry => !entry.fieldName || !entry.fieldValue)) {
-      return res.status(400).json({ message: "Field name and value are required for each entry" });
+    if (
+      !Array.isArray(entries) ||
+      entries.some((entry) => !entry.fieldName || !entry.fieldValue)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Field name and value are required for each entry" });
     }
 
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (entry.fieldName && entry.fieldValue) {
         patient.pastMedicalHistory.push(entry);
       }
@@ -390,11 +398,16 @@ const addPastDentalHistory = async (req, res) => {
     }
 
     const entries = req.body;
-    if (!Array.isArray(entries) || entries.some(entry => !entry.fieldName || !entry.fieldValue)) {
-      return res.status(400).json({ message: "Field name and value are required for each entry" });
+    if (
+      !Array.isArray(entries) ||
+      entries.some((entry) => !entry.fieldName || !entry.fieldValue)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Field name and value are required for each entry" });
     }
 
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (entry.fieldName && entry.fieldValue) {
         patient.pastDentalHistory.push(entry);
       }
@@ -406,8 +419,14 @@ const addPastDentalHistory = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-
+const getTodaysPatient = async (req, res) => {
+  try {
+    const patient = await patientService.getTodaysPatient();
+    res.status(200).json(patient);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 module.exports = {
   getAllPatients,
@@ -428,4 +447,5 @@ module.exports = {
   updateCardStatus,
   addPastMedicalHistory,
   addPastDentalHistory,
+  getTodaysPatient,
 };

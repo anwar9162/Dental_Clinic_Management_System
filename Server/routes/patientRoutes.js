@@ -19,6 +19,7 @@ const {
   updateCardStatus,
   addPastDentalHistory,
   addPastMedicalHistory,
+  getTodaysPatient,
 } = require("../controllers/patientController");
 
 const router = express.Router();
@@ -34,7 +35,10 @@ router.delete("/:id", deletePatient);
 // Dental chart routes
 router.post("/:id/dental-chart", addDentalChartEntry);
 router.get("/:id/dental-chart", getDentalChart);
-router.delete("/:id/dental-chart/:toothNumber/:entryId", deleteDentalChartEntry);
+router.delete(
+  "/:id/dental-chart/:toothNumber/:entryId",
+  deleteDentalChartEntry
+);
 router.put("/:id/dental-chart/:toothNumber/:entryId", updateDentalChartEntry);
 
 // Payment routes
@@ -42,7 +46,11 @@ router.post("/:id/payments", addPayment);
 router.put("/:id/payments/:paymentId", updatePayment);
 
 // File upload routes
-router.post("/:id/progress-images", upload.array("progressImages"), addProgressImages);
+router.post(
+  "/:id/progress-images",
+  upload.array("progressImages"),
+  addProgressImages
+);
 router.post("/:id/xray-images", upload.array("xrayImages"), addXrayImages);
 
 // New routes
@@ -52,5 +60,7 @@ router.put("/:id/card-status", updateCardStatus);
 // Add past dental/medical history
 router.post("/:id/past-medical-history", addPastMedicalHistory);
 router.post("/:id/past-dental-history", addPastDentalHistory);
+
+router.get("/today/patients", getTodaysPatient);
 
 module.exports = router;

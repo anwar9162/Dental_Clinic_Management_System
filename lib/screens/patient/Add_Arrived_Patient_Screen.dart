@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../services/appointment_api_service.dart'; // Import the AppointmentService
+import '../../models/appointment_model.dart';
 
 class AddArrivedPatientScreen extends StatefulWidget {
   final VoidCallback onClose;
@@ -17,32 +19,48 @@ class AddArrivedPatientScreen extends StatefulWidget {
 
 class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _arrivalTimeController = TextEditingController();
+  TimeOfDay? _arrivalTime;
   final _notesController = TextEditingController();
-  final _searchQueryController =
-      TextEditingController(); // Initialize TextEditingController here
+  final _searchQueryController = TextEditingController();
 
   String? _selectedPatient;
   String _searchQuery = '';
   late List<Map<String, dynamic>> _patients;
+  late List<Appointment> _todaysAppointments;
+  final AppointmentService _appointmentService = AppointmentService();
+  String _arrivalType = ''; // Hidden field to store arrival type
 
   @override
   void initState() {
     super.initState();
-    _patients = widget.patients; // Initialize _patients with widget.patients
+    _patients = widget.patients;
     _searchQueryController.addListener(() {
       setState(() {
         _searchQuery = _searchQueryController.text;
       });
     });
+    _loadTodaysAppointments(); // Load today's appointments when the screen is initialized
   }
 
   @override
   void dispose() {
     _searchQueryController.dispose();
-    _arrivalTimeController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadTodaysAppointments() async {
+    try {
+      final todaysAppointments =
+          await _appointmentService.getTodaysAppointments();
+      setState(() {
+        _todaysAppointments = todaysAppointments;
+      });
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load today\'s appointments')),
+      );
+    }
   }
 
   List<Map<String, dynamic>> get _filteredPatients {
@@ -58,16 +76,28 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
     }
   }
 
+  void _selectArrivalTime() async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: _arrivalTime ?? TimeOfDay.now(),
+    );
+
+    if (pickedTime != null && pickedTime != _arrivalTime) {
+      setState(() {
+        _arrivalTime = pickedTime;
+      });
+    }
+  }
+
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
-      if (_selectedPatient == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select a patient')),
-        );
-        return;
-      }
-      // Handle the form submission logic here
-      widget.onClose(); // Close the form after submission
+      // Handle form submission logic here
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                'Patient marked as arrived with arrival type: $_arrivalType')),
+      );
+      widget.onClose(); // Close the form after handling arrival
     }
   }
 
@@ -77,7 +107,7 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
       padding: const EdgeInsets.all(16.0),
       child: Center(
         child: Container(
-          width: 600, // Adjust width as needed
+          width: 600,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -106,8 +136,14 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
                         _buildPatientCard(),
                         SizedBox(height: 16),
                         _buildLabeledTextField(
-                            'Arrival Time', _arrivalTimeController,
-                            keyboardType: TextInputType.datetime),
+                          'Arrival Time',
+                          TextEditingController(
+                              text: _arrivalTime == null
+                                  ? ''
+                                  : _arrivalTime!.format(context)),
+                          onTap: _selectArrivalTime,
+                          readOnly: true,
+                        ),
                         SizedBox(height: 16),
                         _buildLabeledTextField('Notes', _notesController),
                         SizedBox(height: 24),
@@ -140,7 +176,7 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
 
   Widget _buildSearchField() {
     return TextField(
-      controller: _searchQueryController, // Use existing controller
+      controller: _searchQueryController,
       onChanged: (query) {
         setState(() {
           _searchQuery = query;
@@ -156,7 +192,7 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
                 icon: Icon(Icons.clear),
                 onPressed: () {
                   setState(() {
-                    _searchQueryController.clear(); // Clear the controller
+                    _searchQueryController.clear();
                     _searchQuery = '';
                   });
                 },
@@ -173,9 +209,34 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
         (patient) =>
             '${patient['firstName']} ${patient['lastName']}' ==
             selectedPatientName,
-        orElse: () =>
-            {'firstName': 'Unknown', 'lastName': '', 'phoneNumber': ''},
+        orElse: () => {
+          'firstName': 'Unknown',
+          'lastName': '',
+          'phoneNumber': '',
+          '_id': ''
+        },
       );
+
+      // Debugging IDs
+      print('Selected Patient ID Type: ${selectedPatient['_id'].runtimeType}');
+      print('Selected Patient ID: ${selectedPatient['_id']}');
+
+      // Check if the selected patient is in today's appointments
+      final selectedPatientId =
+          selectedPatient['_id'].toString(); // Ensure ID is a string
+      final isInAppointments = _todaysAppointments.any((appointment) {
+        final appointmentPatientId =
+            appointment.patientDetails!.id.toString(); // Ensure ID is a string
+        print(
+            'Appointment Patient ID Type: ${appointment.patientDetails!.id.runtimeType}');
+        print('Appointment Patient ID: ${appointment.patientDetails!.id}');
+        return appointmentPatientId == selectedPatientId;
+      });
+
+      setState(() {
+        _arrivalType = isInAppointments ? 'On Appointment' : 'Walk-in';
+      });
+
       return Card(
         margin: EdgeInsets.symmetric(vertical: 8),
         elevation: 4,
@@ -187,8 +248,8 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
             icon: Icon(Icons.clear, color: Colors.red),
             onPressed: () {
               setState(() {
-                _selectedPatient = null; // Clear the selection
-                _searchQuery = ''; // Optionally clear the search query
+                _selectedPatient = null;
+                _searchQuery = '';
               });
             },
           ),
@@ -237,8 +298,15 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
             onTap: () {
               setState(() {
                 _selectedPatient = '$patientName ($patientPhone)';
-                _searchQuery =
-                    patientName; // Set search query to selected patient
+                _searchQuery = patientName;
+                // Update arrival type based on selected patient
+                final selectedPatientId = patient['_id'].toString();
+                final isInAppointments = _todaysAppointments.any(
+                  (appointment) =>
+                      appointment.patientDetails!.id.toString() ==
+                      selectedPatientId,
+                );
+                _arrivalType = isInAppointments ? 'On Appointment' : 'Walk-in';
               });
             },
             selected: _selectedPatient == '$patientName ($patientPhone)',
@@ -250,14 +318,16 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
   }
 
   Widget _buildLabeledTextField(String label, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text}) {
+      {TextInputType keyboardType = TextInputType.text,
+      VoidCallback? onTap,
+      bool readOnly = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 120, // Adjust width for labels
+            width: 120,
             child: Text(
               label,
               style: TextStyle(
@@ -272,6 +342,8 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
             child: TextFormField(
               controller: controller,
               keyboardType: keyboardType,
+              readOnly: readOnly,
+              onTap: onTap,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.grey[100],
@@ -303,13 +375,12 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
           child: ElevatedButton(
             onPressed: _submitForm,
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  Color.fromARGB(255, 194, 199, 230), // Updated color
+              backgroundColor: Color.fromARGB(255, 194, 199, 230),
               padding: EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              elevation: 5, // Subtle shadow for a modern effect
+              elevation: 5,
             ),
             child: Text(
               'Mark as Arrived',

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:dental_management_main/models/patient_model.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart'; // Import for MediaType
@@ -230,6 +231,18 @@ class PatientApiService {
     } catch (e) {
       print('Exception caught: $e');
       throw Exception('Failed to add x-ray images');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getTodaysPatient() async {
+    final response =
+        await http.get(Uri.parse('$baseUrl/patients/today/patients'));
+
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((data) => data as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Failed to load today\'s patients');
     }
   }
 }

@@ -101,3 +101,10 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
     }
   }
 }
+
+class AppointmentInitial extends AppointmentState {
+  final List<Appointment> appointments = [];
+
+  @override
+  List<Object?> get props => [appointments];
+}

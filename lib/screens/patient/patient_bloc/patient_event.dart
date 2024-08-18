@@ -7,6 +7,8 @@ abstract class PatientEvent extends Equatable {
 
 class LoadPatients extends PatientEvent {}
 
+class LoadTodaysPatients extends PatientEvent {}
+
 class DeletePatient extends PatientEvent {
   final String id;
 
