@@ -23,7 +23,7 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
   final _notesController = TextEditingController();
   final _searchQueryController = TextEditingController();
 
-  String? _selectedPatient;
+  String? _selectedPatientId;
   String _searchQuery = '';
   late List<Map<String, dynamic>> _patients;
   late List<Appointment> _todaysAppointments;
@@ -203,12 +203,9 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
   }
 
   Widget _buildPatientCard() {
-    if (_selectedPatient != null) {
-      final selectedPatientName = _selectedPatient?.split(' (')[0] ?? '';
+    if (_selectedPatientId != null) {
       final selectedPatient = _patients.firstWhere(
-        (patient) =>
-            '${patient['firstName']} ${patient['lastName']}' ==
-            selectedPatientName,
+        (patient) => patient['_id'].toString() == _selectedPatientId,
         orElse: () => {
           'firstName': 'Unknown',
           'lastName': '',
@@ -217,19 +214,13 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
         },
       );
 
-      // Debugging IDs
-      print('Selected Patient ID Type: ${selectedPatient['_id'].runtimeType}');
-      print('Selected Patient ID: ${selectedPatient['_id']}');
-
       // Check if the selected patient is in today's appointments
       final selectedPatientId =
           selectedPatient['_id'].toString(); // Ensure ID is a string
       final isInAppointments = _todaysAppointments.any((appointment) {
         final appointmentPatientId =
             appointment.patientDetails!.id.toString(); // Ensure ID is a string
-        print(
-            'Appointment Patient ID Type: ${appointment.patientDetails!.id.runtimeType}');
-        print('Appointment Patient ID: ${appointment.patientDetails!.id}');
+
         return appointmentPatientId == selectedPatientId;
       });
 
@@ -248,7 +239,7 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
             icon: Icon(Icons.clear, color: Colors.red),
             onPressed: () {
               setState(() {
-                _selectedPatient = null;
+                _selectedPatientId = null;
                 _searchQuery = '';
               });
             },
@@ -289,6 +280,9 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
       children: filteredPatients.map((patient) {
         final patientName = '${patient['firstName']} ${patient['lastName']}';
         final patientPhone = patient['phoneNumber'] ?? '';
+        final patientId =
+            patient['_id'].toString(); // Use patient ID for comparison
+
         return Card(
           margin: EdgeInsets.symmetric(vertical: 4),
           elevation: 4,
@@ -297,19 +291,16 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
             subtitle: Text(patientPhone),
             onTap: () {
               setState(() {
-                _selectedPatient = '$patientName ($patientPhone)';
-                _searchQuery = patientName;
+                _selectedPatientId = patientId;
                 // Update arrival type based on selected patient
-                final selectedPatientId = patient['_id'].toString();
                 final isInAppointments = _todaysAppointments.any(
                   (appointment) =>
-                      appointment.patientDetails!.id.toString() ==
-                      selectedPatientId,
+                      appointment.patientDetails!.id.toString() == patientId,
                 );
                 _arrivalType = isInAppointments ? 'On Appointment' : 'Walk-in';
               });
             },
-            selected: _selectedPatient == '$patientName ($patientPhone)',
+            selected: _selectedPatientId == patientId,
             selectedTileColor: Colors.blue[50],
           ),
         );
