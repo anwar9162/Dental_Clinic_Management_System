@@ -111,13 +111,13 @@ const visitSchema = new mongoose.Schema({
   reason: String,
   chiefComplaint: {
     type: chiefComplaintSchema,
-    required: function() {
+    required: function () {
       return this.reason && this.reason !== "Routine Check-up";
     },
   },
   historyOfPresentIllness: {
     type: hpiSchema,
-    required: function() {
+    required: function () {
       return this.reason && this.reason !== "Routine Check-up";
     },
   },
@@ -142,23 +142,26 @@ const visitSchema = new mongoose.Schema({
 });
 
 // Define the schema for the patient
-const patientSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
-  phoneNumber: {
-    type: String,
-    unique: true,
+const patientSchema = new mongoose.Schema(
+  {
+    firstName: String,
+    lastName: String,
+    phoneNumber: {
+      type: String,
+      unique: true,
+    },
+    gender: String,
+    dateOfBirth: Date,
+    address: String,
+    cardStatus: cardStatusSchema,
+    visitHistory: [visitSchema],
+    progressImages: [imageSchema],
+    xrayImages: [imageSchema],
+    pastMedicalHistory: [dynamicFieldSchema], // Flexible fields
+    pastDentalHistory: [dynamicFieldSchema], // Flexible fields
   },
-  gender: String,
-  dateOfBirth: Date,
-  address: String,
-  cardStatus: cardStatusSchema,
-  visitHistory: [visitSchema],
-  progressImages: [imageSchema],
-  xrayImages: [imageSchema],
-  pastMedicalHistory: [dynamicFieldSchema], // Flexible fields
-  pastDentalHistory: [dynamicFieldSchema], // Flexible fields
-});
+  { timestamps: true }
+); // Add timestamps option
 
 const Patient = mongoose.model("Patient", patientSchema);
 
