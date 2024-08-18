@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/appointment_api_service.dart'; // Import the AppointmentService
+import '../../services/arrival_service.dart'; // Import the ArrivalService
 import '../../models/appointment_model.dart';
 
 class AddArrivedPatientScreen extends StatefulWidget {
@@ -28,6 +29,7 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
   late List<Map<String, dynamic>> _patients;
   late List<Appointment> _todaysAppointments;
   final AppointmentService _appointmentService = AppointmentService();
+  final ArrivalService _arrivalService = ArrivalService();
   String _arrivalType = ''; // Hidden field to store arrival type
 
   @override
@@ -89,15 +91,40 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
     }
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Handle form submission logic here
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                'Patient marked as arrived with arrival type: $_arrivalType')),
-      );
-      widget.onClose(); // Close the form after handling arrival
+      if (_selectedPatientId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select a patient')),
+        );
+        return;
+      }
+
+      try {
+        final arrivalTime = DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          DateTime.now().day,
+          _arrivalTime?.hour ?? 0,
+          _arrivalTime?.minute ?? 0,
+        );
+
+        await _arrivalService.markPatientAsArrived(
+          patientId: _selectedPatientId!,
+          arrivalTime: arrivalTime,
+          notes: _notesController.text,
+          arrivalType: _arrivalType,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Patient marked as arrived')),
+        );
+        widget.onClose(); // Close the form after handling arrival
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to mark patient as arrived: $error')),
+        );
+      }
     }
   }
 
@@ -138,9 +165,10 @@ class _AddArrivedPatientScreenState extends State<AddArrivedPatientScreen> {
                         _buildLabeledTextField(
                           'Arrival Time',
                           TextEditingController(
-                              text: _arrivalTime == null
-                                  ? ''
-                                  : _arrivalTime!.format(context)),
+                            text: _arrivalTime == null
+                                ? ''
+                                : _arrivalTime!.format(context),
+                          ),
                           onTap: _selectArrivalTime,
                           readOnly: true,
                         ),

@@ -13,10 +13,8 @@ class AppointmentService {
     final response = await http.get(Uri.parse('$baseUrl/appointments'));
 
     if (response.statusCode == 200) {
-      print('Response Body: ${response.body}');
       List jsonResponse = json.decode(response.body) as List;
       return jsonResponse.map((data) {
-        print('Parsed Data: $data');
         return Appointment.fromJson(data as Map<String, dynamic>);
       }).toList();
     } else {
@@ -103,10 +101,6 @@ class AppointmentService {
   Future<List<Appointment>> getTodaysAppointments() async {
     final response =
         await http.get(Uri.parse('$baseUrl/appointments/today/appointments'));
-
-    // Log the raw response body
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);

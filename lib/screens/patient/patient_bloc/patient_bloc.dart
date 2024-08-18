@@ -30,13 +30,11 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
     emit(PatientLoading());
     try {
       final todaysPatientsJson = await patientApiService.getTodaysPatient();
-      print('Raw JSON data of today\'s patients: $todaysPatientsJson');
 
       // Convert raw JSON data to List<Patient>
       final todaysPatients = (todaysPatientsJson as List<dynamic>)
           .map((json) => Patient.fromJson(json as Map<String, dynamic>))
           .toList();
-      print('Converted Patient objects: $todaysPatients');
 
       emit(TodaysPatientsLoaded(todaysPatients));
     } catch (e) {
