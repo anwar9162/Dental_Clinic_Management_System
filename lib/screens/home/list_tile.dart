@@ -1,44 +1,36 @@
 import 'package:flutter/material.dart';
 
 class ListTileWidget extends StatelessWidget {
-  final String title;
-  final String subtitle1;
-  final String subtitle2;
-  final String subtitle3;
+  final String firstName;
+  final String lastName;
+  final String gender;
+  final String dateOfBirth;
+  final TextStyle textStyle;
 
   const ListTileWidget({
-    required this.title,
-    required this.subtitle1,
-    required this.subtitle2,
-    required this.subtitle3,
+    required this.firstName,
+    required this.lastName,
+    required this.gender,
+    required this.dateOfBirth,
+    required this.textStyle,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 4,
-            spreadRadius: 2,
-            offset: Offset(0, 2),
-          ),
+    return ListTile(
+      title: Row(
+        children: [
+          Text(firstName, style: textStyle),
+          SizedBox(width: 8), // Space between first name and last name
+          Text(lastName, style: textStyle),
         ],
       ),
-      child: ListTile(
-        leading: Icon(Icons.person, color: Colors.teal),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(subtitle1),
-            Text(subtitle2),
-            Text(subtitle3),
-          ],
-        ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Gender: $gender', style: textStyle),
+          Text('Date of Birth: $dateOfBirth', style: textStyle),
+        ],
       ),
     );
   }

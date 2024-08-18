@@ -24,4 +24,13 @@ class MarkPatientAsArrivedEvent extends ArrivalEvent {
   List<Object?> get props => [patientId, arrivalTime, notes, arrivalType];
 }
 
+class DeleteArrivalEvent extends ArrivalEvent {
+  final String arrivalId;
+
+  const DeleteArrivalEvent(this.arrivalId);
+
+  @override
+  List<Object?> get props => [arrivalId];
+}
+
 class LoadArrivalsEvent extends ArrivalEvent {}

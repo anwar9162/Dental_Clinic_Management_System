@@ -1,5 +1,4 @@
 // arrival_bloc.dart
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'arrival_event.dart';
 import 'arrival_state.dart';
@@ -12,6 +11,7 @@ class ArrivalBloc extends Bloc<ArrivalEvent, ArrivalState> {
   ArrivalBloc(this.arrivalService) : super(ArrivalInitialState()) {
     on<MarkPatientAsArrivedEvent>(_onMarkPatientAsArrived);
     on<LoadArrivalsEvent>(_onLoadArrivals);
+    on<DeleteArrivalEvent>(_onDeleteArrival); // Handle delete event
   }
 
   Future<void> _onMarkPatientAsArrived(
@@ -25,11 +25,11 @@ class ArrivalBloc extends Bloc<ArrivalEvent, ArrivalState> {
         arrivalType: event.arrivalType,
       );
       print('Patient marked as arrived: ${event.patientId}');
-      // Refresh the list of arrivals after marking a patient as arrived
-      add(LoadArrivalsEvent());
+      add(LoadArrivalsEvent()); // Refresh the list of arrivals after marking a patient as arrived
     } catch (e) {
       print('Error marking patient as arrived: ${e.toString()}');
-      emit(ArrivalErrorState(e.toString()));
+      emit(ArrivalErrorState(
+          'Failed to mark patient as arrived. Please try again.'));
     }
   }
 
@@ -44,7 +44,6 @@ class ArrivalBloc extends Bloc<ArrivalEvent, ArrivalState> {
           .map((json) => Arrival.fromJson(json as Map<String, dynamic>))
           .toList();
 
-      // Filter and categorize arrivals
       final onAppointmentArrivals = arrivals
           .where((arrival) => arrival.arrivalType == 'On Appointment')
           .toList();
@@ -59,7 +58,20 @@ class ArrivalBloc extends Bloc<ArrivalEvent, ArrivalState> {
       ));
     } catch (e) {
       print('Error loading arrivals: ${e.toString()}');
-      emit(ArrivalErrorState(e.toString()));
+      emit(ArrivalErrorState('Failed to load arrivals. Please try again.'));
+    }
+  }
+
+  Future<void> _onDeleteArrival(
+      DeleteArrivalEvent event, Emitter<ArrivalState> emit) async {
+    emit(ArrivalLoadingState());
+    try {
+      await arrivalService.deleteArrival(event.arrivalId);
+      print('Arrival deleted: ${event.arrivalId}');
+      add(LoadArrivalsEvent()); // Refresh the list of arrivals after deletion
+    } catch (e) {
+      print('Error deleting arrival: ${e.toString()}');
+      emit(ArrivalErrorState('Failed to delete arrival. Please try again.'));
     }
   }
 }

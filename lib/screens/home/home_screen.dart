@@ -1,4 +1,3 @@
-// home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -56,18 +55,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context, patientState) {
                       return BlocBuilder<ArrivalBloc, ArrivalState>(
                         builder: (context, arrivalState) {
-                          // Declare and initialize variables here
                           List<Patient> onAppointmentPatients = [];
                           List<Patient> walkInPatients = [];
                           List<Patient> newPatients = [];
+                          List<Arrival> onAppointmentArrivals = [];
+                          List<Arrival> walkInArrivals = [];
 
                           if (arrivalState is ArrivalLoadedState) {
-                            onAppointmentPatients = arrivalState
-                                .onAppointmentArrivals
+                            onAppointmentArrivals =
+                                arrivalState.onAppointmentArrivals;
+                            walkInArrivals = arrivalState.walkInArrivals;
+                            onAppointmentPatients = onAppointmentArrivals
                                 .map((arrival) => arrival.patient)
                                 .toList();
-
-                            walkInPatients = arrivalState.walkInArrivals
+                            walkInPatients = walkInArrivals
                                 .map((arrival) => arrival.patient)
                                 .toList();
                           }
@@ -81,14 +82,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onAppointmentPatients),
                                 SizedBox(height: 20),
                                 _buildDetailGrid([], walkInPatients,
-                                    newPatients, onAppointmentPatients),
+                                    newPatients, onAppointmentPatients, [], []),
                               ],
                             );
                           } else if (appointmentState is AppointmentLoaded &&
                               patientState is TodaysPatientsLoaded) {
                             final appointments = appointmentState.appointments;
 
-                            // Convert newPatients from dynamic to Patient
                             newPatients = (patientState as TodaysPatientsLoaded)
                                 .todaysPatients
                                 .map((e) => e as Patient)
@@ -99,8 +99,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 _buildInfoCards(appointments, walkInPatients,
                                     newPatients, onAppointmentPatients),
                                 SizedBox(height: 20),
-                                _buildDetailGrid(appointments, walkInPatients,
-                                    newPatients, onAppointmentPatients),
+                                _buildDetailGrid(
+                                    appointments,
+                                    walkInPatients,
+                                    newPatients,
+                                    onAppointmentPatients,
+                                    onAppointmentArrivals,
+                                    walkInArrivals),
                               ],
                             );
                           } else if (appointmentState is AppointmentError) {
@@ -146,12 +151,6 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.red,
         ),
         InfoCard(
-          title: 'Arrived Patient',
-          count: onAppointmentPatients.length,
-          icon: Icons.person_outline,
-          color: Color.fromARGB(255, 7, 118, 179),
-        ),
-        InfoCard(
           title: 'Walk-In Patients',
           count: walkInPatients.length,
           icon: Icons.person_outline,
@@ -163,6 +162,12 @@ class _HomeScreenState extends State<HomeScreen> {
           icon: Icons.person_add,
           color: Colors.blue,
         ),
+        InfoCard(
+          title: 'Arrived Patient',
+          count: onAppointmentPatients.length,
+          icon: Icons.person_outline,
+          color: Color.fromARGB(255, 7, 118, 179),
+        ),
       ],
     );
   }
@@ -171,29 +176,78 @@ class _HomeScreenState extends State<HomeScreen> {
       List<Appointment> appointments,
       List<Patient> walkInPatients,
       List<Patient> newPatients,
-      List<Patient> onAppointmentPatients) {
+      List<Patient> onAppointmentPatients,
+      List<Arrival> onAppointmentArrivals,
+      List<Arrival> walkInArrivals) {
     return StaggeredGrid.count(
-      crossAxisCount: 3,
+      crossAxisCount: 4,
       mainAxisSpacing: 16,
       crossAxisSpacing: 16,
       children: [
         DetailCard(
           title: 'Today\'s Appointment',
           appointments: appointments,
+          onDelete: (patient) {
+            // Handle delete action for appointments if needed
+          },
         ),
         DetailCard(
           title: 'Today\'s Walk-In Patients',
           patients: walkInPatients,
+          arrivals: walkInArrivals, // Pass arrivals for walk-in patients
+          onDelete: (patient) async {
+            final arrival =
+                walkInArrivals.firstWhere((a) => a.patient.id == patient.id);
+            bool? confirmDelete = await _showConfirmationDialog(context);
+            if (confirmDelete ?? false) {
+              context.read<ArrivalBloc>().add(DeleteArrivalEvent(arrival.id));
+            }
+          },
         ),
         DetailCard(
           title: 'Today\'s New Patients',
           patients: newPatients,
+          onDelete: (patient) {
+            // Handle delete action for new patients if needed
+          },
         ),
         DetailCard(
           title: 'Arrived Patient',
           patients: onAppointmentPatients,
+          arrivals:
+              onAppointmentArrivals, // Pass arrivals for on-appointment patients
+          onDelete: (patient) async {
+            final arrival = onAppointmentArrivals
+                .firstWhere((a) => a.patient.id == patient.id);
+            bool? confirmDelete = await _showConfirmationDialog(context);
+            if (confirmDelete ?? false) {
+              context.read<ArrivalBloc>().add(DeleteArrivalEvent(arrival.id));
+            }
+          },
         ),
       ],
+    );
+  }
+
+  Future<bool?> _showConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete this item?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

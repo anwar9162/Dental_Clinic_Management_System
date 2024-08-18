@@ -47,4 +47,22 @@ class ArrivalService {
       throw Exception('Failed to load arrivals: ${response.body}');
     }
   }
+
+  // Method to delete an arrival by ID
+  Future<void> deleteArrival(String id) async {
+    final response = await http.delete(
+      Uri.parse('$apiUrl/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Successfully deleted
+      print('Arrival deleted successfully');
+    } else {
+      // Handle the error
+      throw Exception('Failed to delete arrival: ${response.body}');
+    }
+  }
 }

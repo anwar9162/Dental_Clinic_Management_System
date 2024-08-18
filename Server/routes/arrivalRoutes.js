@@ -43,5 +43,22 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 });
+// Route to delete an arrival by ID
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find and delete the arrival
+    const arrival = await Arrival.findByIdAndDelete(id);
+
+    if (!arrival) {
+      return res.status(404).json({ message: "Arrival not found" });
+    }
+
+    res.status(200).json({ message: "Arrival deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+});
 
 module.exports = router;
