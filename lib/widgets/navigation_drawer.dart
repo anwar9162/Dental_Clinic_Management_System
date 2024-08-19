@@ -98,23 +98,6 @@ class CustomNavigationDrawer extends StatelessWidget {
           ),
           Divider(color: Colors.white54),
           ListTile(
-            leading: Icon(Icons.person_outline, color: Colors.white),
-            title: Text('Patient Record',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w500)),
-            tileColor: selectedRoute == '/patientrecord' ? selectedColor : null,
-            onTap: () {
-              onMenuTap(
-                '/patientrecord',
-                arguments: Patient(
-                  firstName: "Kibrom",
-                  lastName: "Adinew",
-                  phoneNumber: "0712345678",
-                ),
-              );
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.videocam, color: Colors.white),
             title: Text('Telemedicine',
                 style: TextStyle(
