@@ -41,7 +41,7 @@ router.get("/today", async (req, res) => {
 
     const arrivals = await Arrival.find({
       arrivalTime: { $gte: today, $lt: tomorrow },
-      status: 'Arrived', // Include this if you want to filter by status as well
+     
     }).populate("patientId", "firstName lastName phoneNumber");
 
     res.status(200).json(arrivals);
