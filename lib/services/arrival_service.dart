@@ -36,8 +36,8 @@ class ArrivalService {
   }
 
   // Optional: Method to get all arrivals
-  Future<List<dynamic>> getAllArrivals() async {
-    final response = await http.get(Uri.parse(apiUrl));
+  Future<List<dynamic>> gettodayArrivals() async {
+    final response = await http.get(Uri.parse('$apiUrl/today'));
 
     if (response.statusCode == 200) {
       // Successfully fetched arrivals

@@ -44,17 +44,7 @@ console.log(today);
   }).populate('patient').populate('doctor');
 };
 
-const getArrivedPatients = async () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
 
-  return await Appointment.find({
-    date: { $gte: today, $lt: tomorrow },
-    status: 'Arrived',
-  }).populate('patient').populate('doctor');
-};
 
 const getVisitHistory = async (patientId) => {
   return await Appointment.find({
@@ -69,7 +59,7 @@ module.exports = {
   updateAppointment,
   deleteAppointment,
   getTodaysAppointments,
-  getArrivedPatients,
+ 
   getVisitHistory,
 
 };

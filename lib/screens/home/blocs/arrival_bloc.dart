@@ -37,7 +37,7 @@ class ArrivalBloc extends Bloc<ArrivalEvent, ArrivalState> {
       LoadArrivalsEvent event, Emitter<ArrivalState> emit) async {
     emit(ArrivalLoadingState());
     try {
-      final arrivalsJson = await arrivalService.getAllArrivals();
+      final arrivalsJson = await arrivalService.gettodayArrivals();
       print('Raw arrivals JSON: $arrivalsJson'); // Debug log
 
       final arrivals = arrivalsJson

@@ -31,18 +31,25 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Route to get all arrivals (optional)
-router.get("/", async (req, res) => {
+// Route to get all arrivals for today
+router.get("/today", async (req, res) => {
   try {
-    const arrivals = await Arrival.find().populate(
-      "patientId",
-      "firstName lastName phoneNumber"
-    ); // Populate patient details
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const arrivals = await Arrival.find({
+      arrivalTime: { $gte: today, $lt: tomorrow },
+      status: 'Arrived', // Include this if you want to filter by status as well
+    }).populate("patientId", "firstName lastName phoneNumber");
+
     res.status(200).json(arrivals);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
 });
+
 // Route to delete an arrival by ID
 router.delete("/:id", async (req, res) => {
   try {
