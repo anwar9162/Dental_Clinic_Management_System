@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
+import 'navigation_drawer.dart'; // Import your custom drawer
 import '../screens/home/home_screen.dart';
 import '../screens/patient/medical_information_screen.dart';
 import '../screens/appointment/appointment_list_screen.dart';
@@ -6,11 +7,8 @@ import '../screens/doctor/doctor_list_screen.dart';
 import '../screens/billing/billing_list_screen.dart';
 import '../screens/appointment/add_appointment_screen.dart';
 import '../screens/appointment/appointment_calendar_screen.dart';
-import '../widgets/navigation_drawer.dart';
-import '../screens/patient/patient_record_screen.dart';
-import '../screens/Tele_Medicine/telemedicine_screen.dart';
 import '../screens/patient/patient_list_screen.dart';
-import '../models/patient_model.dart';
+import '../screens/Tele_Medicine/telemedicine_screen.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -31,59 +29,53 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          CustomNavigationDrawer(
-            onMenuTap: _onMenuTap,
-            selectedRoute: _currentScreen, // Pass the current route here
-          ),
-          Expanded(
-            child: Navigator(
-              key: GlobalKey<NavigatorState>(),
-              onGenerateRoute: (settings) {
-                WidgetBuilder builder;
-                switch (_currentScreen) {
-                  case '/':
-                    builder = (context) => HomeScreen();
-                    break;
-                  case '/medical-information':
-                    builder = (context) => MedicalInformationScreen();
-                    break;
-                  case '/patient-lists':
-                    builder = (context) => PatientListScreen();
-                    break;
-                  case '/appointments':
-                    builder = (context) => AppointmentListScreen();
-                    break;
-                  case '/appointment-calendar':
-                    builder = (context) => AppointmentCalendarScreen();
-                    break;
-                  case '/doctors':
-                    builder = (context) => DoctorListScreen();
-                    break;
-                  case '/billing':
-                    builder = (context) => BillingListScreen();
-                    break;
-                  case '/add-appointment':
-                    builder = (context) => AddAppointmentScreen();
-                    break;
-                  //case '/patientrecord':
-                  //builder = (context) =>
-                  //  PatientRecordScreen(patient: _arguments as Patient);
-                  //break;
-                  case '/Telemedicine':
-                    builder = (context) => TelemedicineScreen();
-                    break;
-                  default:
-                    builder = (context) => HomeScreen();
-                    break;
-                }
-                return MaterialPageRoute(builder: builder);
-              },
-            ),
-          ),
-        ],
+      drawer: CustomNavigationDrawer(
+        onMenuTap: _onMenuTap,
+        selectedRoute: _currentScreen, // Pass the current route here
+      ),
+      appBar: AppBar(
+        title: Text('Dental Clinic Management'),
+      ),
+      body: Navigator(
+        key: GlobalKey<NavigatorState>(),
+        onGenerateRoute: (settings) {
+          WidgetBuilder builder;
+          switch (_currentScreen) {
+            case '/':
+              builder = (context) => HomeScreen();
+              break;
+            case '/medical-information':
+              builder = (context) => MedicalInformationScreen();
+              break;
+            case '/patient-lists':
+              builder = (context) => PatientListScreen();
+              break;
+            case '/appointments':
+              builder = (context) => AppointmentListScreen();
+              break;
+            case '/appointment-calendar':
+              builder = (context) => AppointmentCalendarScreen();
+              break;
+            case '/doctors':
+              builder = (context) => DoctorListScreen();
+              break;
+            case '/billing':
+              builder = (context) => BillingListScreen();
+              break;
+            case '/add-appointment':
+              builder = (context) => AddAppointmentScreen();
+              break;
+            case '/Telemedicine':
+              builder = (context) => TelemedicineScreen();
+              break;
+            default:
+              builder = (context) => HomeScreen();
+              break;
+          }
+          return MaterialPageRoute(builder: builder);
+        },
       ),
     );
   }
 }
+*/
