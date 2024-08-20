@@ -5,12 +5,11 @@ import 'screens/home/home_screen.dart';
 import 'screens/patient/medical_information_screen.dart';
 import 'screens/appointment/appointment_list_screen.dart';
 import 'screens/doctor/doctor_list_screen.dart';
-import 'screens/billing/billing_list_screen.dart';
-import 'screens/appointment/add_appointment_screen.dart';
+
 import 'screens/appointment/appointment_calendar_screen.dart';
 import 'screens/patient/patient_list_screen.dart';
 import 'screens/Tele_Medicine/telemedicine_screen.dart';
-import 'widgets/navigation_drawer.dart'; // Import CustomNavigationDrawer
+
 import 'main_scaffold.dart'; // Import MainScaffold
 
 class RouteConfig {
@@ -48,16 +47,7 @@ class RouteConfig {
           pageBuilder: (context, state) =>
               _buildPageWithDrawer(context, DoctorListScreen(), state),
         ),
-        GoRoute(
-          path: '/billing',
-          pageBuilder: (context, state) =>
-              _buildPageWithDrawer(context, BillingListScreen(), state),
-        ),
-        GoRoute(
-          path: '/add-appointment',
-          pageBuilder: (context, state) =>
-              _buildPageWithDrawer(context, AddAppointmentScreen(), state),
-        ),
+
         GoRoute(
           path: '/Telemedicine',
           pageBuilder: (context, state) =>

@@ -1,24 +1,40 @@
-// main_scaffold.dart
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'widgets/navigation_drawer.dart'; // Ensure this path is correct
+import 'navigation_drawer.dart' as custom_drawer;
 
-class MainScaffold extends StatelessWidget {
+class MainScaffold extends StatefulWidget {
   final Widget child;
   final String currentRoute;
 
   MainScaffold({required this.child, required this.currentRoute});
 
   @override
+  _MainScaffoldState createState() => _MainScaffoldState();
+}
+
+class _MainScaffoldState extends State<MainScaffold> {
+  bool _isDrawerExpanded = true;
+
+  void _toggleDrawer() {
+    setState(() {
+      _isDrawerExpanded = !_isDrawerExpanded;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: CustomNavigationDrawer(
-        onMenuTap: (route, {Object? arguments}) {
-          GoRouter.of(context).go(route);
-        },
-        selectedRoute: currentRoute,
+      body: Row(
+        children: [
+          custom_drawer.NavigationDrawer(
+            currentRoute: widget.currentRoute,
+            isExpanded: _isDrawerExpanded,
+            onToggleDrawer: _toggleDrawer,
+          ),
+          Expanded(
+            child: widget.child,
+          ),
+        ],
       ),
-      body: child,
     );
   }
 }
