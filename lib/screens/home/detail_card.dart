@@ -32,7 +32,7 @@ class DetailCard extends StatelessWidget {
           gradient: LinearGradient(
             colors: [
               Color.fromARGB(255, 252, 252, 252),
-              Color.fromARGB(255, 198, 243, 211),
+              Color.fromARGB(255, 244, 248, 245),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
