@@ -210,6 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onDelete: (patient) {
             // Handle delete action for new patients if needed
           },
+          isNewPatientCard: true, // Specify that this card is for new patients
         ),
         DetailCard(
           title: 'Arrived Patient',

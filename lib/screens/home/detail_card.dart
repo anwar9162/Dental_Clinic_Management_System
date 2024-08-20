@@ -10,13 +10,15 @@ class DetailCard extends StatelessWidget {
   final List<Patient>? patients;
   final List<Arrival>? arrivals; // Added for arrival times
   final Function(Patient) onDelete;
+  final bool isNewPatientCard; // Flag to handle new patients differently
 
   const DetailCard({
     required this.title,
     this.appointments,
     this.patients,
-    this.arrivals, // Added for arrival times
+    this.arrivals,
     required this.onDelete,
+    this.isNewPatientCard = false, // Default to false if not specified
   });
 
   @override
@@ -88,44 +90,69 @@ class DetailCard extends StatelessWidget {
                       // Handle the patient item
                       final patientIndex = index - (appointments?.length ?? 0);
                       final patient = patients![patientIndex];
-                      final arrival = arrivals?.firstWhere(
-                        (a) => a.patient.id == patient.id,
-                        orElse: () => Arrival(
-                          id: '',
-                          patient: patient,
-                          arrivalTime: DateTime.now(),
-                          arrivalType: '',
-                        ),
-                      );
-                      return ListTile(
-                        title: Row(
-                          children: [
-                            Text(patient.firstName,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16)),
-                            SizedBox(
-                                width:
-                                    8), // Space between first name and last name
-                            Text(patient.lastName,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16)),
-                          ],
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                'Arrival Time: ${_formatTime(arrival?.arrivalTime ?? DateTime.now())}',
-                                style: TextStyle(fontSize: 14)),
-                            Text('Note: ${arrival!.notes ?? 'N/A'}',
-                                style: TextStyle(fontSize: 14)),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => onDelete(patient),
-                        ),
-                      );
+                      if (isNewPatientCard) {
+                        // New Patient card logic
+                        return ListTile(
+                          title: Row(
+                            children: [
+                              Text(patient.firstName,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
+                              SizedBox(width: 8),
+                              Text(patient.lastName,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
+                            ],
+                          ),
+                          subtitle: Text(patient.phoneNumber),
+                          //trailing: IconButton(
+                          //   icon: Icon(Icons.delete, color: Colors.red),
+                          //  onPressed: () => onDelete(patient),
+                          //    ),
+                        );
+                      } else {
+                        // Regular patient card logic
+                        final arrival = arrivals?.firstWhere(
+                          (a) => a.patient.id == patient.id,
+                          orElse: () => Arrival(
+                            id: '',
+                            patient: patient,
+                            arrivalTime: DateTime.now(),
+                            arrivalType: '',
+                          ),
+                        );
+                        return ListTile(
+                          title: Row(
+                            children: [
+                              Text(patient.firstName,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
+                              SizedBox(width: 8),
+                              Text(patient.lastName,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'Arrival Time: ${_formatTime(arrival?.arrivalTime ?? DateTime.now())}',
+                                  style: TextStyle(fontSize: 14)),
+                              Text('Note: ${arrival!.notes ?? 'N/A'}',
+                                  style: TextStyle(fontSize: 14)),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => onDelete(patient),
+                          ),
+                        );
+                      }
                     }
                   },
                 ),
