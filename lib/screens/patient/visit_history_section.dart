@@ -51,6 +51,7 @@ class VisitHistorySection extends StatelessWidget {
         Text(
           'Visit History',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.blueGrey[800], // Professional color
               ),
@@ -70,13 +71,14 @@ class VisitHistorySection extends StatelessWidget {
       title: Text(
         'Date: ${DateFormat('yyyy-MM-dd').format(visit.date)}',
         style: TextStyle(
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           color: Colors.blueGrey[700],
         ),
       ),
       subtitle: Text(
         visit.reason ?? 'No reason provided',
-        style: TextStyle(color: Colors.grey[600]),
+        style: TextStyle(color: Colors.grey[600], fontSize: 12),
       ),
       children: [
         if (visit.chiefComplaint != null ||

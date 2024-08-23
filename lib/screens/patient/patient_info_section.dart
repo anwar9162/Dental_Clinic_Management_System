@@ -49,7 +49,7 @@ class _PatientInfoSectionState extends State<PatientInfoSection> {
       child: Row(
         children: [
           _buildProfileImage(),
-          SizedBox(width: 16),
+          SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +58,7 @@ class _PatientInfoSectionState extends State<PatientInfoSection> {
                 SizedBox(height: 8),
                 Text(
                   widget.patient.phoneNumber ?? 'N/A',
-                  style: TextStyle(fontSize: 16, color: Colors.blueGrey[800]),
+                  style: TextStyle(fontSize: 10, color: Colors.blueGrey[800]),
                 ),
               ],
             ),
@@ -129,7 +129,7 @@ class _PatientInfoSectionState extends State<PatientInfoSection> {
     return Text(
       '${firstName ?? 'Unknown'} ${lastName ?? 'Patient'}',
       style: TextStyle(
-        fontSize: 20,
+        fontSize: 12,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
       ),
@@ -159,7 +159,7 @@ class _PatientInfoSectionState extends State<PatientInfoSection> {
               value,
               style: TextStyle(
                 color: Colors.blueGrey[600],
-                fontSize: 16,
+                fontSize: 12,
               ),
             ),
           ),

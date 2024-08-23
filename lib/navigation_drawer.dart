@@ -16,7 +16,7 @@ class NavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double drawerWidth = isExpanded ? 250.0 : 50.0;
+    double drawerWidth = isExpanded ? 175.0 : 50.0;
 
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
@@ -42,7 +42,7 @@ class NavigationDrawer extends StatelessWidget {
                       Icon(
                         Icons.local_hospital,
                         color: Colors.white,
-                        size: 36.0,
+                        size: 30.0,
                       ),
                       SizedBox(width: 10.0),
                       Text(
@@ -182,6 +182,7 @@ class NavigationDrawer extends StatelessWidget {
               style: TextStyle(
                 color: isSelected ? Colors.white : Colors.white70,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 14,
               ),
             )
           : null,

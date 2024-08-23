@@ -127,18 +127,20 @@ class _MedicalInformationScreenState extends State<MedicalInformationScreen> {
                                         patient.lastName!,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14),
+                                        fontSize: 12),
                                   ),
                                   subtitle: Text(
                                     'Phone: ${patient.phoneNumber}',
-                                    style: TextStyle(color: Colors.grey[700]),
+                                    style: TextStyle(
+                                        color: Colors.grey[700], fontSize: 12),
                                   ),
                                   leading: Icon(
                                     Icons.person,
                                     color: Colors.teal,
+                                    size: 18,
                                   ),
                                   trailing: Icon(Icons.arrow_forward_ios,
-                                      color: Colors.teal),
+                                      size: 10, color: Colors.teal),
                                   onTap: () {
                                     setState(() {
                                       selectedPatient = patient;
@@ -154,7 +156,7 @@ class _MedicalInformationScreenState extends State<MedicalInformationScreen> {
                   ),
                 ),
                 Expanded(
-                  flex: 4,
+                  flex: 5,
                   child: selectedPatient == null
                       ? Center(
                           child: Text(
