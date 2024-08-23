@@ -9,6 +9,7 @@ import 'screens/doctor/doctor_list_screen.dart';
 import 'screens/appointment/appointment_calendar_screen.dart';
 import 'screens/patient/patient_list_screen.dart';
 import 'screens/Tele_Medicine/telemedicine_screen.dart';
+import 'screens/login/login_screen.dart';
 
 import 'main_scaffold.dart'; // Import MainScaffold
 
@@ -52,6 +53,11 @@ class RouteConfig {
           path: '/Telemedicine',
           pageBuilder: (context, state) =>
               _buildPageWithDrawer(context, TelemedicineScreen(), state),
+        ),
+        GoRoute(
+          path: '/login',
+          pageBuilder: (context, state) =>
+              _buildPageWithDrawer(context, LoginScreen(), state),
         ),
         // Add more routes as needed
       ],

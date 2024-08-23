@@ -5,11 +5,13 @@ class NavigationDrawer extends StatelessWidget {
   final String currentRoute;
   final bool isExpanded;
   final VoidCallback onToggleDrawer;
+  final VoidCallback onLogout; // Add callback for log out
 
   NavigationDrawer({
     required this.currentRoute,
     required this.isExpanded,
     required this.onToggleDrawer,
+    required this.onLogout, // Initialize callback
   });
 
   @override
@@ -119,7 +121,34 @@ class NavigationDrawer extends StatelessWidget {
                   currentRoute: currentRoute,
                   isExpanded: isExpanded,
                 ),
+                _buildDrawerItem(
+                  context: context,
+                  title: 'Login',
+                  icon: Icons.person,
+                  route: '/login',
+                  currentRoute: currentRoute,
+                  isExpanded: isExpanded,
+                ),
               ],
+            ),
+          ),
+          // Log Out Button
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: onLogout,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.red, // Button color
+                backgroundColor: Colors.white, // Text color
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.logout),
+                  SizedBox(width: 8.0),
+                  Text('Log Out'),
+                ],
+              ),
             ),
           ),
           IconButton(

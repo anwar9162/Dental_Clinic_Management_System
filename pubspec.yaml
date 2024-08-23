@@ -105,6 +105,8 @@ flutter:
     - assets/images/Teeth-month-3.jpg
     - assets/images/Xray1.jpg
     - assets/images/Xray2.jpg
+    - assets/images/dental_clinic_logo.png
+    - assets/images/dental_clinic_logo2.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

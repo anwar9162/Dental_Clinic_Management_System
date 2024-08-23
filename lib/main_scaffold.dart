@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'navigation_drawer.dart' as custom_drawer;
+import 'package:go_router/go_router.dart'; // Import GoRouter for navigation
 
 class MainScaffold extends StatefulWidget {
   final Widget child;
@@ -20,6 +21,12 @@ class _MainScaffoldState extends State<MainScaffold> {
     });
   }
 
+  void _logout() {
+    // Handle log out logic here
+    // For example, clear user session and navigate to login page
+    GoRouter.of(context).go('/login'); // Replace with your actual login route
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +36,7 @@ class _MainScaffoldState extends State<MainScaffold> {
             currentRoute: widget.currentRoute,
             isExpanded: _isDrawerExpanded,
             onToggleDrawer: _toggleDrawer,
+            onLogout: _logout, // Pass the log out callback
           ),
           Expanded(
             child: widget.child,
