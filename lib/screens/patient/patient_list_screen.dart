@@ -163,9 +163,9 @@ class _PatientListScreenState extends State<PatientListScreen> {
                 DataCell(Text(patient['firstName'] ?? '')),
                 DataCell(Text(patient['lastName'] ?? '')),
                 DataCell(Text(patient['phoneNumber'] ?? '')),
-                DataCell(Text(patient['Gender'] ?? '')),
+                DataCell(Text(patient['gender'] ?? '')),
                 DataCell(Text(formattedDateOfBirth)), // Display formatted date
-                DataCell(Text(patient['Address'] ?? '')),
+                DataCell(Text(patient['address'] ?? '')),
                 DataCell(Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
