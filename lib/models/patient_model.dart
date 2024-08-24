@@ -197,14 +197,14 @@ class HPI {
 class PhysicalExamination {
   final String bloodPressure;
   final String temperature;
-  final String pulse;
-  final String respirationRate;
+  final String? pulse;
+  final String? respirationRate;
 
   PhysicalExamination({
     required this.bloodPressure,
     required this.temperature,
-    required this.pulse,
-    required this.respirationRate,
+    this.pulse,
+    this.respirationRate,
   });
 
   factory PhysicalExamination.fromJson(Map<String, dynamic> json) {
