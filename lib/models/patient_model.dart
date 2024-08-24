@@ -59,8 +59,8 @@ class Visit {
   final String? reason;
   final ChiefComplaint? chiefComplaint;
   final HPI? historyOfPresentIllness;
-  final PhysicalExamination physicalExamination;
-  final GeneralAppearance generalAppearance;
+  final PhysicalExamination? physicalExamination;
+  final GeneralAppearance? generalAppearance;
   final ExtraOral? extraOral;
   final InternalOral internalOral;
   final Diagnosis? diagnosis;
@@ -74,8 +74,8 @@ class Visit {
     this.reason,
     this.chiefComplaint,
     this.historyOfPresentIllness,
-    required this.physicalExamination,
-    required this.generalAppearance,
+    this.physicalExamination,
+    this.generalAppearance,
     this.extraOral,
     required this.internalOral,
     this.diagnosis,
@@ -125,8 +125,8 @@ class Visit {
       'reason': reason,
       'chiefComplaint': chiefComplaint?.toJson(),
       'historyOfPresentIllness': historyOfPresentIllness?.toJson(),
-      'physicalExamination': physicalExamination.toJson(),
-      'generalAppearance': generalAppearance.toJson(),
+      'physicalExamination': physicalExamination?.toJson(),
+      'generalAppearance': generalAppearance?.toJson(),
       'extraOral': extraOral?.toJson(),
       'internalOral': internalOral.toJson(),
       'diagnosis': diagnosis?.toJson(),
@@ -139,14 +139,14 @@ class Visit {
 }
 
 class ChiefComplaint {
-  final String description;
-  final String duration;
-  final String severity;
+  final String? description;
+  final String? duration;
+  final String? severity;
 
   ChiefComplaint({
-    required this.description,
-    required this.duration,
-    required this.severity,
+    this.description,
+    this.duration,
+    this.severity,
   });
 
   factory ChiefComplaint.fromJson(Map<String, dynamic> json) {
@@ -167,14 +167,14 @@ class ChiefComplaint {
 }
 
 class HPI {
-  final String onset;
-  final String progression;
-  final String associatedSymptoms;
+  final String? onset;
+  final String? progression;
+  final String? associatedSymptoms;
 
   HPI({
-    required this.onset,
-    required this.progression,
-    required this.associatedSymptoms,
+    this.onset,
+    this.progression,
+    this.associatedSymptoms,
   });
 
   factory HPI.fromJson(Map<String, dynamic> json) {
@@ -195,14 +195,14 @@ class HPI {
 }
 
 class PhysicalExamination {
-  final String bloodPressure;
-  final String temperature;
+  final String? bloodPressure;
+  final String? temperature;
   final String? pulse;
   final String? respirationRate;
 
   PhysicalExamination({
-    required this.bloodPressure,
-    required this.temperature,
+    this.bloodPressure,
+    this.temperature,
     this.pulse,
     this.respirationRate,
   });
