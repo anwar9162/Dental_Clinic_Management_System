@@ -13,16 +13,16 @@ class VisitHistorySection extends StatelessWidget {
     final reversedVisits = (visits ?? []).reversed.toList();
 
     return Container(
-      width: double.infinity, // Full width of the parent
-      color: Colors.white, // White background for the section
+      width: double.infinity,
+      color: Colors.white,
       child: Card(
-        elevation: 0, // Remove shadow for a flat design
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0), // Rounded corners
+          borderRadius: BorderRadius.circular(8.0),
         ),
-        color: Colors.white, // White background for the card
+        color: Colors.white,
         child: Padding(
-          padding: const EdgeInsets.all(16.0), // Padding for spacing
+          padding: const EdgeInsets.all(8.0), // Reduced padding
           child: reversedVisits.isEmpty
               ? _buildNoVisitHistory()
               : _buildVisitHistory(context, reversedVisits),
@@ -37,8 +37,8 @@ class VisitHistorySection extends StatelessWidget {
         'No visit history available',
         style: TextStyle(
           color: Colors.grey[700],
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
+          fontSize: 14, // Reduced font size
+          fontWeight: FontWeight.w400,
         ),
       ),
     );
@@ -50,15 +50,15 @@ class VisitHistorySection extends StatelessWidget {
       children: [
         Text(
           'Visit History',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontSize: 16,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontSize: 14, // Reduced font size
                 fontWeight: FontWeight.bold,
-                color: Colors.blueGrey[800], // Professional color
+                color: Colors.blueGrey[800],
               ),
         ),
-        SizedBox(height: 12),
+        SizedBox(height: 8), // Reduced space
         ...visits.map((visit) => Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
+              padding: const EdgeInsets.only(bottom: 8.0), // Reduced space
               child: _buildVisitExpansionTile(visit),
             )),
       ],
@@ -67,61 +67,79 @@ class VisitHistorySection extends StatelessWidget {
 
   Widget _buildVisitExpansionTile(Visit visit) {
     return ExpansionTile(
-      leading: Icon(Icons.history, color: Colors.blueGrey[600]),
+      leading: Icon(Icons.history,
+          color: Colors.blueGrey[600], size: 24), // Smaller icon
       title: Text(
         'Date: ${DateFormat('yyyy-MM-dd').format(visit.date)}',
         style: TextStyle(
-          fontSize: 14,
+          fontSize: 12, // Reduced font size
           fontWeight: FontWeight.bold,
           color: Colors.blueGrey[700],
         ),
       ),
       subtitle: Text(
         visit.reason ?? 'No reason provided',
-        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+        style: TextStyle(
+            color: Colors.grey[600], fontSize: 12), // Reduced font size
       ),
       children: [
         if (visit.chiefComplaint != null ||
             visit.historyOfPresentIllness != null)
           _buildCategoryRow(
-            visit.chiefComplaint != null ? 'Chief Complaint' : null,
+            visit.chiefComplaint != null
+                ? 'Chief Complaint'
+                : 'Chief Complaint (No data)',
             visit.chiefComplaint,
             visit.historyOfPresentIllness != null
                 ? 'History of Present Illness'
-                : null,
+                : 'History of Present Illness (No data)',
             visit.historyOfPresentIllness,
-          ),
-        if (visit.physicalExamination != null ||
-            visit.generalAppearance != null)
-          _buildCategoryRow(
-            visit.physicalExamination != null ? 'Physical Examination' : null,
+            visit.physicalExamination != null
+                ? 'Physical Examination'
+                : 'Physical Examination (No data)',
             visit.physicalExamination,
-            visit.generalAppearance != null ? 'General Appearance' : null,
-            visit.generalAppearance,
           ),
-        if (visit.extraOral != null || visit.internalOral != null)
+        if (visit.generalAppearance != null ||
+            visit.extraOral != null ||
+            visit.internalOral != null)
           _buildCategoryRow(
-            visit.extraOral != null ? 'Extra Oral Examination' : null,
+            visit.generalAppearance != null
+                ? 'General Appearance'
+                : 'General Appearance (No data)',
+            visit.generalAppearance,
+            visit.extraOral != null
+                ? 'Extra Oral Examination'
+                : 'Extra Oral Examination (No data)',
             visit.extraOral,
-            visit.internalOral != null ? 'Internal Oral Examination' : null,
+            visit.internalOral != null
+                ? 'Internal Oral Examination'
+                : 'Internal Oral Examination (No data)',
             visit.internalOral,
           ),
-        if (visit.diagnosis != null || visit.treatmentPlan != null)
-          _buildCategoryRow(
-            visit.diagnosis != null ? 'Diagnosis' : null,
-            visit.diagnosis,
-            visit.treatmentPlan != null ? 'Treatment Plan' : null,
-            visit.treatmentPlan,
-          ),
-        if (visit.treatmentDone != null ||
+        if (visit.diagnosis != null ||
+            visit.treatmentPlan != null ||
+            visit.treatmentDone != null ||
             visit.progressNotes != null ||
             visit.payment != null)
           _buildCategoryRow(
-            visit.treatmentDone != null ? 'Treatment Done' : null,
+            visit.diagnosis != null ? 'Diagnosis' : 'Diagnosis (No data)',
+            visit.diagnosis,
+            visit.treatmentPlan != null
+                ? 'Treatment Plan'
+                : 'Treatment Plan (No data)',
+            visit.treatmentPlan,
+            visit.treatmentDone != null
+                ? 'Treatment Done'
+                : 'Treatment Done (No data)',
             visit.treatmentDone,
-            visit.progressNotes != null ? 'Progress Notes' : null,
+          ),
+        if (visit.progressNotes != null || visit.payment != null)
+          _buildCategoryRow(
+            visit.progressNotes != null
+                ? 'Progress Notes'
+                : 'Progress Notes (No data)',
             visit.progressNotes,
-            visit.payment != null ? 'Payment' : null,
+            visit.payment != null ? 'Payment' : 'Payment (No data)',
             visit.payment,
           ),
       ],
@@ -129,26 +147,22 @@ class VisitHistorySection extends StatelessWidget {
   }
 
   Widget _buildCategoryRow(
-      String? title1, dynamic content1, String? title2, dynamic content2,
+      String title1, dynamic content1, String title2, dynamic content2,
       [String? title3, dynamic content3]) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0), // Reduced space
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: title1 != null
-                ? _buildCategorySection(title1, content1)
-                : Container(),
+            child: _buildCategorySection(title1, content1),
           ),
-          SizedBox(width: 12),
+          SizedBox(width: 8), // Reduced space
           Expanded(
-            child: title2 != null
-                ? _buildCategorySection(title2, content2)
-                : Container(),
+            child: _buildCategorySection(title2, content2),
           ),
           if (title3 != null) ...[
-            SizedBox(width: 12),
+            SizedBox(width: 8), // Reduced space
             Expanded(
               child: _buildCategorySection(title3, content3),
             ),
@@ -159,12 +173,16 @@ class VisitHistorySection extends StatelessWidget {
   }
 
   Widget _buildCategorySection(String title, dynamic content) {
+    if (content == null) {
+      content = 'No data available'; // Default value for null content
+    }
+
     if (content is List<ProgressNote>) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCategoryHeader(title),
-          SizedBox(height: 8),
+          SizedBox(height: 4), // Reduced space
           ...content.map((item) => _buildProgressNoteRow(item)).toList(),
         ],
       );
@@ -174,7 +192,7 @@ class VisitHistorySection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCategoryHeader(title),
-          SizedBox(height: 8),
+          SizedBox(height: 4), // Reduced space
           _buildCategoryDetails(contentMap),
         ],
       );
@@ -183,13 +201,14 @@ class VisitHistorySection extends StatelessWidget {
 
   Widget _buildCategoryHeader(String title) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(
+          vertical: 4.0, horizontal: 8.0), // Reduced padding
       child: Text(
         title,
         style: TextStyle(
           fontWeight: FontWeight.bold,
           color: Color.fromARGB(255, 49, 190, 255),
-          fontSize: 15,
+          fontSize: 12, // Reduced font size
         ),
       ),
     );
@@ -206,29 +225,32 @@ class VisitHistorySection extends StatelessWidget {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(
+          vertical: 4.0, horizontal: 8.0), // Reduced padding
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 2,
+            flex: 1,
             child: Text(
               label,
               style: TextStyle(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: Colors.blueGrey[800],
-                fontSize: 14,
+                fontSize: 12, // Reduced font size
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          SizedBox(width: 8),
+          SizedBox(width: 6), // Reduced space
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Text(
               value,
-              style: TextStyle(color: Colors.blueGrey[600]),
+              style: TextStyle(
+                  color: Colors.blueGrey[600],
+                  fontSize: 12), // Reduced font size
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -240,7 +262,8 @@ class VisitHistorySection extends StatelessWidget {
 
   Widget _buildProgressNoteRow(ProgressNote note) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(
+          vertical: 4.0, horizontal: 8.0), // Reduced padding
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -250,14 +273,18 @@ class VisitHistorySection extends StatelessWidget {
               children: [
                 Text(
                   note.note,
-                  style: TextStyle(color: Colors.blueGrey[600]),
+                  style: TextStyle(
+                      color: Colors.blueGrey[600],
+                      fontSize: 12), // Reduced font size
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 2), // Reduced space
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     DateFormat('yyyy-MM-dd').format(note.createdAt),
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12), // Reduced font size
                   ),
                 ),
               ],
@@ -271,59 +298,65 @@ class VisitHistorySection extends StatelessWidget {
   Map<String, String> _convertToMap(dynamic content) {
     if (content is ChiefComplaint) {
       return {
-        'Description': content.description,
-        'Duration': content.duration,
-        'Severity': content.severity,
+        'Description': content.description ?? 'No data available',
+        'Duration': content.duration ?? 'No data available',
+        'Severity': content.severity ?? 'No data available',
       };
     } else if (content is HPI) {
       return {
-        'Onset': content.onset,
-        'Progression': content.progression,
-        'Associated Symptoms': content.associatedSymptoms,
+        'Onset': content.onset ?? 'No data available',
+        'Progression': content.progression ?? 'No data available',
+        'Associated Symptoms':
+            content.associatedSymptoms ?? 'No data available',
       };
     } else if (content is PhysicalExamination) {
       return {
-        'Blood Pressure': content.bloodPressure,
-        'Temperature': content.temperature,
-        'Pulse': content.pulse,
-        'Respiration Rate': content.respirationRate,
+        'Blood Pressure': content.bloodPressure ?? 'No data available',
+        'Temperature': content.temperature ?? 'No data available',
+        'Pulse': content.pulse ?? 'No data available',
+        'Respiration Rate': content.respirationRate ?? 'No data available',
       };
     } else if (content is GeneralAppearance) {
       return {
-        'Appearance': content.appearance,
-        'Additional Notes': content.additionalNotes ?? 'N/A',
+        'Appearance': content.appearance ?? 'No data available',
+        'Additional Notes': content.additionalNotes ?? 'No data available',
       };
     } else if (content is ExtraOral) {
       return {
-        'Findings': content.findings,
+        'Findings': content.findings ?? 'No data available',
       };
     } else if (content is InternalOral) {
       return {
-        'Findings': content.findings,
+        'Findings': content.findings ?? 'No data available',
       };
     } else if (content is Diagnosis) {
       return {
-        'Condition': content.condition,
-        'Details': content.details,
+        'Condition': content.condition ?? 'No data available',
+        'Details': content.details ?? 'No data available',
       };
     } else if (content is TreatmentPlan) {
       return {
-        'Planned Treatments': content.plannedTreatments.join(', '),
-        'Follow-Up Instructions': content.followUpInstructions ?? 'N/A',
+        'Planned Treatments': content.plannedTreatments.isNotEmpty
+            ? content.plannedTreatments.join(', ')
+            : 'No data available',
+        'Follow-Up Instructions':
+            content.followUpInstructions ?? 'No data available',
       };
     } else if (content is TreatmentDone) {
       return {
-        'Treatments': content.treatments.join(', '),
+        'Treatments': content.treatments.isNotEmpty
+            ? content.treatments.join(', ')
+            : 'No data available',
         'Completion Date': content.completionDate != null
             ? DateFormat('yyyy-MM-dd').format(content.completionDate!)
-            : 'N/A',
+            : 'No data available',
       };
     } else if (content is Payment) {
       return {
         'Amount': content.amount.toString(),
         'Date': DateFormat('yyyy-MM-dd').format(content.date),
         'Status': content.status,
-        'Reason': content.reason ?? 'N/A',
+        'Reason': content.reason ?? 'No data available',
       };
     } else {
       return {};

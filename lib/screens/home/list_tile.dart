@@ -18,19 +18,28 @@ class ListTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       title: Row(
         children: [
-          Text(firstName, style: textStyle),
-          SizedBox(width: 8), // Space between first name and last name
-          Text(lastName, style: textStyle),
+          Expanded(
+            child: Text(
+              '$firstName $lastName',
+              style: textStyle.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Gender: $gender', style: textStyle),
-          Text('Date of Birth: $dateOfBirth', style: textStyle),
-        ],
+      subtitle: Text(
+        '($gender, DOB: $dateOfBirth)',
+        style: textStyle.copyWith(
+          fontSize: 14,
+          color: Colors.black54,
+        ),
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

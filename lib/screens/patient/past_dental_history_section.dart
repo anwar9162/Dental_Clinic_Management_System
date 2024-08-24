@@ -9,64 +9,63 @@ class PastDentalHistorySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity, // Full width of the parent
-      color: Colors.white, // White background for the section
+      width: double.infinity,
+      color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.all(16.0), // Padding for spacing
+        padding: const EdgeInsets.all(8.0), // Reduced padding
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Past Dental History',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.blueGrey[800], // Professional color
+                    fontSize: 14, // Reduced font size
+                    color: Colors.blueGrey[800],
                   ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12), // Reduced spacing
             if (pastDentalHistory == null || pastDentalHistory!.isEmpty)
               Text(
                 'No past dental history available.',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.blueGrey[600], // Professional color
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 12, // Reduced font size
+                      color: Colors.blueGrey[600],
                     ),
               )
             else
               Column(
                 children: pastDentalHistory!.map((entry) {
                   return Container(
-                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    margin: EdgeInsets.symmetric(
+                        vertical: 4.0), // Reduced vertical margin
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           entry.fieldName,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color:
-                                    Colors.blueGrey[700], // Professional color
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12, // Reduced font size
+                                    color: Colors.blueGrey[700],
+                                  ),
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: 2), // Reduced spacing
                         Text(
                           entry.fieldValue.isNotEmpty
                               ? entry.fieldValue
                               : 'No additional information',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                                color:
-                                    Colors.blueGrey[500], // Professional color
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontSize: 12, // Reduced font size
+                                    color: Colors.blueGrey[500],
+                                  ),
                         ),
-                        SizedBox(height: 16), // Spacing between entries
+                        SizedBox(height: 8), // Reduced spacing
                         Divider(
-                          color: Colors
-                              .blueGrey[300], // Subtle divider for separation
+                          color: Colors.blueGrey[300],
+                          thickness: 1, // Thinner divider
                         ),
                       ],
                     ),

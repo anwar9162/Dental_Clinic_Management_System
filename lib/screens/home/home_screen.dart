@@ -194,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
         DetailCard(
           title: 'Today\'s Walk-In Patients',
           patients: walkInPatients,
-          arrivals: walkInArrivals, // Pass arrivals for walk-in patients
+          arrivals: walkInArrivals,
           onDelete: (patient) async {
             final arrival =
                 walkInArrivals.firstWhere((a) => a.patient.id == patient.id);
@@ -210,13 +210,12 @@ class _HomeScreenState extends State<HomeScreen> {
           onDelete: (patient) {
             // Handle delete action for new patients if needed
           },
-          isNewPatientCard: true, // Specify that this card is for new patients
+          isNewPatientCard: true,
         ),
         DetailCard(
           title: 'Arrived Patient',
           patients: onAppointmentPatients,
-          arrivals:
-              onAppointmentArrivals, // Pass arrivals for on-appointment patients
+          arrivals: onAppointmentArrivals,
           onDelete: (patient) async {
             final arrival = onAppointmentArrivals
                 .firstWhere((a) => a.patient.id == patient.id);

@@ -121,13 +121,15 @@ class _MedicalInformationScreenState extends State<MedicalInformationScreen> {
                                   ],
                                 ),
                                 child: ListTile(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 8.0), // Reduced padding
                                   title: Text(
-                                    patient.firstName! +
-                                        " " +
-                                        patient.lastName!,
+                                    '${patient.firstName!} ${patient.lastName!}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 12),
+                                        fontSize: 14), // Adjusted font size
+                                    overflow: TextOverflow
+                                        .ellipsis, // Ensure names stay on one line
                                   ),
                                   subtitle: Text(
                                     'Phone: ${patient.phoneNumber}',
@@ -137,10 +139,13 @@ class _MedicalInformationScreenState extends State<MedicalInformationScreen> {
                                   leading: Icon(
                                     Icons.person,
                                     color: Colors.teal,
-                                    size: 18,
+                                    size: 24, // Adjusted icon size
                                   ),
-                                  trailing: Icon(Icons.arrow_forward_ios,
-                                      size: 10, color: Colors.teal),
+                                  trailing: Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16, // Adjusted icon size
+                                    color: Colors.teal,
+                                  ),
                                   onTap: () {
                                     setState(() {
                                       selectedPatient = patient;
