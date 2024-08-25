@@ -5,8 +5,8 @@ import 'newvisitscreen.dart';
 
 class VisitHistorySection extends StatelessWidget {
   final List<Visit>? visits;
-
-  VisitHistorySection({this.visits});
+  final Patient? patient;
+  VisitHistorySection({this.visits, this.patient});
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,7 @@ class VisitHistorySection extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.add, color: Colors.blueGrey[600]),
               onPressed: () {
-                NewVisitScreen.showAddVisitDialog(context);
+                NewVisitScreen.showAddVisitDialog(context, patient!);
               },
             ),
           ],

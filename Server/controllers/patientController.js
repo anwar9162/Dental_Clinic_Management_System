@@ -316,25 +316,38 @@ const addXrayImages = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-// Add a visit record
 const addVisitRecord = async (req, res) => {
   try {
     const { id } = req.params;
     const visitData = req.body;
 
+    // Log the request body
+    console.log("Received visit data:", visitData);
+
     // Find the patient by ID
     const patient = await Patient.findById(id);
     if (!patient) {
-      return res.status(404).json({ message: "Patient not found" });
+      console.log(`Patient with ID ${id} not found`);
+      const errorResponse = { message: "Patient not found" };
+      console.log("Response:", errorResponse);
+      return res.status(404).json(errorResponse);
     }
 
     // Add the new visit record to the visitHistory
     patient.visitHistory.push(visitData);
-    await patient.save();
+    const updatedPatient = await patient.save();
 
-    res.status(201).json(patient);
+    // Log the successful response
+    console.log("Response:", updatedPatient);
+    res.status(201).json(updatedPatient);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Log the error message
+    console.error("Error adding visit record:", error.message);
+
+    // Log the error response
+    const errorResponse = { error: error.message };
+    console.log("Response:", errorResponse);
+    res.status(500).json(errorResponse);
   }
 };
 

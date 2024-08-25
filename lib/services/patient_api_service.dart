@@ -245,4 +245,55 @@ class PatientApiService {
       throw Exception('Failed to load today\'s patients');
     }
   }
+
+  // Add a visit record
+  // Add a visit record
+  Future<void> addVisitRecord(String id, Map<String, dynamic> visitData) async {
+    // Log the request body for debugging purposes
+    print('Request Body: ${jsonEncode(visitData)}');
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/patients/$id/visit-records'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(visitData),
+    );
+
+    if (response.statusCode != 201) {
+      final errorResponse = json.decode(response.body);
+      throw Exception(
+          'Failed to add visit record: ${errorResponse['message']}');
+    }
+  }
+
+  // Add past medical history
+  Future<void> addPastMedicalHistory(
+      String id, List<Map<String, dynamic>> entries) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/patients/$id/past-medical-history'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(entries),
+    );
+
+    if (response.statusCode != 201) {
+      final errorResponse = json.decode(response.body);
+      throw Exception(
+          'Failed to add past medical history: ${errorResponse['message']}');
+    }
+  }
+
+  // Add past dental history
+  Future<void> addPastDentalHistory(
+      String id, List<Map<String, dynamic>> entries) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/patients/$id/past-dental-history'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(entries),
+    );
+
+    if (response.statusCode != 201) {
+      final errorResponse = json.decode(response.body);
+      throw Exception(
+          'Failed to add past dental history: ${errorResponse['message']}');
+    }
+  }
 }

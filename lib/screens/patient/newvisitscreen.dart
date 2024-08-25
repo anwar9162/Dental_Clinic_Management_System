@@ -1,21 +1,26 @@
+import 'package:dental_management_main/models/patient_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../services/patient_api_service.dart'; // Adjust the import path as needed
 
 class NewVisitScreen extends StatefulWidget {
+  final Patient patient;
+
+  NewVisitScreen({required this.patient});
+
   @override
   _NewVisitScreenState createState() => _NewVisitScreenState();
 
-  static void showAddVisitDialog(BuildContext context) {
+  static void showAddVisitDialog(BuildContext context, Patient patient) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.white, // Set dialog background to pure white
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(12.0), // Slightly reduced radius
+            borderRadius: BorderRadius.circular(12.0),
           ),
-          child: NewVisitScreen(),
+          child: NewVisitScreen(patient: patient),
         );
       },
     );
@@ -54,11 +59,14 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     'reasonPayment': TextEditingController(),
   };
 
+  final PatientApiService _apiService = PatientApiService();
+
   @override
   void initState() {
     super.initState();
-    _controllers['date']!.text =
-        DateFormat('yyyy-MM-dd').format(DateTime.now());
+    // Set today's date as default value
+    final todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    _controllers['date']!.text = todayDate;
   }
 
   @override
@@ -67,13 +75,123 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     super.dispose();
   }
 
+  void _handleSave() async {
+    if (_formKey.currentState!.validate()) {
+      final visitData = {
+        'date': _controllers['date']!.text,
+        'reason': _controllers['reason']!.text.isNotEmpty
+            ? _controllers['reason']!.text
+            : 'N/A',
+        'chiefComplaint': {
+          'description': _controllers['description']!.text.isNotEmpty
+              ? _controllers['description']!.text
+              : 'N/A',
+          'duration': _controllers['duration']!.text.isNotEmpty
+              ? _controllers['duration']!.text
+              : 'N/A',
+          'severity': _controllers['severity']!.text.isNotEmpty
+              ? _controllers['severity']!.text
+              : 'N/A',
+        },
+        'historyOfPresentIllness': {
+          'onset': _controllers['onset']!.text.isNotEmpty
+              ? _controllers['onset']!.text
+              : 'N/A',
+          'progression': _controllers['progression']!.text.isNotEmpty
+              ? _controllers['progression']!.text
+              : 'N/A',
+          'associatedSymptoms':
+              _controllers['associatedSymptoms']!.text.isNotEmpty
+                  ? _controllers['associatedSymptoms']!.text
+                  : 'N/A',
+        },
+        'physicalExamination': {
+          'bloodPressure': _controllers['bloodPressure']!.text.isNotEmpty
+              ? _controllers['bloodPressure']!.text
+              : 'N/A',
+          'temperature': _controllers['temperature']!.text.isNotEmpty
+              ? _controllers['temperature']!.text
+              : 'N/A',
+          'pulse': _controllers['pulse']!.text.isNotEmpty
+              ? _controllers['pulse']!.text
+              : 'N/A',
+          'respirationRate': _controllers['respirationRate']!.text.isNotEmpty
+              ? _controllers['respirationRate']!.text
+              : 'N/A',
+        },
+        'generalAppearance': {
+          'appearance': _controllers['appearance']!.text.isNotEmpty
+              ? _controllers['appearance']!.text
+              : 'Acute Sick-Looking',
+          'additionalNotes': _controllers['additionalNotes']!.text.isNotEmpty
+              ? _controllers['additionalNotes']!.text
+              : 'N/A',
+        },
+        'extraOral': _controllers['extraOralFindings']!.text.isNotEmpty
+            ? _controllers['extraOralFindings']!.text
+            : null,
+        'internalOral': {
+          'findings': _controllers['internalOralFindings']!.text.isNotEmpty
+              ? _controllers['internalOralFindings']!.text
+              : 'N/A',
+        },
+        'diagnosis': _controllers['condition']!.text.isNotEmpty
+            ? _controllers['condition']!.text
+            : null,
+        'treatmentPlan': {
+          'plannedTreatments': [
+            _controllers['plannedTreatments']!.text.isNotEmpty
+                ? _controllers['plannedTreatments']!.text
+                : 'N/A'
+          ],
+          'followUpInstructions':
+              _controllers['followUpInstructions']!.text.isNotEmpty
+                  ? _controllers['followUpInstructions']!.text
+                  : 'N/A',
+        },
+        'treatmentDone': {
+          'treatments': [
+            _controllers['treatments']!.text.isNotEmpty
+                ? _controllers['treatments']!.text
+                : 'N/A'
+          ],
+          'completionDate': _controllers['completionDate']!.text.isNotEmpty
+              ? _controllers['completionDate']!.text
+              : '2024-08-25',
+        },
+        'progressNotes': [
+          {
+            'note': _controllers['note']!.text.isNotEmpty
+                ? _controllers['note']!.text
+                : 'N/A',
+            'createdAt': _controllers['date']!.text,
+          }
+        ],
+        'progressImages': [],
+        'xrayImages': [],
+      };
+
+      try {
+        await _apiService.addVisitRecord(widget.patient.id!, visitData);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Visit record added successfully!'),
+        ));
+        Navigator.of(context).pop();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to add visit record: $e'),
+        ));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      color: Colors.white, // Ensure container background is pure white
-      padding: const EdgeInsets.all(16.0), // Reduced padding
+      color: Colors.white,
+      padding: const EdgeInsets.all(16.0),
       width: screenWidth * 0.8,
       child: SingleChildScrollView(
         child: Column(
@@ -86,20 +204,21 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
                     color: Colors.blueAccent,
                   ),
             ),
-            SizedBox(height: 4), // Reduced height
+            SizedBox(height: 4),
             Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDateAndReasonFields(),
+                  _buildDateField(),
+                  SizedBox(height: 8),
+                  _buildReasonField(),
                   SizedBox(height: 8),
                   _buildMultiColumnSections(screenWidth),
-                  SizedBox(height: 8), // Reduced height
+                  SizedBox(height: 8),
                   Divider(color: Colors.grey[400]),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(top: 12.0), // Reduced padding
+                    padding: const EdgeInsets.only(top: 12.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
@@ -110,21 +229,15 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
                             style: TextStyle(color: Colors.redAccent),
                           ),
                         ),
-                        SizedBox(width: 12), // Reduced width
+                        SizedBox(width: 12),
                         ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              // Handle save action
-                              Navigator.of(context).pop();
-                            }
-                          },
+                          onPressed: _handleSave,
                           child: Text('Save'),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.blueAccent,
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  6.0), // Slightly reduced radius
+                              borderRadius: BorderRadius.circular(6.0),
                             ),
                           ),
                         ),
@@ -140,17 +253,51 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     );
   }
 
-  Widget _buildDateAndReasonFields() {
+  Widget _buildDateField() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 120,
+          child: Text(
+            'Visit Date',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+        ),
+        Expanded(
+          child: SizedBox(
+            height: 40,
+            child: TextFormField(
+              controller: _controllers['date']!,
+              readOnly: true,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Date is required';
+                }
+                return null;
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReasonField() {
     return Row(
       children: [
         Expanded(
-          child: _buildTextFormField(_controllers['date']!, 'Visit Date'),
-        ),
-        SizedBox(width: 8), // Reduced width
-        Expanded(
-          child:
-              _buildTextFormField(_controllers['reason']!, 'Reason for Visit'),
-        ),
+            child: _buildTextFormField(
+                _controllers['reason']!, 'Reason for Visit')),
       ],
     );
   }
@@ -176,8 +323,7 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
             _controllers['respirationRate']!, 'Respiration Rate'),
       ],
       'General Appearance': [
-        _buildDropdownField(_controllers['appearance']!, 'Appearance',
-            ['Well-Looking', 'Acute Sick-Looking']),
+        _buildTextFormField(_controllers['appearance']!, 'Appearance'),
         _buildTextFormField(
             _controllers['additionalNotes']!, 'Additional Notes'),
       ],
@@ -220,13 +366,12 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
         final sectionFields = entry.value;
 
         return Padding(
-          padding: const EdgeInsets.symmetric(
-              vertical: 4.0), // Reduced vertical padding
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildSectionTitle(sectionTitle),
-              SizedBox(height: 4), // Reduced space between title and fields
+              SizedBox(height: 4),
               ...sectionFields,
             ],
           ),
@@ -237,13 +382,12 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
 
   Widget _buildSectionTitle(String title) {
     return Container(
-      padding: EdgeInsets.symmetric(
-          vertical: 4.0, horizontal: 8.0), // Reduced padding
-      color: Colors.white, // Ensure section title background is white
+      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      color: Colors.white,
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 14.0, // Reduced font size
+          fontSize: 14.0,
           fontWeight: FontWeight.bold,
           color: Colors.blueAccent,
         ),
@@ -254,11 +398,11 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
   Widget _buildTextFormField(TextEditingController controller, String label,
       [TextInputType? keyboardType]) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0), // Reduced padding
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
           SizedBox(
-            width: 120, // Fixed width for labels
+            width: 120,
             child: Text(
               label,
               style: TextStyle(
@@ -269,23 +413,23 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
           ),
           Expanded(
             child: SizedBox(
-              height: 40, // Set a fixed height
+              height: 40,
               child: TextFormField(
                 controller: controller,
                 keyboardType: keyboardType ?? TextInputType.text,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(6.0), // Slightly reduced radius
+                    borderRadius: BorderRadius.circular(6.0),
                   ),
                   filled: true,
-                  fillColor: Colors.white, // Set text field background to white
+                  fillColor: Colors.white,
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter $label';
+                  // Skip validation for default values
+                  if (value == null || value.isEmpty || value == 'N/A') {
+                    return null;
                   }
-                  return null;
+                  return 'Please enter $label';
                 },
               ),
             ),
@@ -298,11 +442,11 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
   Widget _buildDropdownField(
       TextEditingController controller, String label, List<String> options) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0), // Reduced padding
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
           SizedBox(
-            width: 120, // Fixed width for labels
+            width: 120,
             child: Text(
               label,
               style: TextStyle(
@@ -313,16 +457,15 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
           ),
           Expanded(
             child: SizedBox(
-              height: 40, // Set a fixed height
+              height: 40,
               child: DropdownButtonFormField<String>(
                 value: controller.text.isNotEmpty ? controller.text : null,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(6.0), // Slightly reduced radius
+                    borderRadius: BorderRadius.circular(6.0),
                   ),
                   filled: true,
-                  fillColor: Colors.white, // Set dropdown background to white
+                  fillColor: Colors.white,
                 ),
                 items: options.map((String value) {
                   return DropdownMenuItem<String>(

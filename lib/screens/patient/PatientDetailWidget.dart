@@ -69,7 +69,8 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
           children: [
             PatientInfoSection(patient: widget.patient),
             SizedBox(height: 16),
-            VisitHistorySection(visits: widget.patient.visitHistory),
+            VisitHistorySection(
+                visits: widget.patient.visitHistory, patient: widget.patient),
             SizedBox(height: 16),
             PastMedicalHistorySection(
               pastMedicalHistory: widget.patient.pastMedicalHistory,
