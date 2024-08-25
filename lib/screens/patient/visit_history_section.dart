@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '../../models/patient_model.dart';
+import 'newvisitscreen.dart';
 
 class VisitHistorySection extends StatelessWidget {
   final List<Visit>? visits;
@@ -48,13 +48,25 @@ class VisitHistorySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Visit History',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontSize: 14, // Reduced font size
-                fontWeight: FontWeight.bold,
-                color: Colors.blueGrey[800],
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Visit History',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontSize: 14, // Reduced font size
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueGrey[800],
+                    ),
               ),
+            ),
+            IconButton(
+              icon: Icon(Icons.add, color: Colors.blueGrey[600]),
+              onPressed: () {
+                NewVisitScreen.showAddVisitDialog(context);
+              },
+            ),
+          ],
         ),
         SizedBox(height: 8), // Reduced space
         ...visits.map((visit) => Padding(
