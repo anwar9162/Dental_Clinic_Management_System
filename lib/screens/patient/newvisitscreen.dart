@@ -53,10 +53,6 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     'treatments': TextEditingController(),
     'completionDate': TextEditingController(),
     'note': TextEditingController(),
-    'amount': TextEditingController(),
-    'datePayment': TextEditingController(),
-    'status': TextEditingController(),
-    'reasonPayment': TextEditingController(),
   };
 
   final PatientApiService _apiService = PatientApiService();
@@ -155,9 +151,7 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
                 ? _controllers['treatments']!.text
                 : 'N/A'
           ],
-          'completionDate': _controllers['completionDate']!.text.isNotEmpty
-              ? _controllers['completionDate']!.text
-              : '2024-08-25',
+          'completionDate': _controllers['date']!.text,
         },
         'progressNotes': [
           {
@@ -349,14 +343,7 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
       ],
       'Progress Notes': [
         _buildTextFormField(_controllers['note']!, 'Note'),
-        _buildTextFormField(_controllers['datePayment']!, 'Date'),
-      ],
-      'Payment': [
-        _buildTextFormField(_controllers['amount']!, 'Amount'),
-        _buildTextFormField(_controllers['datePayment']!, 'Date'),
-        _buildDropdownField(_controllers['status']!, 'Status',
-            ['Pending', 'Cancelled', 'Paid']),
-        _buildTextFormField(_controllers['reasonPayment']!, 'Reason'),
+        _buildTextFormField(_controllers['date']!, 'Date'),
       ],
     };
 
@@ -416,7 +403,7 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
               height: 40,
               child: TextFormField(
                 controller: controller,
-                keyboardType: keyboardType ?? TextInputType.text,
+                keyboardType: keyboardType,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(6.0),
@@ -425,11 +412,10 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
                   fillColor: Colors.white,
                 ),
                 validator: (value) {
-                  // Skip validation for default values
-                  if (value == null || value.isEmpty || value == 'N/A') {
-                    return null;
+                  if (value == null || value.isEmpty) {
+                    return null; // No error, let the handleSave handle the default value
                   }
-                  return 'Please enter $label';
+                  return null;
                 },
               ),
             ),
