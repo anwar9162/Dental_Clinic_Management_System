@@ -23,56 +23,58 @@ class VisitHistorySection extends StatelessWidget {
         color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.all(8.0), // Reduced padding
-          child: reversedVisits.isEmpty
-              ? _buildNoVisitHistory()
-              : _buildVisitHistory(context, reversedVisits),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNoVisitHistory() {
-    return Center(
-      child: Text(
-        'No visit history available',
-        style: TextStyle(
-          color: Colors.grey[700],
-          fontSize: 14, // Reduced font size
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVisitHistory(BuildContext context, List<Visit> visits) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                'Visit History',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontSize: 14, // Reduced font size
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueGrey[800],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Visit History',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontSize: 14, // Reduced font size
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey[800],
+                          ),
                     ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add, color: Colors.blueGrey[600]),
+                    onPressed: () {
+                      NewVisitScreen.showAddVisitDialog(context, patient!);
+                    },
+                  ),
+                ],
               ),
-            ),
-            IconButton(
-              icon: Icon(Icons.add, color: Colors.blueGrey[600]),
-              onPressed: () {
-                NewVisitScreen.showAddVisitDialog(context, patient!);
-              },
-            ),
-          ],
+              SizedBox(height: 8), // Reduced space
+              if (reversedVisits.isEmpty)
+                _buildNoVisitHistory(context)
+              else
+                ...reversedVisits.map((visit) => Padding(
+                      padding:
+                          const EdgeInsets.only(bottom: 8.0), // Reduced space
+                      child: _buildVisitExpansionTile(visit),
+                    )),
+            ],
+          ),
         ),
-        SizedBox(height: 8), // Reduced space
-        ...visits.map((visit) => Padding(
-              padding: const EdgeInsets.only(bottom: 8.0), // Reduced space
-              child: _buildVisitExpansionTile(visit),
-            )),
+      ),
+    );
+  }
+
+  Widget _buildNoVisitHistory(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'No visit history available',
+          style: TextStyle(
+            color: Colors.grey[700],
+            fontSize: 14, // Reduced font size
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        SizedBox(height: 16), // Space between message and button
       ],
     );
   }
