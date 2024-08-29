@@ -274,7 +274,10 @@ class PatientApiService {
       body: jsonEncode(entries),
     );
 
-    if (response.statusCode != 201) {
+    if (response.statusCode == 201) {
+      // Optionally return some response data if needed
+      print('Successfully added past medical history.');
+    } else {
       final errorResponse = json.decode(response.body);
       throw Exception(
           'Failed to add past medical history: ${errorResponse['message']}');
@@ -290,10 +293,13 @@ class PatientApiService {
       body: jsonEncode(entries),
     );
 
-    if (response.statusCode != 201) {
+    if (response.statusCode == 201) {
+      // Optionally return some response data if needed
+      print('Successfully added past dental history.');
+    } else {
       final errorResponse = json.decode(response.body);
       throw Exception(
-          'Failed to add past dental history: ${errorResponse['message']}');
+          'Failed to add past medical history: ${errorResponse['message']}');
     }
   }
 }

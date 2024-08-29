@@ -423,16 +423,19 @@ class Payment {
 class PastMedicalHistory {
   final String fieldName;
   final String fieldValue;
+  final String? patientId; // Add this field
 
   PastMedicalHistory({
     required this.fieldName,
     required this.fieldValue,
+    this.patientId, // Include in the constructor
   });
 
   factory PastMedicalHistory.fromJson(Map<String, dynamic> json) {
     return PastMedicalHistory(
       fieldName: json['fieldName'],
       fieldValue: json['fieldValue'],
+      patientId: json['patientId'], // Handle patientId in fromJson
     );
   }
 
@@ -440,6 +443,7 @@ class PastMedicalHistory {
     return {
       'fieldName': fieldName,
       'fieldValue': fieldValue,
+      'patientId': patientId, // Include in toJson
     };
   }
 }

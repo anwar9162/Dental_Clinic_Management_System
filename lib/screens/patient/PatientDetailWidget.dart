@@ -70,14 +70,19 @@ class _PatientDetailWidgetState extends State<PatientDetailWidget> {
             PatientInfoSection(patient: widget.patient),
             SizedBox(height: 16),
             VisitHistorySection(
-                visits: widget.patient.visitHistory, patient: widget.patient),
+              visits: widget.patient.visitHistory ?? [],
+              patient: widget.patient,
+            ),
             SizedBox(height: 16),
             PastMedicalHistorySection(
-              pastMedicalHistory: widget.patient.pastMedicalHistory,
+              pastMedicalHistory: widget.patient.pastMedicalHistory ?? [],
+              patient: widget.patient, // Pass Patient object
             ),
             SizedBox(height: 16),
             PastDentalHistorySection(
-              pastDentalHistory: widget.patient.pastDentalHistory,
+              pastDentalHistory: widget.patient.pastDentalHistory ??
+                  [], // Ensure this is not null
+              patient: widget.patient, // Pass Patient object
             ),
             SizedBox(height: 16),
             ProgressImagesSection(
