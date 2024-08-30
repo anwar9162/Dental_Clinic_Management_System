@@ -192,17 +192,18 @@ class _AppointmentCalendarScreenState extends State<AppointmentCalendarScreen> {
       getAppointmentsForDay: _getAppointmentsForDay,
       selectedPatient: _selectedPatient,
       selectedDoctor: _selectedDoctor,
-      onPatientSelected: (Patient patient) {
+      onPatientSelected: (Patient? patient) {
         setState(() {
           _selectedPatient = patient;
         });
-        _logger.i('Patient selected: ${patient.firstName} ${patient.lastName}');
+        _logger.i(
+            'Patient selected: ${patient?.firstName ?? 'None'} ${patient?.lastName ?? ''}');
       },
-      onDoctorSelected: (doctor) {
+      onDoctorSelected: (Map<String, dynamic>? doctor) {
         setState(() {
           _selectedDoctor = doctor;
         });
-        _logger.i('Doctor selected: ${doctor['name']}');
+        _logger.i('Doctor selected: ${doctor?['name'] ?? 'Unknown'}');
       },
       appointmentReason: _appointmentReason,
       onAppointmentReasonChanged: _updateAppointmentReason,

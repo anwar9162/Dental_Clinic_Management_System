@@ -6,7 +6,7 @@ import '../patient/patient_bloc/patient_event.dart';
 import '../patient/patient_bloc/patient_state.dart';
 
 class PatientListWidget extends StatefulWidget {
-  final void Function(Patient) onPatientSelected;
+  final void Function(Patient?) onPatientSelected;
 
   PatientListWidget({required this.onPatientSelected});
 
@@ -18,12 +18,11 @@ class _PatientListWidgetState extends State<PatientListWidget> {
   final TextEditingController _searchController = TextEditingController();
   List<Patient> _allPatients = [];
   List<Patient> _filteredPatients = [];
-  Patient? _selectedPatient; // Variable to keep track of the selected patient
+  Patient? _selectedPatient;
 
   @override
   void initState() {
     super.initState();
-    // Fetch all patients initially
     context.read<PatientBloc>().add(LoadPatients());
     _searchController.addListener(_onSearchChanged);
   }
@@ -34,11 +33,19 @@ class _PatientListWidgetState extends State<PatientListWidget> {
       _filteredPatients = _allPatients.where((patient) {
         final fullName =
             '${patient.firstName} ${patient.lastName}'.toLowerCase();
-        final phone = patient.phoneNumber?.toLowerCase() ??
-            ''; // Ensure phone is not null
+        final phone = patient.phoneNumber?.toLowerCase() ?? '';
         return fullName.contains(query) || phone.contains(query);
       }).toList();
     });
+  }
+
+  void _clearSearch() {
+    setState(() {
+      _searchController.clear();
+      _filteredPatients = _allPatients;
+      _selectedPatient = null;
+    });
+    widget.onPatientSelected(null); // Notify about unselection
   }
 
   @override
@@ -78,12 +85,11 @@ class _PatientListWidgetState extends State<PatientListWidget> {
             child: Center(child: Text('Error: ${state.message}')),
           );
         } else if (state is PatientLoaded) {
-          // Store all patients only when they are loaded
           if (_allPatients.isEmpty) {
-            _allPatients = state.patients.map((patient) {
-              return Patient.fromJson(patient);
-            }).toList();
-            _filteredPatients = _allPatients; // Initialize filtered list
+            _allPatients = state.patients
+                .map((patientMap) => Patient.fromJson(patientMap))
+                .toList();
+            _filteredPatients = _allPatients;
           }
 
           return Container(
@@ -106,10 +112,15 @@ class _PatientListWidgetState extends State<PatientListWidget> {
                   decoration: InputDecoration(
                     labelText: "Search Patients",
                     border: OutlineInputBorder(),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(Icons.clear),
+                            onPressed: _clearSearch,
+                          )
+                        : null,
                   ),
                   onTap: () {
                     if (_selectedPatient != null) {
-                      // Pre-fill the search bar with the selected patient's name
                       _searchController.text =
                           '${_selectedPatient!.firstName} ${_selectedPatient!.lastName}';
                       _searchController.selection = TextSelection.fromPosition(
@@ -147,9 +158,19 @@ class _PatientListWidgetState extends State<PatientListWidget> {
                                   : null,
                               onTap: () {
                                 setState(() {
-                                  _selectedPatient = patient;
+                                  if (_selectedPatient == patient) {
+                                    _selectedPatient =
+                                        null; // Deselect if already selected
+                                  } else {
+                                    _selectedPatient =
+                                        patient; // Select new patient
+                                  }
+                                  _searchController.text = _selectedPatient !=
+                                          null
+                                      ? '${_selectedPatient!.firstName} ${_selectedPatient!.lastName}'
+                                      : '';
                                 });
-                                widget.onPatientSelected(patient);
+                                widget.onPatientSelected(_selectedPatient);
                               },
                             );
                           }).toList(),

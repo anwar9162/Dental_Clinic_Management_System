@@ -13,8 +13,10 @@ class AppointmentCalendarView extends StatefulWidget {
   final List<Appointment> Function(DateTime) getAppointmentsForDay;
   final Patient? selectedPatient;
   final Map<String, dynamic>? selectedDoctor;
-  final Function(Patient) onPatientSelected;
-  final Function(Map<String, dynamic>) onDoctorSelected;
+  final Function(Patient?)
+      onPatientSelected; // Updated to handle nullable Patient
+  final Function(Map<String, dynamic>?)
+      onDoctorSelected; // Updated to handle nullable Doctor
   final String? appointmentReason;
   final Function(String) onAppointmentReasonChanged;
 
@@ -226,45 +228,44 @@ class _AppointmentCalendarViewState extends State<AppointmentCalendarView> {
           SizedBox(width: 16.0),
           Expanded(
             flex: 2,
-            child: Card(
-              elevation: 4.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
+            child: Container(
+              color: Colors.white, // Set the background color to white
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        height: MediaQuery.of(context).size.height * 0.2,
-                        child: PatientListWidget(
-                          onPatientSelected: widget.onPatientSelected,
-                        ),
+                      // Row to place PatientListWidget and DoctorListWidget side by side
+                      Row(
+                        children: [
+                          Expanded(
+                            flex:
+                                1, // Adjust the flex value to control the width ratio
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.2,
+                              child: PatientListWidget(
+                                onPatientSelected: widget.onPatientSelected,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                              width:
+                                  16.0), // Add some spacing between the widgets
+                          Expanded(
+                            flex:
+                                1, // Adjust the flex value to control the width ratio
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.2,
+                              child: DoctorListWidget(
+                                onDoctorSelected: widget.onDoctorSelected,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 16.0),
-                      Container(
-                        height: MediaQuery.of(context).size.height * 0.2,
-                        child: DoctorListWidget(
-                          onDoctorSelected: widget.onDoctorSelected,
-                        ),
-                      ),
-                      SizedBox(height: 16.0),
-                      if (widget.selectedPatient != null) ...[
-                        Text(
-                          'Patient: ${widget.selectedPatient!.firstName} ${widget.selectedPatient!.lastName}',
-                          style: TextStyle(fontWeight: FontWeight.normal),
-                        ),
-                        SizedBox(height: 8.0),
-                      ],
-                      if (widget.selectedDoctor != null) ...[
-                        Text(
-                          'Doctor: ${widget.selectedDoctor!['name']}',
-                          style: TextStyle(fontWeight: FontWeight.normal),
-                        ),
-                        SizedBox(height: 8.0),
-                      ],
+
                       TextField(
                         controller: _appointmentReasonController,
                         decoration: InputDecoration(
