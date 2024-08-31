@@ -80,8 +80,8 @@ class _AddPatientFormState extends State<_AddPatientForm> {
         children: [
           Center(
             child: Container(
-              constraints: BoxConstraints(maxWidth: 600),
-              padding: const EdgeInsets.all(16.0),
+              constraints: BoxConstraints(maxWidth: 500), // Reduced max width
+              padding: const EdgeInsets.all(12.0), // Reduced padding
               decoration: _boxDecoration,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -89,27 +89,36 @@ class _AddPatientFormState extends State<_AddPatientForm> {
                   _buildHeader(),
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: const EdgeInsets.all(12.0), // Reduced padding
                       child: Form(
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildNameFields(),
-                            SizedBox(height: 16),
+                            SizedBox(height: 12), // Reduced height
                             _buildLabeledTextField(
-                                'Phone Number', _phoneController,
-                                keyboardType: TextInputType.phone),
-                            SizedBox(height: 16),
-                            _buildLabeledDropdownField('Gender',
-                                _genderController, ['Male', 'Female']),
-                            SizedBox(height: 16),
+                              'Phone Number',
+                              _phoneController,
+                              keyboardType: TextInputType.phone,
+                            ),
+                            SizedBox(height: 12), // Reduced height
+                            _buildLabeledDropdownField(
+                              'Gender',
+                              _genderController,
+                              ['Male', 'Female'],
+                            ),
+                            SizedBox(height: 12), // Reduced height
                             _buildLabeledDateField(
-                                'Date of Birth', _dobController),
-                            SizedBox(height: 16),
+                              'Date of Birth',
+                              _dobController,
+                            ),
+                            SizedBox(height: 12), // Reduced height
                             _buildLabeledTextField(
-                                'address', _addressController),
-                            SizedBox(height: 24),
+                              'Address',
+                              _addressController,
+                            ),
+                            SizedBox(height: 16), // Reduced height
                             _buildActionButtons(),
                           ],
                         ),
@@ -139,7 +148,7 @@ class _AddPatientFormState extends State<_AddPatientForm> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 12.0), // Reduced padding
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -147,7 +156,7 @@ class _AddPatientFormState extends State<_AddPatientForm> {
             'Add New Patient',
             style: _headerTextStyle,
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 6), // Reduced height
           Text(
             'Please fill in the details below to add a new patient.',
             style: _subHeaderTextStyle,
@@ -159,13 +168,16 @@ class _AddPatientFormState extends State<_AddPatientForm> {
 
   Widget _buildNameFields() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-            child: _buildLabeledTextField('First Name', _firstNameController)),
-        SizedBox(width: 16),
+          flex: 3, // Adjusted flex to make fields wider
+          child: _buildLabeledTextField('First Name', _firstNameController),
+        ),
+        SizedBox(width: 8), // Reduced width
         Expanded(
-            child: _buildLabeledTextField('Last Name', _lastNameController)),
+          flex: 3, // Adjusted flex to make fields wider
+          child: _buildLabeledTextField('Last Name', _lastNameController),
+        ),
       ],
     );
   }
@@ -173,18 +185,18 @@ class _AddPatientFormState extends State<_AddPatientForm> {
   Widget _buildLabeledTextField(String label, TextEditingController controller,
       {TextInputType keyboardType = TextInputType.text}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(bottom: 12.0), // Reduced padding
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 150,
+            width: 100, // Reduced width
             child: Text(
               label,
               style: _labelTextStyle,
             ),
           ),
-          SizedBox(width: 16),
+          SizedBox(width: 8), // Reduced width
           Expanded(
             child: TextFormField(
               controller: controller,
@@ -201,18 +213,18 @@ class _AddPatientFormState extends State<_AddPatientForm> {
   Widget _buildLabeledDropdownField(
       String label, TextEditingController controller, List<String> options) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(bottom: 12.0), // Reduced padding
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 150,
+            width: 100, // Reduced width
             child: Text(
               label,
               style: _labelTextStyle,
             ),
           ),
-          SizedBox(width: 16),
+          SizedBox(width: 8), // Reduced width
           Expanded(
             child: DropdownButtonFormField<String>(
               value: controller.text.isEmpty ? null : controller.text,
@@ -239,18 +251,18 @@ class _AddPatientFormState extends State<_AddPatientForm> {
   Widget _buildLabeledDateField(
       String label, TextEditingController controller) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(bottom: 12.0), // Reduced padding
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 150,
+            width: 100, // Reduced width
             child: Text(
               label,
               style: _labelTextStyle,
             ),
           ),
-          SizedBox(width: 16),
+          SizedBox(width: 8), // Reduced width
           Expanded(
             child: TextFormField(
               controller: controller,
@@ -286,23 +298,25 @@ class _AddPatientFormState extends State<_AddPatientForm> {
           style: TextButton.styleFrom(
             backgroundColor: const Color.fromARGB(
                 255, 251, 251, 251), // Subtle grey color for cancel
-            textStyle: TextStyle(fontSize: 16),
+            textStyle: TextStyle(fontSize: 14), // Reduced font size
           ),
           child: Text('Cancel'),
         ),
-        SizedBox(width: 16),
+        SizedBox(width: 8), // Reduced width
         ElevatedButton(
           onPressed: _submitForm,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromARGB(
                 255, 157, 192, 221), // Vibrant blue color for add patient
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: EdgeInsets.symmetric(
+                horizontal: 12, vertical: 8), // Reduced padding
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(6), // Reduced border radius
             ),
-            elevation: 5,
+            elevation: 4, // Reduced elevation
           ),
-          child: Text('Add Patient', style: TextStyle(fontSize: 16)),
+          child: Text('Add Patient',
+              style: TextStyle(fontSize: 14)), // Reduced font size
         ),
       ],
     );
@@ -325,15 +339,17 @@ class _AddPatientFormState extends State<_AddPatientForm> {
       filled: true,
       fillColor: Colors.grey[100],
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6), // Reduced border radius
         borderSide: BorderSide.none,
       ),
+      contentPadding: EdgeInsets.symmetric(
+          vertical: 12.0, horizontal: 8.0), // Adjusted padding
     );
   }
 
   TextStyle get _headerTextStyle {
     return TextStyle(
-      fontSize: 22,
+      fontSize: 18, // Reduced font size
       fontWeight: FontWeight.bold,
       color: Colors.black87,
     );
@@ -342,13 +358,13 @@ class _AddPatientFormState extends State<_AddPatientForm> {
   TextStyle get _subHeaderTextStyle {
     return TextStyle(
       color: Colors.grey[600],
-      fontSize: 16,
+      fontSize: 14, // Reduced font size
     );
   }
 
   TextStyle get _labelTextStyle {
     return TextStyle(
-      fontSize: 16,
+      fontSize: 14, // Reduced font size
       fontWeight: FontWeight.bold,
       color: Colors.black87,
     );
@@ -357,12 +373,12 @@ class _AddPatientFormState extends State<_AddPatientForm> {
   BoxDecoration get _boxDecoration {
     return BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(10), // Reduced border radius
       boxShadow: [
         BoxShadow(
           color: Colors.black12,
-          blurRadius: 12,
-          offset: Offset(0, 6),
+          blurRadius: 8, // Reduced blur radius
+          offset: Offset(0, 4), // Reduced offset
         ),
       ],
     );

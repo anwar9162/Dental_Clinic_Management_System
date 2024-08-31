@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'add_doctor_screen.dart';
+import 'edit_doctor_screen.dart';
 import 'doctor_detail_screen.dart';
 import 'blocs/doctor_bloc.dart';
 import 'blocs/doctor_event.dart';
@@ -15,6 +16,7 @@ class DoctorListScreen extends StatefulWidget {
 
 class _DoctorListScreenState extends State<DoctorListScreen> {
   bool _showingAddDoctorScreen = false;
+  bool _showingEditDoctorScreen = false;
   String? _selectedDoctorId;
 
   @override
@@ -26,6 +28,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
   void _selectDoctor(String id) {
     setState(() {
       _showingAddDoctorScreen = false;
+      _showingEditDoctorScreen = false;
       _selectedDoctorId = id;
     });
     context.read<DoctorDetailBloc>().add(FetchDoctorById(id));
@@ -34,13 +37,15 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
   void _showAddDoctorScreen() {
     setState(() {
       _showingAddDoctorScreen = true;
+      _showingEditDoctorScreen = false;
       _selectedDoctorId = null;
     });
   }
 
   void _editDoctor(String id) {
     setState(() {
-      _showingAddDoctorScreen = true;
+      _showingAddDoctorScreen = false;
+      _showingEditDoctorScreen = true;
       _selectedDoctorId = id;
     });
   }
@@ -99,21 +104,21 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
           ),
         ],
       ),
-      body: BlocBuilder<DoctorBloc, DoctorState>(
-        builder: (context, state) {
-          if (state is DoctorLoading) {
-            return Center(
-              child: SpinKitFadingCircle(
-                color: Color(0xFF6ABEDC),
-                size: 40.0, // Reduced size
-              ),
-            );
-          } else if (state is DoctorsLoaded) {
-            return Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: ListView.builder(
+      body: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: BlocBuilder<DoctorBloc, DoctorState>(
+              builder: (context, state) {
+                if (state is DoctorLoading) {
+                  return Center(
+                    child: SpinKitFadingCircle(
+                      color: Color(0xFF6ABEDC),
+                      size: 40.0, // Reduced size
+                    ),
+                  );
+                } else if (state is DoctorsLoaded) {
+                  return ListView.builder(
                     itemCount: state.doctors.length,
                     itemBuilder: (context, index) {
                       final doctor = state.doctors[index];
@@ -166,58 +171,64 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                         ),
                       );
                     },
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: _showingAddDoctorScreen
-                      ? AddDoctorScreen()
-                      : BlocBuilder<DoctorDetailBloc, DoctorState>(
-                          builder: (context, state) {
-                            if (state is DoctorDetailLoading) {
-                              return Center(
-                                child: SpinKitFadingCircle(
-                                  color: Color(0xFF6ABEDC),
-                                  size: 40.0, // Reduced size
-                                ),
-                              );
-                            } else if (state is DoctorDetailLoaded) {
-                              final doctor = state.doctor;
-                              return DoctorDetailScreen(
-                                name: doctor['name']!,
-                                specialty: doctor['specialty']!,
-                                gender: doctor['gender']!,
-                                phone: doctor['phone']!,
-                              );
-                            } else {
-                              return const Center(
-                                child: Text(
-                                  'Select a doctor to see details',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                ),
-              ],
-            );
-          } else if (state is DoctorError) {
-            return Center(
-              child: Text(
-                state.message,
-                style: TextStyle(color: Colors.red),
-              ),
-            );
-          } else {
-            return Center(
-              child: Text(
-                'No doctors available.',
-                style: TextStyle(color: Colors.grey),
-              ),
-            );
-          }
-        },
+                  );
+                } else if (state is DoctorError) {
+                  return Center(
+                    child: Text(
+                      state.message,
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  );
+                } else {
+                  return Center(
+                    child: Text(
+                      'No doctors available.',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: _showingAddDoctorScreen
+                ? AddDoctorScreen()
+                : _showingEditDoctorScreen
+                    ? EditDoctorScreen(
+                        doctorId:
+                            _selectedDoctorId!) // Pass the selectedDoctorId here
+                    : BlocBuilder<DoctorDetailBloc, DoctorState>(
+                        builder: (context, state) {
+                          if (state is DoctorDetailLoading) {
+                            return Center(
+                              child: SpinKitFadingCircle(
+                                color: Color(0xFF6ABEDC),
+                                size: 40.0, // Reduced size
+                              ),
+                            );
+                          } else if (state is DoctorDetailLoaded) {
+                            final doctor = state.doctor;
+                            return DoctorDetailScreen(
+                              name: doctor['name']!,
+                              specialty: doctor['specialty']!,
+                              gender: doctor['gender']!,
+                              phone: doctor['phone']!,
+                              address: doctor['address']!,
+                              username: doctor['username']!,
+                            );
+                          } else {
+                            return const Center(
+                              child: Text(
+                                'Select a doctor to see details',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddDoctorScreen,

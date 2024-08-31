@@ -25,6 +25,12 @@ class AddDoctor extends DoctorEvent {
   List<Object?> get props => [doctorData];
 }
 
+class UpdateDoctor extends DoctorEvent {
+  final String id;
+  final Map<String, dynamic> doctorData;
+  UpdateDoctor(this.id, this.doctorData);
+}
+
 class DeleteDoctor extends DoctorEvent {
   final String id;
 

@@ -1,17 +1,32 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const doctorSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  specialty: { type: String, required: true }, // Changed from specialization to specialty
+  specialty: { type: String, required: true },
   contactInfo: {
     phone: { type: String, required: true },
     gender: { type: String, required: true },
     address: { type: String, required: true },
   },
-  // availableDays: { type: [String], required: true }, 
-  // availableTimeSlots: { type: [String], required: true }, // e.g., ['09:00-12:00', '13:00-15:00']
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, default: 'Doctor', immutable: true } // Role is immutable
 });
 
-const Doctor = mongoose.model("Doctor", doctorSchema);
+// Hash the password before saving
+doctorSchema.pre('save', async function (next) {
+  if (this.isModified('password') || this.isNew) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
+
+// Method to compare passwords
+doctorSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+const Doctor = mongoose.model('Doctor', doctorSchema);
 
 module.exports = Doctor;

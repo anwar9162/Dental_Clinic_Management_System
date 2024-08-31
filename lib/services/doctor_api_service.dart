@@ -46,4 +46,16 @@ class DoctorApiService {
       throw Exception('Failed to delete doctor');
     }
   }
+
+  Future<void> updateDoctor(String id, Map<String, dynamic> doctorData) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/doctors/$id'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(doctorData),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update doctor');
+    }
+  }
 }

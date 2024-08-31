@@ -31,6 +31,15 @@ class DoctorDetailLoaded extends DoctorState {
   List<Object?> get props => [doctor];
 }
 
+class DoctorUpdated extends DoctorState {
+  final String message;
+
+  DoctorUpdated([this.message = 'Doctor updated successfully']);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 class DoctorError extends DoctorState {
   final String message;
 
