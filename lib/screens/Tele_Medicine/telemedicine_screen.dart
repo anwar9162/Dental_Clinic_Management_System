@@ -39,7 +39,7 @@ class _TelemedicineScreenState extends State<TelemedicineScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Telemedicine'),
-        backgroundColor: Colors.teal,
+        backgroundColor: Color(0xFF6ABEDC),
         elevation: 4.0,
         actions: [
           IconButton(
