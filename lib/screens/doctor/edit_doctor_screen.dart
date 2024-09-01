@@ -22,7 +22,9 @@ class _EditDoctorScreenState extends State<EditDoctorScreen> {
   late TextEditingController _usernameController;
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
+  late TextEditingController _passwordController;
   String? _selectedGender;
+  bool _isPasswordVisible = false;
 
   @override
   void initState() {
@@ -32,6 +34,7 @@ class _EditDoctorScreenState extends State<EditDoctorScreen> {
     _usernameController = TextEditingController();
     _phoneController = TextEditingController();
     _addressController = TextEditingController();
+    _passwordController = TextEditingController();
     context.read<DoctorDetailBloc>().add(FetchDoctorById(widget.doctorId));
   }
 
@@ -61,6 +64,8 @@ class _EditDoctorScreenState extends State<EditDoctorScreen> {
           'phone': _phoneController.text,
           'address': _addressController.text,
         },
+        // Include password only if _isPasswordVisible is true
+        if (_isPasswordVisible) 'password': _passwordController.text,
       };
       context
           .read<DoctorDetailBloc>()
@@ -75,6 +80,7 @@ class _EditDoctorScreenState extends State<EditDoctorScreen> {
     _usernameController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -132,6 +138,8 @@ class _EditDoctorScreenState extends State<EditDoctorScreen> {
                       _buildSectionHeader('Login Credentials'),
                       _buildTextField(
                           _usernameController, 'Username', Icons.person),
+                      _buildPasswordPrompt(),
+                      if (_isPasswordVisible) _buildPasswordField(),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: _submitForm,
@@ -240,6 +248,63 @@ class _EditDoctorScreenState extends State<EditDoctorScreen> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Please select gender';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildPasswordPrompt() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        children: [
+          Checkbox(
+            value: _isPasswordVisible,
+            onChanged: (value) {
+              // Safely handle null value by using null-aware operator
+              setState(() {
+                _isPasswordVisible = value ?? false;
+                if (!(_isPasswordVisible)) {
+                  _passwordController.clear();
+                }
+              });
+            },
+            activeColor: Color(0xFF6ABEDC),
+          ),
+          const Text('Change Password'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: TextFormField(
+        controller: _passwordController,
+        obscureText: true,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.lock, color: Color(0xFF6ABEDC)),
+          labelText: 'New Password',
+          labelStyle: TextStyle(color: Color(0xFF6ABEDC)),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF6ABEDC), width: 2.0),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade300, width: 1.0),
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        validator: (value) {
+          // Safely handle null value by using null-aware operator
+          if (_isPasswordVisible && (value == null || value.isEmpty)) {
+            return 'Please enter a new password';
           }
           return null;
         },
