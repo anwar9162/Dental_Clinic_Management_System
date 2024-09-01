@@ -5,6 +5,10 @@ import 'blocs/doctor_event.dart';
 import 'blocs/doctor_state.dart';
 
 class AddDoctorScreen extends StatefulWidget {
+  final VoidCallback onDoctorAdded;
+
+  AddDoctorScreen({required this.onDoctorAdded});
+
   @override
   _AddDoctorScreenState createState() => _AddDoctorScreenState();
 }
@@ -52,10 +56,10 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
     return BlocListener<DoctorBloc, DoctorState>(
       listener: (context, state) {
         if (state is DoctorAdded) {
-          Navigator.pop(context); // Navigate back on success
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Doctor added successfully!')),
           );
+          widget.onDoctorAdded();
         } else if (state is DoctorError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to add doctor: ${state.message}')),

@@ -42,12 +42,26 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
     });
   }
 
+  void _onDoctorAdded() {
+    setState(() {
+      _showingAddDoctorScreen = false;
+    });
+  }
+
   void _editDoctor(String id) {
     setState(() {
       _showingAddDoctorScreen = false;
       _showingEditDoctorScreen = true;
       _selectedDoctorId = id;
     });
+  }
+
+  void _onDoctorUpdated() {
+    setState(() {
+      _showingEditDoctorScreen = false;
+    });
+    // Fetch the updated list of doctors
+    context.read<DoctorBloc>().add(FetchAllDoctors());
   }
 
   void _deleteDoctor(String id) {
@@ -193,11 +207,12 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
           Expanded(
             flex: 2,
             child: _showingAddDoctorScreen
-                ? AddDoctorScreen()
+                ? AddDoctorScreen(onDoctorAdded: _onDoctorAdded)
                 : _showingEditDoctorScreen
                     ? EditDoctorScreen(
-                        doctorId:
-                            _selectedDoctorId!) // Pass the selectedDoctorId here
+                        doctorId: _selectedDoctorId!,
+                        onDoctorUpdated: _onDoctorUpdated,
+                      )
                     : BlocBuilder<DoctorDetailBloc, DoctorState>(
                         builder: (context, state) {
                           if (state is DoctorDetailLoading) {

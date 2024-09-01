@@ -36,8 +36,10 @@ class DoctorDetailBloc extends Bloc<DoctorEvent, DoctorState> {
       UpdateDoctor event, Emitter<DoctorState> emit) async {
     emit(DoctorLoading()); // Emit loading state while updating
     try {
+      // Perform the update operation
       await apiService.updateDoctor(event.id, event.doctorData);
-      // Fetch the updated details after updating
+
+      // Fetch the updated doctor details
       final updatedDoctor = await apiService.getDoctorById(event.id);
       final doctorDetails = {
         'name': updatedDoctor['name'],
@@ -47,8 +49,13 @@ class DoctorDetailBloc extends Bloc<DoctorEvent, DoctorState> {
         'address': updatedDoctor['contactInfo']['address'],
         'username': updatedDoctor['username'],
       };
-      emit(DoctorDetailLoaded(doctorDetails));
-      emit(DoctorUpdated()); // Emit updated state after successful update
+      emit(DoctorDetailLoaded(doctorDetails)); // Emit updated details
+
+      // Optionally fetch the updated list of doctors
+      final doctors = await apiService.getAllDoctors();
+      emit(DoctorsLoaded(doctors)); // Emit updated doctor list
+
+      emit(DoctorUpdated()); // Emit success message after successful update
     } catch (e) {
       emit(DoctorError(e.toString()));
     }

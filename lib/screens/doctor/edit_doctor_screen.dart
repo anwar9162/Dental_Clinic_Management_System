@@ -6,8 +6,10 @@ import 'blocs/doctor_state.dart';
 
 class EditDoctorScreen extends StatefulWidget {
   final String doctorId;
+  final VoidCallback onDoctorUpdated;
 
-  const EditDoctorScreen({required this.doctorId});
+  const EditDoctorScreen(
+      {required this.doctorId, required this.onDoctorUpdated});
 
   @override
   _EditDoctorScreenState createState() => _EditDoctorScreenState();
@@ -85,6 +87,8 @@ class _EditDoctorScreenState extends State<EditDoctorScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Doctor updated successfully')),
           );
+          // Call the callback function
+          widget.onDoctorUpdated();
         } else if (state is DoctorError) {
           // Show error message
           ScaffoldMessenger.of(context).showSnackBar(
