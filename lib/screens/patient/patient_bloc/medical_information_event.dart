@@ -7,3 +7,5 @@ abstract class MedicalInformationEvent extends Equatable {
 }
 
 class FetchPatients extends MedicalInformationEvent {}
+
+class FetchBasicPatientInfo extends MedicalInformationEvent {}

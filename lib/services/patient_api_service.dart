@@ -23,13 +23,41 @@ class PatientApiService {
     }
   }
 
-  Future<Map<String, dynamic>> getPatientById(String id) async {
-    final response = await http.get(Uri.parse('$baseUrl/patients/$id'));
+  // Fetch basic patient information
+  Future<List<Map<String, dynamic>>> getPatientsBasicInfo() async {
+    try {
+      final response =
+          await http.get(Uri.parse('$baseUrl/patients/basicpatientinfo'));
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load patient');
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = jsonDecode(response.body);
+        return jsonList.map((json) => json as Map<String, dynamic>).toList();
+      } else {
+        throw Exception('Failed to load basic patient information');
+      }
+    } catch (e) {
+      if (kIsWeb) {
+        print('Error in getPatientsBasicInfo: $e');
+      }
+      rethrow; // Propagate error
+    }
+  }
+
+  // Fetch a specific patient by ID
+  Future<Map<String, dynamic>> getPatientById(String id) async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/patients/$id'));
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        throw Exception('Failed to load patient: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      if (kIsWeb) {
+        print('Error in getPatientById: $e');
+      }
+      rethrow; // Propagate error
     }
   }
 

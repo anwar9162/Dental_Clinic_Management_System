@@ -1,6 +1,7 @@
 // states/medical_information_state.dart
 import 'package:equatable/equatable.dart';
 import '../../../models/patient_model.dart';
+import '../../../models/basic_patient_info_model.dart';
 
 abstract class MedicalInformationState extends Equatable {
   @override
@@ -18,6 +19,15 @@ class MedicalInformationLoaded extends MedicalInformationState {
 
   @override
   List<Object> get props => [patients];
+}
+
+class MedicalInformationBasicInfoLoaded extends MedicalInformationState {
+  final List<PatientBasicInfo> basicPatientInfo;
+
+  MedicalInformationBasicInfoLoaded(this.basicPatientInfo);
+
+  @override
+  List<Object> get props => [basicPatientInfo];
 }
 
 class MedicalInformationError extends MedicalInformationState {

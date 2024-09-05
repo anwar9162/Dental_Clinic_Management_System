@@ -3,7 +3,10 @@ const Patient = require("../models/Patient");
 const getAllPatients = async () => {
   return await Patient.find();
 };
-
+// Get all patients with basic information
+const getPatientsBasicInfo = async () => {
+  return await Patient.find({}, "firstName lastName phoneNumber"); // Project only required fields
+};
 const getPatientById = async (id) => {
   return await Patient.findById(id).populate("visitHistory");
 };
@@ -47,4 +50,5 @@ module.exports = {
   deletePatient,
   updateCardStatus,
   getTodaysPatient,
+  getPatientsBasicInfo,
 };

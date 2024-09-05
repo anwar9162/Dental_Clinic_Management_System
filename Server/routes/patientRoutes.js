@@ -2,6 +2,7 @@ const express = require("express");
 const upload = require("../helpers/uploadHelper"); // Import the upload helper
 const {
   getAllPatients,
+  getPatientsBasicInfo,
   getPatientById,
   createPatient,
   updatePatient,
@@ -20,13 +21,14 @@ const {
   addPastDentalHistory,
   addPastMedicalHistory,
   getTodaysPatient,
-  updateVisitRecord
+  updateVisitRecord,
 } = require("../controllers/patientController");
 
 const router = express.Router();
 
 // Basic patient routes
 router.get("/", getAllPatients);
+router.get("/basicpatientinfo", getPatientsBasicInfo);
 router.get("/:id", getPatientById);
 router.get("/phone-number/:phoneNumber", getPatientByPhone);
 router.post("/", createPatient);
@@ -57,8 +59,7 @@ router.post("/:id/xray-images", upload.array("xrayImages"), addXrayImages);
 // New routes
 router.post("/:id/visit-records", addVisitRecord);
 
-  router.put("/:id/visit-records/:visitId", updateVisitRecord); // Updated route
-
+router.put("/:id/visit-records/:visitId", updateVisitRecord); // Updated route
 
 router.put("/:id/card-status", updateCardStatus);
 

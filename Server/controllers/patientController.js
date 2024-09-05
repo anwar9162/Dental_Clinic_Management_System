@@ -11,6 +11,15 @@ const getAllPatients = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+// Get all patients with basic information
+const getPatientsBasicInfo = async (req, res) => {
+  try {
+    const patients = await Patient.find({}, "firstName lastName phoneNumber"); // Project only required fields
+    res.status(200).json(patients);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 // Get patient by ID
 const getPatientById = async (req, res) => {
@@ -356,7 +365,10 @@ const updateVisitRecord = async (req, res) => {
     const { id, visitId } = req.params;
     const { progressNote, treatmentPlan, treatmentDone } = req.body;
 
-    const patient = await Patient.findOne({ _id: id, "visitHistory._id": visitId });
+    const patient = await Patient.findOne({
+      _id: id,
+      "visitHistory._id": visitId,
+    });
     if (!patient) return res.status(404).send("Visit record not found.");
 
     const visit = patient.visitHistory.id(visitId);
@@ -366,11 +378,14 @@ const updateVisitRecord = async (req, res) => {
       visit.progressNotes.push({ note: progressNote });
     }
 
-     // Update treatment plan
-     if (treatmentPlan) {
+    // Update treatment plan
+    if (treatmentPlan) {
       if (Array.isArray(treatmentPlan)) {
         visit.treatmentPlan.plannedTreatments = [
-          ...new Set([...visit.treatmentPlan.plannedTreatments, ...treatmentPlan])
+          ...new Set([
+            ...visit.treatmentPlan.plannedTreatments,
+            ...treatmentPlan,
+          ]),
         ];
       } else {
         return res.status(400).send("Invalid treatmentPlan format.");
@@ -381,7 +396,10 @@ const updateVisitRecord = async (req, res) => {
     if (treatmentDone) {
       if (Array.isArray(treatmentDone.treatments)) {
         visit.treatmentDone.treatments = [
-          ...new Set([...visit.treatmentDone.treatments, ...treatmentDone.treatments])
+          ...new Set([
+            ...visit.treatmentDone.treatments,
+            ...treatmentDone.treatments,
+          ]),
         ];
       } else {
         return res.status(400).send("Invalid treatmentDone.treatments format.");
@@ -507,5 +525,6 @@ module.exports = {
   addPastMedicalHistory,
   addPastDentalHistory,
   getTodaysPatient,
-  updateVisitRecord
+  updateVisitRecord,
+  getPatientsBasicInfo,
 };
