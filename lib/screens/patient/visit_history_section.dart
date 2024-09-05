@@ -30,7 +30,7 @@ class VisitHistorySection extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Visit History',
+                      'Hx',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontSize: 14, // Reduced font size
                             fontWeight: FontWeight.bold,
@@ -84,7 +84,8 @@ class VisitHistorySection extends StatelessWidget {
       leading: Icon(Icons.history,
           color: Colors.blueGrey[600], size: 24), // Smaller icon
       title: Text(
-        'Date: ${DateFormat('yyyy-MM-dd').format(visit.date)}',
+        'Chief Compliant: ${visit.chiefComplaint!.description!}',
+        //   'Date: ${DateFormat('yyyy-MM-dd').format(visit.date)}',
         style: TextStyle(
           fontSize: 12, // Reduced font size
           fontWeight: FontWeight.bold,
@@ -92,7 +93,8 @@ class VisitHistorySection extends StatelessWidget {
         ),
       ),
       subtitle: Text(
-        visit.reason ?? 'No reason provided',
+        'Date: ${DateFormat('yyyy-MM-dd').format(visit.date)}',
+        // visit.reason ?? 'No reason provided',
         style: TextStyle(
             color: Colors.grey[600], fontSize: 12), // Reduced font size
       ),
@@ -115,7 +117,7 @@ class VisitHistorySection extends StatelessWidget {
           ),
         if (visit.generalAppearance != null ||
             visit.extraOral != null ||
-            visit.internalOral != null)
+            visit.intraOral != null)
           _buildCategoryRow(
             visit.generalAppearance != null
                 ? 'General Appearance'
@@ -125,10 +127,10 @@ class VisitHistorySection extends StatelessWidget {
                 ? 'Extra Oral Examination'
                 : 'Extra Oral Examination (No data)',
             visit.extraOral,
-            visit.internalOral != null
-                ? 'Internal Oral Examination'
-                : 'Internal Oral Examination (No data)',
-            visit.internalOral,
+            visit.intraOral != null
+                ? 'Intra Oral Examination'
+                : 'Intra Oral Examination (No data)',
+            visit.intraOral,
           ),
         if (visit.diagnosis != null ||
             visit.treatmentPlan != null ||
@@ -313,48 +315,48 @@ class VisitHistorySection extends StatelessWidget {
     if (content is ChiefComplaint) {
       return {
         'Description': content.description ?? 'No data available',
-        'Duration': content.duration ?? 'No data available',
-        'Severity': content.severity ?? 'No data available',
+        //     'Duration': content.duration ?? 'No data available',
+        //   'Severity': content.severity ?? 'No data available',
       };
     } else if (content is HPI) {
       return {
-        'Onset': content.onset ?? 'No data available',
-        'Progression': content.progression ?? 'No data available',
-        'Associated Symptoms':
-            content.associatedSymptoms ?? 'No data available',
+        'Detail': content.Detail ?? 'No data available',
+        //  'Progression': content.progression ?? 'No data available',
+        //'Associated Symptoms':
+        //  content.associatedSymptoms ?? 'No data available',
       };
     } else if (content is PhysicalExamination) {
       return {
         'Blood Pressure': content.bloodPressure ?? 'No data available',
         'Temperature': content.temperature ?? 'No data available',
         'Pulse': content.pulse ?? 'No data available',
-        'Respiration Rate': content.respirationRate ?? 'No data available',
+        //    'Respiration Rate': content.respirationRate ?? 'No data available',
       };
     } else if (content is GeneralAppearance) {
       return {
         'Appearance': content.appearance ?? 'No data available',
-        'Additional Notes': content.additionalNotes ?? 'No data available',
+        //'Additional Notes': content.additionalNotes ?? 'No data available',
       };
     } else if (content is ExtraOral) {
       return {
         'Findings': content.findings ?? 'No data available',
       };
-    } else if (content is InternalOral) {
+    } else if (content is IntraOral) {
       return {
         'Findings': content.findings ?? 'No data available',
       };
     } else if (content is Diagnosis) {
       return {
         'Condition': content.condition ?? 'No data available',
-        'Details': content.details ?? 'No data available',
+        //   'Details': content.details ?? 'No data available',
       };
     } else if (content is TreatmentPlan) {
       return {
         'Planned Treatments': content.plannedTreatments.isNotEmpty
             ? content.plannedTreatments.join(', ')
             : 'No data available',
-        'Follow-Up Instructions':
-            content.followUpInstructions ?? 'No data available',
+        //  'Follow-Up Instructions':
+        //    content.followUpInstructions ?? 'No data available',
       };
     } else if (content is TreatmentDone) {
       return {

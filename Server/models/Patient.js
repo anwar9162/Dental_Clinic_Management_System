@@ -3,15 +3,13 @@ const mongoose = require("mongoose");
 // Define the schema for chief complaint
 const chiefComplaintSchema = new mongoose.Schema({
   description: String,
-  duration: String,
-  severity: String,
+
 });
 
 // Define the schema for history of present illness (HPI)
 const hpiSchema = new mongoose.Schema({
-  onset: String,
-  progression: String,
-  associatedSymptoms: String,
+  Detail: String,
+
 });
 
 // Define the schema for physical examination
@@ -19,7 +17,7 @@ const physicalExaminationSchema = new mongoose.Schema({
   bloodPressure: String,
   temperature: String,
   pulse: String,
-  respirationRate: String,
+  
 });
 
 // Define the schema for general appearance
@@ -36,8 +34,8 @@ const extraOralSchema = new mongoose.Schema({
   findings: String,
 });
 
-// Define the schema for internal oral examination
-const internalOralSchema = new mongoose.Schema({
+// Define the schema for intra oral examination
+const intraOralSchema = new mongoose.Schema({
   findings: String,
 });
 
@@ -50,7 +48,7 @@ const diagnosisSchema = new mongoose.Schema({
 // Define the schema for treatment plan
 const treatmentPlanSchema = new mongoose.Schema({
   plannedTreatments: [String],
-  followUpInstructions: String,
+  
 });
 
 // Define the schema for treatment done
@@ -130,8 +128,8 @@ const visitSchema = new mongoose.Schema({
     required: true,
   },
   extraOral: extraOralSchema,
-  internalOral: {
-    type: internalOralSchema,
+  intraOral: {
+    type: intraOralSchema,
     required: true,
   },
   diagnosis: diagnosisSchema,

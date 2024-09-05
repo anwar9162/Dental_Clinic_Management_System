@@ -351,6 +351,52 @@ const addVisitRecord = async (req, res) => {
   }
 };
 
+const updateVisitRecord = async (req, res) => {
+  try {
+    const { id, visitId } = req.params;
+    const { progressNote, treatmentPlan, treatmentDone } = req.body;
+
+    const patient = await Patient.findOne({ _id: id, "visitHistory._id": visitId });
+    if (!patient) return res.status(404).send("Visit record not found.");
+
+    const visit = patient.visitHistory.id(visitId);
+
+    // Update progress notes
+    if (progressNote) {
+      visit.progressNotes.push({ note: progressNote });
+    }
+
+     // Update treatment plan
+     if (treatmentPlan) {
+      if (Array.isArray(treatmentPlan)) {
+        visit.treatmentPlan.plannedTreatments = [
+          ...new Set([...visit.treatmentPlan.plannedTreatments, ...treatmentPlan])
+        ];
+      } else {
+        return res.status(400).send("Invalid treatmentPlan format.");
+      }
+    }
+
+    // Update treatment done
+    if (treatmentDone) {
+      if (Array.isArray(treatmentDone.treatments)) {
+        visit.treatmentDone.treatments = [
+          ...new Set([...visit.treatmentDone.treatments, ...treatmentDone.treatments])
+        ];
+      } else {
+        return res.status(400).send("Invalid treatmentDone.treatments format.");
+      }
+      if (treatmentDone.completionDate) {
+        visit.treatmentDone.completionDate = treatmentDone.completionDate;
+      }
+    }
+
+    await patient.save();
+    res.status(200).send(visit);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
 const updateCardStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -461,4 +507,5 @@ module.exports = {
   addPastMedicalHistory,
   addPastDentalHistory,
   getTodaysPatient,
+  updateVisitRecord
 };

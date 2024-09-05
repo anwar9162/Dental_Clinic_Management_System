@@ -56,13 +56,13 @@ class CardStatus {
 
 class Visit {
   final DateTime date;
-  final String? reason;
+  // final String? reason;
   final ChiefComplaint? chiefComplaint;
   final HPI? historyOfPresentIllness;
   final PhysicalExamination? physicalExamination;
   final GeneralAppearance? generalAppearance;
   final ExtraOral? extraOral;
-  final InternalOral internalOral;
+  final IntraOral intraOral;
   final Diagnosis? diagnosis;
   final TreatmentPlan? treatmentPlan;
   final TreatmentDone? treatmentDone;
@@ -71,13 +71,13 @@ class Visit {
 
   Visit({
     required this.date,
-    this.reason,
+    // this.reason,
     this.chiefComplaint,
     this.historyOfPresentIllness,
     this.physicalExamination,
     this.generalAppearance,
     this.extraOral,
-    required this.internalOral,
+    required this.intraOral,
     this.diagnosis,
     this.treatmentPlan,
     this.treatmentDone,
@@ -88,7 +88,7 @@ class Visit {
   factory Visit.fromJson(Map<String, dynamic> json) {
     return Visit(
       date: DateTime.parse(json['date']),
-      reason: json['reason'],
+      //  reason: json['reason'],
       chiefComplaint: json['chiefComplaint'] != null
           ? ChiefComplaint.fromJson(json['chiefComplaint'])
           : null,
@@ -101,7 +101,7 @@ class Visit {
       extraOral: json['extraOral'] != null
           ? ExtraOral.fromJson(json['extraOral'])
           : null,
-      internalOral: InternalOral.fromJson(json['internalOral']),
+      intraOral: IntraOral.fromJson(json['intraOral']),
       diagnosis: json['diagnosis'] != null
           ? Diagnosis.fromJson(json['diagnosis'])
           : null,
@@ -122,13 +122,13 @@ class Visit {
   Map<String, dynamic> toJson() {
     return {
       'date': date.toIso8601String(),
-      'reason': reason,
+      //'reason': reason,
       'chiefComplaint': chiefComplaint?.toJson(),
       'historyOfPresentIllness': historyOfPresentIllness?.toJson(),
       'physicalExamination': physicalExamination?.toJson(),
       'generalAppearance': generalAppearance?.toJson(),
       'extraOral': extraOral?.toJson(),
-      'internalOral': internalOral.toJson(),
+      'intraOral': intraOral.toJson(),
       'diagnosis': diagnosis?.toJson(),
       'treatmentPlan': treatmentPlan?.toJson(),
       'treatmentDone': treatmentDone?.toJson(),
@@ -140,56 +140,40 @@ class Visit {
 
 class ChiefComplaint {
   final String? description;
-  final String? duration;
-  final String? severity;
 
   ChiefComplaint({
     this.description,
-    this.duration,
-    this.severity,
   });
 
   factory ChiefComplaint.fromJson(Map<String, dynamic> json) {
     return ChiefComplaint(
       description: json['description'],
-      duration: json['duration'],
-      severity: json['severity'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'description': description,
-      'duration': duration,
-      'severity': severity,
     };
   }
 }
 
 class HPI {
-  final String? onset;
-  final String? progression;
-  final String? associatedSymptoms;
+  final String? Detail;
 
   HPI({
-    this.onset,
-    this.progression,
-    this.associatedSymptoms,
+    this.Detail,
   });
 
   factory HPI.fromJson(Map<String, dynamic> json) {
     return HPI(
-      onset: json['onset'],
-      progression: json['progression'],
-      associatedSymptoms: json['associatedSymptoms'],
+      Detail: json['Detail'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'onset': onset,
-      'progression': progression,
-      'associatedSymptoms': associatedSymptoms,
+      'Detail': Detail,
     };
   }
 }
@@ -198,13 +182,11 @@ class PhysicalExamination {
   final String? bloodPressure;
   final String? temperature;
   final String? pulse;
-  final String? respirationRate;
 
   PhysicalExamination({
     this.bloodPressure,
     this.temperature,
     this.pulse,
-    this.respirationRate,
   });
 
   factory PhysicalExamination.fromJson(Map<String, dynamic> json) {
@@ -212,7 +194,6 @@ class PhysicalExamination {
       bloodPressure: json['bloodPressure'],
       temperature: json['temperature'],
       pulse: json['pulse'],
-      respirationRate: json['respirationRate'],
     );
   }
 
@@ -221,7 +202,6 @@ class PhysicalExamination {
       'bloodPressure': bloodPressure,
       'temperature': temperature,
       'pulse': pulse,
-      'respirationRate': respirationRate,
     };
   }
 }
@@ -270,15 +250,15 @@ class ExtraOral {
   }
 }
 
-class InternalOral {
+class IntraOral {
   final String findings;
 
-  InternalOral({
+  IntraOral({
     required this.findings,
   });
 
-  factory InternalOral.fromJson(Map<String, dynamic> json) {
-    return InternalOral(
+  factory IntraOral.fromJson(Map<String, dynamic> json) {
+    return IntraOral(
       findings: json['findings'],
     );
   }
@@ -316,24 +296,20 @@ class Diagnosis {
 
 class TreatmentPlan {
   final List<String> plannedTreatments;
-  final String? followUpInstructions;
 
   TreatmentPlan({
     required this.plannedTreatments,
-    this.followUpInstructions,
   });
 
   factory TreatmentPlan.fromJson(Map<String, dynamic> json) {
     return TreatmentPlan(
       plannedTreatments: List<String>.from(json['plannedTreatments']),
-      followUpInstructions: json['followUpInstructions'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'plannedTreatments': plannedTreatments,
-      'followUpInstructions': followUpInstructions,
     };
   }
 }
