@@ -44,7 +44,7 @@ Future<void> showAddDentalHistoryDialog(
                               child: TextField(
                                 decoration: InputDecoration(
                                   hintText: 'e.g., Tooth Sensitivity',
-                                  labelText: 'Field Name',
+                                  labelText: 'Subject',
                                   labelStyle: TextStyle(
                                     color: Colors.grey[700],
                                     fontWeight: FontWeight.bold,

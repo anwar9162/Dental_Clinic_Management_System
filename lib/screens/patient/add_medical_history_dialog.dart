@@ -44,7 +44,7 @@ Future<void> showAddMedicalHistoryDialog(
                               child: TextField(
                                 decoration: InputDecoration(
                                   hintText: 'e.g., Allergies, Medications',
-                                  labelText: 'Field Name',
+                                  labelText: 'Subject',
                                   labelStyle: TextStyle(
                                     color: Colors.grey[700],
                                     fontWeight: FontWeight.bold,
