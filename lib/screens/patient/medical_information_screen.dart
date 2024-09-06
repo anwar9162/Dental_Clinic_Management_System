@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../patient/PatientDetailWidget.dart';
-import '../../../models/basic_patient_info_model.dart'; // Update import path
+import '../../../models/basic_patient_info_model.dart';
 import 'patient_bloc/medical_information_bloc.dart';
 import 'patient_bloc/medical_information_event.dart';
 import 'patient_bloc/medical_information_state.dart';
