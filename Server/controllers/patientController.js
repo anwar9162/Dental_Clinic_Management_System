@@ -359,7 +359,6 @@ const addVisitRecord = async (req, res) => {
     res.status(500).json(errorResponse);
   }
 };
-
 const updateVisitRecord = async (req, res) => {
   try {
     const { id, visitId } = req.params;
@@ -394,19 +393,10 @@ const updateVisitRecord = async (req, res) => {
 
     // Update treatment done
     if (treatmentDone) {
-      if (Array.isArray(treatmentDone.treatments)) {
-        visit.treatmentDone.treatments = [
-          ...new Set([
-            ...visit.treatmentDone.treatments,
-            ...treatmentDone.treatments,
-          ]),
-        ];
-      } else {
-        return res.status(400).send("Invalid treatmentDone.treatments format.");
-      }
-      if (treatmentDone.completionDate) {
-        visit.treatmentDone.completionDate = treatmentDone.completionDate;
-      }
+      visit.treatmentDone.push(...treatmentDone.map(entry => ({
+        treatment: entry.treatment,
+        completionDate: entry.completionDate
+      })));
     }
 
     await patient.save();
@@ -415,6 +405,7 @@ const updateVisitRecord = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
 const updateCardStatus = async (req, res) => {
   try {
     const { id } = req.params;

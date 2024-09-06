@@ -65,7 +65,7 @@ class Visit {
   final IntraOral intraOral;
   final Diagnosis? diagnosis;
   final TreatmentPlan? treatmentPlan;
-  final TreatmentDone? treatmentDone;
+  final List<TreatmentEntry>? treatmentDone; // Updated
   final List<ProgressNote>? progressNotes;
   final Payment? payment;
 
@@ -108,9 +108,9 @@ class Visit {
       treatmentPlan: json['treatmentPlan'] != null
           ? TreatmentPlan.fromJson(json['treatmentPlan'])
           : null,
-      treatmentDone: json['treatmentDone'] != null
-          ? TreatmentDone.fromJson(json['treatmentDone'])
-          : null,
+      treatmentDone: (json['treatmentDone'] as List<dynamic>?)
+          ?.map((item) => TreatmentEntry.fromJson(item as Map<String, dynamic>))
+          .toList(), // Updated
       progressNotes: (json['progressNotes'] as List<dynamic>?)
           ?.map((item) => ProgressNote.fromJson(item as Map<String, dynamic>))
           .toList(),
@@ -131,7 +131,8 @@ class Visit {
       'intraOral': intraOral.toJson(),
       'diagnosis': diagnosis?.toJson(),
       'treatmentPlan': treatmentPlan?.toJson(),
-      'treatmentDone': treatmentDone?.toJson(),
+      'treatmentDone':
+          treatmentDone?.map((entry) => entry.toJson()).toList(), // Updated
       'progressNotes': progressNotes?.map((note) => note.toJson()).toList(),
       'payment': payment?.toJson(),
     };
@@ -314,18 +315,18 @@ class TreatmentPlan {
   }
 }
 
-class TreatmentDone {
-  final List<String> treatments;
+class TreatmentEntry {
+  final String treatment;
   final DateTime? completionDate;
 
-  TreatmentDone({
-    required this.treatments,
+  TreatmentEntry({
+    required this.treatment,
     this.completionDate,
   });
 
-  factory TreatmentDone.fromJson(Map<String, dynamic> json) {
-    return TreatmentDone(
-      treatments: List<String>.from(json['treatments']),
+  factory TreatmentEntry.fromJson(Map<String, dynamic> json) {
+    return TreatmentEntry(
+      treatment: json['treatment'],
       completionDate: json['completionDate'] != null
           ? DateTime.parse(json['completionDate'])
           : null,
@@ -334,7 +335,7 @@ class TreatmentDone {
 
   Map<String, dynamic> toJson() {
     return {
-      'treatments': treatments,
+      'treatment': treatment,
       'completionDate': completionDate?.toIso8601String(),
     };
   }

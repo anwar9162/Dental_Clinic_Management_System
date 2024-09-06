@@ -52,11 +52,11 @@ const treatmentPlanSchema = new mongoose.Schema({
 });
 
 // Define the schema for treatment done
-const treatmentDoneSchema = new mongoose.Schema({
-  treatments: [String],
+// Define the schema for individual treatment entry
+const treatmentEntrySchema = new mongoose.Schema({
+  treatment: String,
   completionDate: Date,
 });
-
 // Define the schema for progress notes
 const progressNoteSchema = new mongoose.Schema({
   note: String,
@@ -134,7 +134,7 @@ const visitSchema = new mongoose.Schema({
   },
   diagnosis: diagnosisSchema,
   treatmentPlan: treatmentPlanSchema,
-  treatmentDone: treatmentDoneSchema,
+  treatmentDone: [treatmentEntrySchema],
   progressNotes: [progressNoteSchema],
   payments: paymentSchema,
 });

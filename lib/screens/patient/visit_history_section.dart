@@ -255,8 +255,8 @@ class VisitHistorySection extends StatelessWidget {
                 color: Colors.blueGrey[800],
                 fontSize: 12, // Reduced font size
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              maxLines: null, // Allow for multiple lines
+              overflow: TextOverflow.visible, // Ensure all text is visible
             ),
           ),
           SizedBox(width: 6), // Reduced space
@@ -265,10 +265,11 @@ class VisitHistorySection extends StatelessWidget {
             child: Text(
               value,
               style: TextStyle(
-                  color: Colors.blueGrey[600],
-                  fontSize: 12), // Reduced font size
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+                color: Colors.blueGrey[600],
+                fontSize: 12, // Reduced font size
+              ),
+              maxLines: null, // Allow for multiple lines
+              overflow: TextOverflow.visible, // Ensure all text is visible
             ),
           ),
         ],
@@ -290,7 +291,7 @@ class VisitHistorySection extends StatelessWidget {
                 Text(
                   note.note,
                   style: TextStyle(
-                      color: Colors.blueGrey[600],
+                      color: const Color.fromARGB(255, 0, 6, 8),
                       fontSize: 12), // Reduced font size
                 ),
                 SizedBox(height: 2), // Reduced space
@@ -353,18 +354,19 @@ class VisitHistorySection extends StatelessWidget {
     } else if (content is TreatmentPlan) {
       return {
         'Planned Treatments': content.plannedTreatments.isNotEmpty
-            ? content.plannedTreatments.join(', ')
+            ? content.plannedTreatments.join('\n')
             : 'No data available',
         //  'Follow-Up Instructions':
         //    content.followUpInstructions ?? 'No data available',
       };
-    } else if (content is TreatmentDone) {
+    } else if (content is List<TreatmentEntry>) {
+      // Convert the list to a string with each treatment on a new line
       return {
-        'Treatments': content.treatments.isNotEmpty
-            ? content.treatments.join(', ')
-            : 'No data available',
-        'Completion Date': content.completionDate != null
-            ? DateFormat('yyyy-MM-dd').format(content.completionDate!)
+        'Treatments': content.isNotEmpty
+            ? content
+                .map((entry) =>
+                    '${entry.treatment}: ${entry.completionDate != null ? DateFormat('yyyy-MM-dd').format(entry.completionDate!) : 'No date available'}')
+                .join('\n') // Use '\n' to create new lines
             : 'No data available',
       };
     } else if (content is Payment) {
