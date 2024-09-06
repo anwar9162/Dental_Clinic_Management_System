@@ -84,7 +84,7 @@ class VisitHistorySection extends StatelessWidget {
       leading: Icon(Icons.history,
           color: Colors.blueGrey[600], size: 24), // Smaller icon
       title: Text(
-        'Chief Compliant: ${visit.chiefComplaint!.description!}',
+        'Chief Complaint: ${visit.chiefComplaint!.description!}',
         //   'Date: ${DateFormat('yyyy-MM-dd').format(visit.date)}',
         style: TextStyle(
           fontSize: 12, // Reduced font size
@@ -134,9 +134,7 @@ class VisitHistorySection extends StatelessWidget {
           ),
         if (visit.diagnosis != null ||
             visit.treatmentPlan != null ||
-            visit.treatmentDone != null ||
-            visit.progressNotes != null ||
-            visit.payment != null)
+            visit.treatmentDone != null)
           _buildCategoryRow(
             visit.diagnosis != null ? 'Diagnosis' : 'Diagnosis (No data)',
             visit.diagnosis,
@@ -149,14 +147,14 @@ class VisitHistorySection extends StatelessWidget {
                 : 'Treatment Done (No data)',
             visit.treatmentDone,
           ),
-        if (visit.progressNotes != null || visit.payment != null)
+        if (visit.progressNotes != null)
           _buildCategoryRow(
             visit.progressNotes != null
                 ? 'Progress Notes'
                 : 'Progress Notes (No data)',
             visit.progressNotes,
-            visit.payment != null ? 'Payment' : 'Payment (No data)',
-            visit.payment,
+            '', // Placeholder for no third column
+            '',
           ),
       ],
     );
@@ -177,7 +175,7 @@ class VisitHistorySection extends StatelessWidget {
           Expanded(
             child: _buildCategorySection(title2, content2),
           ),
-          if (title3 != null) ...[
+          if (title3 != null && title3.isNotEmpty) ...[
             SizedBox(width: 8), // Reduced space
             Expanded(
               child: _buildCategorySection(title3, content3),
@@ -261,7 +259,7 @@ class VisitHistorySection extends StatelessWidget {
           ),
           SizedBox(width: 6), // Reduced space
           Expanded(
-            flex: 2,
+            flex: 4,
             child: Text(
               value,
               style: TextStyle(
@@ -368,13 +366,6 @@ class VisitHistorySection extends StatelessWidget {
                     '${entry.treatment}: ${entry.completionDate != null ? DateFormat('yyyy-MM-dd').format(entry.completionDate!) : 'No date available'}')
                 .join('\n') // Use '\n' to create new lines
             : 'No data available',
-      };
-    } else if (content is Payment) {
-      return {
-        'Amount': content.amount.toString(),
-        'Date': DateFormat('yyyy-MM-dd').format(content.date),
-        'Status': content.status,
-        'Reason': content.reason ?? 'No data available',
       };
     } else {
       return {};
