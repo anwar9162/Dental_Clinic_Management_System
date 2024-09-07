@@ -136,9 +136,11 @@ const visitSchema = new mongoose.Schema({
   treatmentPlan: treatmentPlanSchema,
   treatmentDone: [treatmentEntrySchema],
   progressNotes: [progressNoteSchema],
+  pastMedicalHistory: [dynamicFieldSchema], // Flexible fields
+  pastDentalHistory: [dynamicFieldSchema], // Flexible fields
   payments: paymentSchema,
-});
 
+});
 // Define the schema for the patient
 const patientSchema = new mongoose.Schema(
   {
@@ -155,8 +157,7 @@ const patientSchema = new mongoose.Schema(
     visitHistory: [visitSchema],
     progressImages: [imageSchema],
     xrayImages: [imageSchema],
-    pastMedicalHistory: [dynamicFieldSchema], // Flexible fields
-    pastDentalHistory: [dynamicFieldSchema], // Flexible fields
+    
   },
   { timestamps: true }
 ); // Add timestamps option

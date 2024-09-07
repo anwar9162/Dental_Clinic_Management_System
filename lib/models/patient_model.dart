@@ -57,7 +57,6 @@ class CardStatus {
 class Visit {
   final String? id;
   final DateTime date;
-  // final String? reason;
   final ChiefComplaint? chiefComplaint;
   final HPI? historyOfPresentIllness;
   final PhysicalExamination? physicalExamination;
@@ -66,14 +65,15 @@ class Visit {
   final IntraOral intraOral;
   final Diagnosis? diagnosis;
   final TreatmentPlan? treatmentPlan;
-  final List<TreatmentEntry>? treatmentDone; // Updated
+  final List<TreatmentEntry>? treatmentDone;
   final List<ProgressNote>? progressNotes;
   final Payment? payment;
+  final List<PastMedicalHistory>? pastMedicalHistory; // Added
+  final List<PastDentalHistory>? pastDentalHistory; // Added
 
   Visit({
     this.id,
     required this.date,
-    // this.reason,
     this.chiefComplaint,
     this.historyOfPresentIllness,
     this.physicalExamination,
@@ -85,13 +85,14 @@ class Visit {
     this.treatmentDone,
     this.progressNotes,
     this.payment,
+    this.pastMedicalHistory, // Added
+    this.pastDentalHistory, // Added
   });
 
   factory Visit.fromJson(Map<String, dynamic> json) {
     return Visit(
       id: json['_id'],
       date: DateTime.parse(json['date']),
-      //  reason: json['reason'],
       chiefComplaint: json['chiefComplaint'] != null
           ? ChiefComplaint.fromJson(json['chiefComplaint'])
           : null,
@@ -113,19 +114,27 @@ class Visit {
           : null,
       treatmentDone: (json['treatmentDone'] as List<dynamic>?)
           ?.map((item) => TreatmentEntry.fromJson(item as Map<String, dynamic>))
-          .toList(), // Updated
+          .toList(),
       progressNotes: (json['progressNotes'] as List<dynamic>?)
           ?.map((item) => ProgressNote.fromJson(item as Map<String, dynamic>))
           .toList(),
       payment:
           json['payment'] != null ? Payment.fromJson(json['payment']) : null,
+      pastMedicalHistory: (json['pastMedicalHistory'] as List<dynamic>?)
+          ?.map((item) =>
+              PastMedicalHistory.fromJson(item as Map<String, dynamic>))
+          .toList(),
+      pastDentalHistory: (json['pastDentalHistory'] as List<dynamic>?)
+          ?.map((item) =>
+              PastDentalHistory.fromJson(item as Map<String, dynamic>))
+          .toList(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      '_id': id,
       'date': date.toIso8601String(),
-      //'reason': reason,
       'chiefComplaint': chiefComplaint?.toJson(),
       'historyOfPresentIllness': historyOfPresentIllness?.toJson(),
       'physicalExamination': physicalExamination?.toJson(),
@@ -134,10 +143,13 @@ class Visit {
       'intraOral': intraOral.toJson(),
       'diagnosis': diagnosis?.toJson(),
       'treatmentPlan': treatmentPlan?.toJson(),
-      'treatmentDone':
-          treatmentDone?.map((entry) => entry.toJson()).toList(), // Updated
+      'treatmentDone': treatmentDone?.map((entry) => entry.toJson()).toList(),
       'progressNotes': progressNotes?.map((note) => note.toJson()).toList(),
       'payment': payment?.toJson(),
+      'pastMedicalHistory':
+          pastMedicalHistory?.map((history) => history.toJson()).toList(),
+      'pastDentalHistory':
+          pastDentalHistory?.map((history) => history.toJson()).toList(),
     };
   }
 }
@@ -403,19 +415,19 @@ class Payment {
 class PastMedicalHistory {
   final String fieldName;
   final String fieldValue;
-  final String? patientId; // Add this field
+  final String? patientId;
 
   PastMedicalHistory({
     required this.fieldName,
     required this.fieldValue,
-    this.patientId, // Include in the constructor
+    this.patientId,
   });
 
   factory PastMedicalHistory.fromJson(Map<String, dynamic> json) {
     return PastMedicalHistory(
       fieldName: json['fieldName'],
       fieldValue: json['fieldValue'],
-      patientId: json['patientId'], // Handle patientId in fromJson
+      patientId: json['patientId'],
     );
   }
 
@@ -423,7 +435,7 @@ class PastMedicalHistory {
     return {
       'fieldName': fieldName,
       'fieldValue': fieldValue,
-      'patientId': patientId, // Include in toJson
+      'patientId': patientId,
     };
   }
 }

@@ -84,8 +84,7 @@ class VisitHistorySection extends StatelessWidget {
       leading: Icon(Icons.history,
           color: Colors.blueGrey[600], size: 24), // Smaller icon
       title: Text(
-        'Chief Complaint: ${visit.chiefComplaint!.description!}',
-        //   'Date: ${DateFormat('yyyy-MM-dd').format(visit.date)}',
+        'Chief Complaint: ${visit.chiefComplaint?.description ?? 'No data'}',
         style: TextStyle(
           fontSize: 12, // Reduced font size
           fontWeight: FontWeight.bold,
@@ -94,7 +93,6 @@ class VisitHistorySection extends StatelessWidget {
       ),
       subtitle: Text(
         'Date: ${DateFormat('yyyy-MM-dd').format(visit.date)}',
-        // visit.reason ?? 'No reason provided',
         style: TextStyle(
             color: Colors.grey[600], fontSize: 12), // Reduced font size
       ),
@@ -156,6 +154,20 @@ class VisitHistorySection extends StatelessWidget {
             '', // Placeholder for no third column
             '',
           ),
+        if (visit.pastMedicalHistory != null)
+          _buildCategoryRow(
+            'Past Medical History',
+            visit.pastMedicalHistory,
+            '', // Placeholder for no second column
+            '',
+          ),
+        if (visit.pastDentalHistory != null)
+          _buildCategoryRow(
+            'Past Dental History',
+            visit.pastDentalHistory,
+            '', // Placeholder for no second column
+            '',
+          ),
       ],
     );
   }
@@ -200,6 +212,16 @@ class VisitHistorySection extends StatelessWidget {
           ...content.map((item) => _buildProgressNoteRow(item)).toList(),
         ],
       );
+    } else if (content is List<PastMedicalHistory> ||
+        content is List<PastDentalHistory>) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCategoryHeader(title),
+          SizedBox(height: 4), // Reduced space
+          ..._buildHistoryRows(content),
+        ],
+      );
     } else {
       final Map<String, String> contentMap = _convertToMap(content);
       return Column(
@@ -211,6 +233,47 @@ class VisitHistorySection extends StatelessWidget {
         ],
       );
     }
+  }
+
+  List<Widget> _buildHistoryRows(List<dynamic> historyList) {
+    return historyList.map((history) {
+      final fieldName = history.fieldName ?? 'No field name';
+      final fieldValue = history.fieldValue ?? 'No field value';
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Text(
+                fieldName,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.blueGrey[800],
+                  fontSize: 12, // Reduced font size
+                ),
+                maxLines: null,
+                overflow: TextOverflow.visible,
+              ),
+            ),
+            SizedBox(width: 6),
+            Expanded(
+              flex: 4,
+              child: Text(
+                fieldValue,
+                style: TextStyle(
+                  color: Colors.blueGrey[600],
+                  fontSize: 12, // Reduced font size
+                ),
+                maxLines: null,
+                overflow: TextOverflow.visible,
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
   }
 
   Widget _buildCategoryHeader(String title) {
@@ -253,11 +316,11 @@ class VisitHistorySection extends StatelessWidget {
                 color: Colors.blueGrey[800],
                 fontSize: 12, // Reduced font size
               ),
-              maxLines: null, // Allow for multiple lines
-              overflow: TextOverflow.visible, // Ensure all text is visible
+              maxLines: null,
+              overflow: TextOverflow.visible,
             ),
           ),
-          SizedBox(width: 6), // Reduced space
+          SizedBox(width: 6),
           Expanded(
             flex: 4,
             child: Text(
@@ -266,8 +329,8 @@ class VisitHistorySection extends StatelessWidget {
                 color: Colors.blueGrey[600],
                 fontSize: 12, // Reduced font size
               ),
-              maxLines: null, // Allow for multiple lines
-              overflow: TextOverflow.visible, // Ensure all text is visible
+              maxLines: null,
+              overflow: TextOverflow.visible,
             ),
           ),
         ],
@@ -314,27 +377,20 @@ class VisitHistorySection extends StatelessWidget {
     if (content is ChiefComplaint) {
       return {
         'Description': content.description ?? 'No data available',
-        //     'Duration': content.duration ?? 'No data available',
-        //   'Severity': content.severity ?? 'No data available',
       };
     } else if (content is HPI) {
       return {
         'Detail': content.Detail ?? 'No data available',
-        //  'Progression': content.progression ?? 'No data available',
-        //'Associated Symptoms':
-        //  content.associatedSymptoms ?? 'No data available',
       };
     } else if (content is PhysicalExamination) {
       return {
         'Blood Pressure': content.bloodPressure ?? 'No data available',
         'Temperature': content.temperature ?? 'No data available',
         'Pulse': content.pulse ?? 'No data available',
-        //    'Respiration Rate': content.respirationRate ?? 'No data available',
       };
     } else if (content is GeneralAppearance) {
       return {
         'Appearance': content.appearance ?? 'No data available',
-        //'Additional Notes': content.additionalNotes ?? 'No data available',
       };
     } else if (content is ExtraOral) {
       return {
@@ -347,24 +403,20 @@ class VisitHistorySection extends StatelessWidget {
     } else if (content is Diagnosis) {
       return {
         'Condition': content.condition ?? 'No data available',
-        //   'Details': content.details ?? 'No data available',
       };
     } else if (content is TreatmentPlan) {
       return {
         'Planned Treatments': content.plannedTreatments.isNotEmpty
             ? content.plannedTreatments.join('\n')
             : 'No data available',
-        //  'Follow-Up Instructions':
-        //    content.followUpInstructions ?? 'No data available',
       };
     } else if (content is List<TreatmentEntry>) {
-      // Convert the list to a string with each treatment on a new line
       return {
         'Treatments': content.isNotEmpty
             ? content
                 .map((entry) =>
                     '${entry.treatment}: ${entry.completionDate != null ? DateFormat('yyyy-MM-dd').format(entry.completionDate!) : 'No date available'}')
-                .join('\n') // Use '\n' to create new lines
+                .join('\n')
             : 'No data available',
       };
     } else {
