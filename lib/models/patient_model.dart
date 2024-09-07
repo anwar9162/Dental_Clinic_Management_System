@@ -55,6 +55,7 @@ class CardStatus {
 }
 
 class Visit {
+  final String? id;
   final DateTime date;
   // final String? reason;
   final ChiefComplaint? chiefComplaint;
@@ -70,6 +71,7 @@ class Visit {
   final Payment? payment;
 
   Visit({
+    this.id,
     required this.date,
     // this.reason,
     this.chiefComplaint,
@@ -87,6 +89,7 @@ class Visit {
 
   factory Visit.fromJson(Map<String, dynamic> json) {
     return Visit(
+      id: json['_id'],
       date: DateTime.parse(json['date']),
       //  reason: json['reason'],
       chiefComplaint: json['chiefComplaint'] != null
