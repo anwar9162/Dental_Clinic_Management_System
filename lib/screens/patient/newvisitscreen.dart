@@ -31,17 +31,10 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> _controllers = {
     'date': TextEditingController(),
-    'reason': TextEditingController(),
     'description': TextEditingController(),
-    'duration': TextEditingController(),
-    'severity': TextEditingController(),
     'onset': TextEditingController(),
-    'progression': TextEditingController(),
-    'associatedSymptoms': TextEditingController(),
     'bloodPressure': TextEditingController(),
     'temperature': TextEditingController(),
-    'pulse': TextEditingController(),
-    'respirationRate': TextEditingController(),
     'appearance': TextEditingController(),
     'additionalNotes': TextEditingController(),
     'extraOralFindings': TextEditingController(),
@@ -53,6 +46,8 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     'treatments': TextEditingController(),
     'completionDate': TextEditingController(),
     'note': TextEditingController(),
+    'pastMedicalHistory': TextEditingController(),
+    'pastDentalHistory': TextEditingController(),
   };
 
   final PatientApiService _apiService = PatientApiService();
@@ -75,31 +70,15 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     if (_formKey.currentState!.validate()) {
       final visitData = {
         'date': _controllers['date']!.text,
-        'reason': _controllers['reason']!.text.isNotEmpty
-            ? _controllers['reason']!.text
-            : 'N/A',
         'chiefComplaint': {
           'description': _controllers['description']!.text.isNotEmpty
               ? _controllers['description']!.text
-              : 'N/A',
-          'duration': _controllers['duration']!.text.isNotEmpty
-              ? _controllers['duration']!.text
-              : 'N/A',
-          'severity': _controllers['severity']!.text.isNotEmpty
-              ? _controllers['severity']!.text
               : 'N/A',
         },
         'historyOfPresentIllness': {
           'onset': _controllers['onset']!.text.isNotEmpty
               ? _controllers['onset']!.text
               : 'N/A',
-          'progression': _controllers['progression']!.text.isNotEmpty
-              ? _controllers['progression']!.text
-              : 'N/A',
-          'associatedSymptoms':
-              _controllers['associatedSymptoms']!.text.isNotEmpty
-                  ? _controllers['associatedSymptoms']!.text
-                  : 'N/A',
         },
         'physicalExamination': {
           'bloodPressure': _controllers['bloodPressure']!.text.isNotEmpty
@@ -107,12 +86,6 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
               : 'N/A',
           'temperature': _controllers['temperature']!.text.isNotEmpty
               ? _controllers['temperature']!.text
-              : 'N/A',
-          'pulse': _controllers['pulse']!.text.isNotEmpty
-              ? _controllers['pulse']!.text
-              : 'N/A',
-          'respirationRate': _controllers['respirationRate']!.text.isNotEmpty
-              ? _controllers['respirationRate']!.text
               : 'N/A',
         },
         'generalAppearance': {
@@ -151,7 +124,9 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
                 ? _controllers['treatments']!.text
                 : 'N/A'
           ],
-          'completionDate': _controllers['date']!.text,
+          'completionDate': _controllers['completionDate']!.text.isNotEmpty
+              ? _controllers['completionDate']!.text
+              : 'N/A',
         },
         'progressNotes': [
           {
@@ -161,6 +136,13 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
             'createdAt': _controllers['date']!.text,
           }
         ],
+        'pastMedicalHistory':
+            _controllers['pastMedicalHistory']!.text.isNotEmpty
+                ? _controllers['pastMedicalHistory']!.text.split('\n')
+                : [],
+        'pastDentalHistory': _controllers['pastDentalHistory']!.text.isNotEmpty
+            ? _controllers['pastDentalHistory']!.text.split('\n')
+            : [],
         'progressImages': [],
         'xrayImages': [],
       };
@@ -205,8 +187,6 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildDateField(),
-                  SizedBox(height: 8),
-                  _buildReasonField(),
                   SizedBox(height: 8),
                   _buildMultiColumnSections(screenWidth),
                   SizedBox(height: 8),
@@ -286,35 +266,17 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     );
   }
 
-  Widget _buildReasonField() {
-    return Row(
-      children: [
-        Expanded(
-            child: _buildTextFormField(
-                _controllers['reason']!, 'Reason for Visit')),
-      ],
-    );
-  }
-
   Widget _buildMultiColumnSections(double screenWidth) {
     final sectionData = {
       'Chief Complaint': [
         _buildTextFormField(_controllers['description']!, 'Description'),
-        _buildTextFormField(_controllers['duration']!, 'Duration'),
-        _buildTextFormField(_controllers['severity']!, 'Severity'),
       ],
       'History of Present Illness': [
         _buildTextFormField(_controllers['onset']!, 'Onset'),
-        _buildTextFormField(_controllers['progression']!, 'Progression'),
-        _buildTextFormField(
-            _controllers['associatedSymptoms']!, 'Associated Symptoms'),
       ],
       'Physical Examination': [
         _buildTextFormField(_controllers['bloodPressure']!, 'Blood Pressure'),
         _buildTextFormField(_controllers['temperature']!, 'Temperature'),
-        _buildTextFormField(_controllers['pulse']!, 'Pulse'),
-        _buildTextFormField(
-            _controllers['respirationRate']!, 'Respiration Rate'),
       ],
       'General Appearance': [
         _buildTextFormField(_controllers['appearance']!, 'Appearance'),
@@ -344,6 +306,14 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
       'Progress Notes': [
         _buildTextFormField(_controllers['note']!, 'Note'),
         _buildTextFormField(_controllers['date']!, 'Date'),
+      ],
+      'Past Medical History': [
+        _buildTextFormField(
+            _controllers['pastMedicalHistory']!, 'Past Medical History'),
+      ],
+      'Past Dental History': [
+        _buildTextFormField(
+            _controllers['pastDentalHistory']!, 'Past Dental History'),
       ],
     };
 

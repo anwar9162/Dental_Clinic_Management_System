@@ -26,7 +26,7 @@ const generalAppearanceSchema = new mongoose.Schema({
     type: String,
     enum: ["Well-Looking", "Acute Sick-Looking"],
   },
-  additionalNotes: String,
+
 });
 
 // Define the schema for extra oral examination
@@ -56,6 +56,7 @@ const treatmentPlanSchema = new mongoose.Schema({
 const treatmentEntrySchema = new mongoose.Schema({
   treatment: String,
   completionDate: Date,
+  
 });
 // Define the schema for progress notes
 const progressNoteSchema = new mongoose.Schema({

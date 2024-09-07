@@ -197,19 +197,16 @@ class HPI {
 class PhysicalExamination {
   final String? bloodPressure;
   final String? temperature;
-  final String? pulse;
 
   PhysicalExamination({
     this.bloodPressure,
     this.temperature,
-    this.pulse,
   });
 
   factory PhysicalExamination.fromJson(Map<String, dynamic> json) {
     return PhysicalExamination(
       bloodPressure: json['bloodPressure'],
       temperature: json['temperature'],
-      pulse: json['pulse'],
     );
   }
 
@@ -217,31 +214,26 @@ class PhysicalExamination {
     return {
       'bloodPressure': bloodPressure,
       'temperature': temperature,
-      'pulse': pulse,
     };
   }
 }
 
 class GeneralAppearance {
   final String appearance;
-  final String? additionalNotes;
 
   GeneralAppearance({
     required this.appearance,
-    this.additionalNotes,
   });
 
   factory GeneralAppearance.fromJson(Map<String, dynamic> json) {
     return GeneralAppearance(
       appearance: json['appearance'],
-      additionalNotes: json['additionalNotes'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'appearance': appearance,
-      'additionalNotes': additionalNotes,
     };
   }
 }

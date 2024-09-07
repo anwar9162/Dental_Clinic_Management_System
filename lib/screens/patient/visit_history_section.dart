@@ -386,7 +386,6 @@ class VisitHistorySection extends StatelessWidget {
       return {
         'Blood Pressure': content.bloodPressure ?? 'No data available',
         'Temperature': content.temperature ?? 'No data available',
-        'Pulse': content.pulse ?? 'No data available',
       };
     } else if (content is GeneralAppearance) {
       return {
