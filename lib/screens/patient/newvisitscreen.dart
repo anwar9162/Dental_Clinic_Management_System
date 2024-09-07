@@ -30,7 +30,7 @@ class NewVisitScreen extends StatefulWidget {
 class _NewVisitScreenState extends State<NewVisitScreen> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> _controllers = {
-    'date': TextEditingController(),
+    'date': TextEditingController(), // Visit Date
     'description': TextEditingController(),
     'onset': TextEditingController(),
     'bloodPressure': TextEditingController(),
@@ -48,6 +48,8 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     'note': TextEditingController(),
     'pastMedicalHistory': TextEditingController(),
     'pastDentalHistory': TextEditingController(),
+    'progressNoteDate':
+        TextEditingController(), // Separate controller for Progress Note Date
   };
 
   final PatientApiService _apiService = PatientApiService();
@@ -55,9 +57,10 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
   @override
   void initState() {
     super.initState();
-    // Set today's date as default value
     final todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     _controllers['date']!.text = todayDate;
+    _controllers['progressNoteDate']!.text =
+        todayDate; // Initialize separate controller
   }
 
   @override
@@ -133,7 +136,8 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
             'note': _controllers['note']!.text.isNotEmpty
                 ? _controllers['note']!.text
                 : 'N/A',
-            'createdAt': _controllers['date']!.text,
+            'createdAt': _controllers['progressNoteDate']!
+                .text, // Use separate date controller
           }
         ],
         'pastMedicalHistory':
@@ -245,7 +249,6 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
             height: 40,
             child: TextFormField(
               controller: _controllers['date']!,
-              readOnly: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(6.0),
@@ -283,15 +286,14 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
         _buildTextFormField(
             _controllers['additionalNotes']!, 'Additional Notes'),
       ],
-      'Extra Oral Examination': [
+      'Extra Oral Findings': [
         _buildTextFormField(_controllers['extraOralFindings']!, 'Findings'),
       ],
-      'Internal Oral Examination': [
+      'Internal Oral Findings': [
         _buildTextFormField(_controllers['internalOralFindings']!, 'Findings'),
       ],
       'Diagnosis': [
         _buildTextFormField(_controllers['condition']!, 'Condition'),
-        _buildTextFormField(_controllers['details']!, 'Details'),
       ],
       'Treatment Plan': [
         _buildTextFormField(
@@ -305,31 +307,38 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
       ],
       'Progress Notes': [
         _buildTextFormField(_controllers['note']!, 'Note'),
-        _buildTextFormField(_controllers['date']!, 'Date'),
+        _buildTextFormField(_controllers['progressNoteDate']!, 'Date'),
       ],
       'Past Medical History': [
         _buildTextFormField(
-            _controllers['pastMedicalHistory']!, 'Past Medical History'),
+            _controllers['pastMedicalHistory']!, 'Medical History'),
       ],
       'Past Dental History': [
         _buildTextFormField(
-            _controllers['pastDentalHistory']!, 'Past Dental History'),
+            _controllers['pastDentalHistory']!, 'Dental History'),
       ],
     };
 
     return Column(
-      children: sectionData.entries.map((entry) {
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: sectionData.entries.map<Widget>((entry) {
         final sectionTitle = entry.key;
-        final sectionFields = entry.value;
+        final fields = entry.value;
 
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          padding: const EdgeInsets.only(top: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle(sectionTitle),
-              SizedBox(height: 4),
-              ...sectionFields,
+              Text(
+                sectionTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                    ),
+              ),
+              SizedBox(height: 8),
+              ...fields,
             ],
           ),
         );
@@ -337,113 +346,22 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      color: Colors.white,
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 14.0,
-          fontWeight: FontWeight.bold,
-          color: Colors.blueAccent,
+  Widget _buildTextFormField(TextEditingController controller, String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: SizedBox(
+        height: 40,
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6.0),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextFormField(TextEditingController controller, String label,
-      [TextInputType? keyboardType]) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
-            ),
-          ),
-          Expanded(
-            child: SizedBox(
-              height: 40,
-              child: TextFormField(
-                controller: controller,
-                keyboardType: keyboardType,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return null; // No error, let the handleSave handle the default value
-                  }
-                  return null;
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDropdownField(
-      TextEditingController controller, String label, List<String> options) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
-            ),
-          ),
-          Expanded(
-            child: SizedBox(
-              height: 40,
-              child: DropdownButtonFormField<String>(
-                value: controller.text.isNotEmpty ? controller.text : null,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
-                items: options.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    controller.text = newValue ?? '';
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select $label';
-                  }
-                  return null;
-                },
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
