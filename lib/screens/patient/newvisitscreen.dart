@@ -159,7 +159,7 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('New Visit'),
+        title: Text('New Hx'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -232,8 +232,8 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('Visit Information'),
-        _buildTextField('date', 'Visit Date', readOnly: true),
+        //   _buildSectionHeader('Visit Information'),
+        //  _buildTextField('date', 'Visit Date', readOnly: true),
         _buildSectionHeader('Chief Complaint'),
         _buildTextField(
             'chiefComplaintDescription', 'Description of Complaint'),
