@@ -47,8 +47,11 @@ const diagnosisSchema = new mongoose.Schema({
 
 // Define the schema for treatment plan
 const treatmentPlanSchema = new mongoose.Schema({
-  plannedTreatments: [String],
-  
+  plannedTreatments: [
+    {
+      treatment: String,
+    },
+  ],
 });
 
 // Define the schema for treatment done

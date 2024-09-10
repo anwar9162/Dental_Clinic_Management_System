@@ -40,21 +40,31 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     'appearance': TextEditingController(),
     'extraOral': TextEditingController(),
     'intraOral': TextEditingController(),
-    'plannedTreatments': TextEditingController(),
-    'treatment': TextEditingController(),
     'completionDate': TextEditingController(),
-    'progressNote1': TextEditingController(),
-    'progressNote2': TextEditingController(),
-    'progressNote3': TextEditingController(),
-    'medicalHistory1Name': TextEditingController(),
-    'medicalHistory1Value': TextEditingController(),
-    'medicalHistory2Name': TextEditingController(),
-    'medicalHistory2Value': TextEditingController(),
-    'dentalHistory1Name': TextEditingController(),
-    'dentalHistory1Value': TextEditingController(),
-    'dentalHistory2Name': TextEditingController(),
-    'dentalHistory2Value': TextEditingController(),
   };
+
+  List<Map<String, TextEditingController>> _plannedTreatments = [
+    {'treatment': TextEditingController()},
+  ];
+
+  List<Map<String, TextEditingController>> _treatmentDone = [
+    {
+      'treatment': TextEditingController(),
+      'completionDate': TextEditingController()
+    },
+  ];
+
+  List<Map<String, TextEditingController>> _progressNotes = [
+    {'note': TextEditingController()},
+  ];
+
+  List<Map<String, TextEditingController>> _pastMedicalHistory = [
+    {'name': TextEditingController(), 'value': TextEditingController()},
+  ];
+
+  List<Map<String, TextEditingController>> _pastDentalHistory = [
+    {'name': TextEditingController(), 'value': TextEditingController()},
+  ];
 
   @override
   void initState() {
@@ -68,6 +78,87 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
   void dispose() {
     _controllers.values.forEach((controller) => controller.dispose());
     super.dispose();
+  }
+
+  void _addPlannedTreatmentField() {
+    setState(() {
+      _plannedTreatments.add({
+        'treatment': TextEditingController(),
+      });
+    });
+  }
+
+  void _removePlannedTreatmentField(int index) {
+    setState(() {
+      _plannedTreatments[index]['treatment']!.dispose();
+      _plannedTreatments.removeAt(index);
+    });
+  }
+
+  void _addTreatmentDoneField() {
+    setState(() {
+      _treatmentDone.add({
+        'treatment': TextEditingController(),
+        'completionDate': TextEditingController(),
+      });
+    });
+  }
+
+  void _removeTreatmentDoneField(int index) {
+    setState(() {
+      _treatmentDone[index]['treatment']!.dispose();
+      _treatmentDone[index]['completionDate']!.dispose();
+      _treatmentDone.removeAt(index);
+    });
+  }
+
+  void _addProgressNoteField() {
+    setState(() {
+      _progressNotes.add({
+        'note': TextEditingController(),
+      });
+    });
+  }
+
+  void _removeProgressNoteField(int index) {
+    setState(() {
+      _progressNotes[index]['note']!.dispose();
+      _progressNotes.removeAt(index);
+    });
+  }
+
+  void _addPastMedicalHistoryField() {
+    setState(() {
+      _pastMedicalHistory.add({
+        'name': TextEditingController(),
+        'value': TextEditingController(),
+      });
+    });
+  }
+
+  void _removePastMedicalHistoryField(int index) {
+    setState(() {
+      _pastMedicalHistory[index]['name']!.dispose();
+      _pastMedicalHistory[index]['value']!.dispose();
+      _pastMedicalHistory.removeAt(index);
+    });
+  }
+
+  void _addPastDentalHistoryField() {
+    setState(() {
+      _pastDentalHistory.add({
+        'name': TextEditingController(),
+        'value': TextEditingController(),
+      });
+    });
+  }
+
+  void _removePastDentalHistoryField(int index) {
+    setState(() {
+      _pastDentalHistory[index]['name']!.dispose();
+      _pastDentalHistory[index]['value']!.dispose();
+      _pastDentalHistory.removeAt(index);
+    });
   }
 
   void _handleSave() async {
@@ -95,47 +186,35 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
         },
         "diagnosis": null,
         "treatmentPlan": {
-          "plannedTreatments": [
-            _controllers['plannedTreatments']!.text,
-          ],
+          "plannedTreatments": _plannedTreatments.map((entry) {
+            return {
+              "treatment": entry['treatment']!.text,
+            };
+          }).toList(),
         },
-        "treatmentDone": [
-          {
-            "treatment": _controllers['treatment']!.text,
-            "completionDate": _controllers['completionDate']!.text,
-          },
-        ],
-        "progressNotes": [
-          {
-            "note": _controllers['progressNote1']!.text,
-          },
-          {
-            "note": _controllers['progressNote2']!.text,
-          },
-          {
-            "note": _controllers['progressNote3']!.text,
-          },
-        ],
-        "pastMedicalHistory": [
-          {
-            "fieldName": _controllers['medicalHistory1Name']!.text,
-            "fieldValue": _controllers['medicalHistory1Value']!.text,
-          },
-          {
-            "fieldName": _controllers['medicalHistory2Name']!.text,
-            "fieldValue": _controllers['medicalHistory2Value']!.text,
-          },
-        ],
-        "pastDentalHistory": [
-          {
-            "fieldName": _controllers['dentalHistory1Name']!.text,
-            "fieldValue": _controllers['dentalHistory1Value']!.text,
-          },
-          {
-            "fieldName": _controllers['dentalHistory2Name']!.text,
-            "fieldValue": _controllers['dentalHistory2Value']!.text,
-          },
-        ],
+        "treatmentDone": _treatmentDone.map((entry) {
+          return {
+            "treatment": entry['treatment']!.text,
+            "completionDate": entry['completionDate']!.text,
+          };
+        }).toList(),
+        "progressNotes": _progressNotes.map((entry) {
+          return {
+            "note": entry['note']!.text,
+          };
+        }).toList(),
+        "pastMedicalHistory": _pastMedicalHistory.map((entry) {
+          return {
+            "fieldName": entry['name']!.text,
+            "fieldValue": entry['value']!.text,
+          };
+        }).toList(),
+        "pastDentalHistory": _pastDentalHistory.map((entry) {
+          return {
+            "fieldName": entry['name']!.text,
+            "fieldValue": entry['value']!.text,
+          };
+        }).toList(),
       };
 
       try {
@@ -232,8 +311,6 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        //   _buildSectionHeader('Visit Information'),
-        //  _buildTextField('date', 'Visit Date', readOnly: true),
         _buildSectionHeader('Chief Complaint'),
         _buildTextField(
             'chiefComplaintDescription', 'Description of Complaint'),
@@ -255,12 +332,7 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
         _buildSectionHeader('History of Present Illness'),
         _buildTextField('hpiDetail', 'Detail of HPI'),
         _buildSectionHeader('General Appearance'),
-        _buildTextField('appearance', 'Appearance'),
-        _buildSectionHeader('Treatment Done'),
-        _buildTextField('treatment', 'Treatment Done'),
-        _buildTextField('completionDate', 'Completion Date'),
-        _buildSectionHeader('Treatment Plan'),
-        _buildTextField('plannedTreatments', 'Planned Treatments'),
+        _buildGeneralAppearanceDropdown(), // Use DropdownButtonFormField here
       ],
     );
   }
@@ -269,20 +341,233 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('Past Medical History'),
-        _buildFieldNameValueRow(
-            'medicalHistory1Name', 'medicalHistory1Value', 'Medical History 1'),
-        _buildFieldNameValueRow(
-            'medicalHistory2Name', 'medicalHistory2Value', 'Medical History 2'),
-        _buildSectionHeader('Past Dental History'),
-        _buildFieldNameValueRow(
-            'dentalHistory1Name', 'dentalHistory1Value', 'Dental History 1'),
-        _buildFieldNameValueRow(
-            'dentalHistory2Name', 'dentalHistory2Value', 'Dental History 2'),
+        _buildSectionHeader('Treatment Done'),
+        ..._treatmentDone.asMap().entries.map((entry) {
+          int index = entry.key;
+          return Row(
+            children: [
+              Expanded(
+                flex: 4,
+                child: TextFormField(
+                  controller: entry.value['treatment'],
+                  decoration: InputDecoration(
+                    labelText: 'Treatment',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Treatment is required';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: TextFormField(
+                  controller: entry.value['completionDate'],
+                  decoration: InputDecoration(
+                    labelText: 'Completion Date',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Completion Date is required';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.remove_circle, color: Colors.red),
+                onPressed: () => _removeTreatmentDoneField(index),
+              ),
+            ],
+          );
+        }).toList(),
+        ElevatedButton(
+          onPressed: _addTreatmentDoneField,
+          child: Text('Add Treatment Done'),
+        ),
+        _buildSectionHeader('Treatment Plan'),
+        ..._plannedTreatments.asMap().entries.map((entry) {
+          int index = entry.key;
+          return Row(
+            children: [
+              Expanded(
+                flex: 4,
+                child: TextFormField(
+                  controller: entry.value['treatment'],
+                  decoration: InputDecoration(
+                    labelText: 'Planned Treatment',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Planned Treatment is required';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.remove_circle, color: Colors.red),
+                onPressed: () => _removePlannedTreatmentField(index),
+              ),
+            ],
+          );
+        }).toList(),
+        ElevatedButton(
+          onPressed: _addPlannedTreatmentField,
+          child: Text('Add Planned Treatment'),
+        ),
         _buildSectionHeader('Progress Notes'),
-        _buildTextField('progressNote1', 'Progress Note 1'),
-        _buildTextField('progressNote2', 'Progress Note 2'),
-        _buildTextField('progressNote3', 'Progress Note 3'),
+        ..._progressNotes.asMap().entries.map((entry) {
+          int index = entry.key;
+          return Row(
+            children: [
+              Expanded(
+                flex: 4,
+                child: TextFormField(
+                  controller: entry.value['note'],
+                  decoration: InputDecoration(
+                    labelText: 'Progress Note',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Progress Note is required';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.remove_circle, color: Colors.red),
+                onPressed: () => _removeProgressNoteField(index),
+              ),
+            ],
+          );
+        }).toList(),
+        ElevatedButton(
+          onPressed: _addProgressNoteField,
+          child: Text('Add Progress Note'),
+        ),
+        _buildSectionHeader('Past Medical History'),
+        ..._pastMedicalHistory.asMap().entries.map((entry) {
+          int index = entry.key;
+          return Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: TextFormField(
+                  controller: entry.value['name'],
+                  decoration: InputDecoration(
+                    labelText: 'Subject',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Subject is required';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                flex: 4,
+                child: TextFormField(
+                  controller: entry.value['value'],
+                  decoration: InputDecoration(
+                    labelText: 'Details',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Details are required';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.remove_circle, color: Colors.red),
+                onPressed: () => _removePastMedicalHistoryField(index),
+              ),
+            ],
+          );
+        }).toList(),
+        ElevatedButton(
+          onPressed: _addPastMedicalHistoryField,
+          child: Text('Add Medical History'),
+        ),
+        _buildSectionHeader('Past Dental History'),
+        ..._pastDentalHistory.asMap().entries.map((entry) {
+          int index = entry.key;
+          return Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: TextFormField(
+                  controller: entry.value['name'],
+                  decoration: InputDecoration(
+                    labelText: 'Subject',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Subject is required';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                flex: 4,
+                child: TextFormField(
+                  controller: entry.value['value'],
+                  decoration: InputDecoration(
+                    labelText: 'Details',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Details are required';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.remove_circle, color: Colors.red),
+                onPressed: () => _removePastDentalHistoryField(index),
+              ),
+            ],
+          );
+        }).toList(),
+        ElevatedButton(
+          onPressed: _addPastDentalHistoryField,
+          child: Text('Add Dental History'),
+        ),
       ],
     );
   }
@@ -322,49 +607,83 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     );
   }
 
-  Widget _buildFieldNameValueRow(
-      String nameKey, String valueKey, String label) {
+  Widget _buildGeneralAppearanceDropdown() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
-      child: Row(
-        children: [
-          // Field Name Input - Narrower
-          Expanded(
-            flex: 2, // Adjust this flex value to make the name field narrower
-            child: TextFormField(
-              controller: _controllers[nameKey],
-              decoration: InputDecoration(
-                labelText: 'Subject', // Update label to 'Subject'
-                border: OutlineInputBorder(),
-                filled: true,
-                fillColor: Colors.grey[100],
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Subject is required';
-                }
-                return null;
-              },
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Appearance',
+          labelStyle: TextStyle(
+            color: Colors.black54,
+            fontWeight: FontWeight.w500,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: BorderSide(
+              color: Colors.grey[300]!,
+              width: 1.0,
             ),
           ),
-          SizedBox(width: 12),
-          // Field Value Input - Wider
-          Expanded(
-            flex: 4, // Adjust this flex value to make the value field wider
-            child: TextFormField(
-              controller: _controllers[valueKey],
-              decoration: InputDecoration(
-                labelText: 'Details', // Update label to 'Details'
-                border: OutlineInputBorder(),
-                filled: true,
-                fillColor: Colors.grey[100],
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: BorderSide(
+              color: Colors.blueAccent,
+              width: 2.0,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: BorderSide(
+              color: Colors.grey[300]!,
+              width: 1.0,
+            ),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding:
+              EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: _controllers['appearance']!.text.isEmpty
+                ? null
+                : _controllers['appearance']!.text,
+            hint: Text('Appearance'),
+            items: [
+              DropdownMenuItem<String>(
+                value: 'Acute Sick-Looking',
+                child: _buildDropdownItem('Acute Sick-Looking'),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Details are required';
-                }
-                return null;
-              },
+              DropdownMenuItem<String>(
+                value: 'Well-Looking',
+                child: _buildDropdownItem('Well Looking'),
+              ),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _controllers['appearance']!.text = value ?? '';
+              });
+            },
+            dropdownColor: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdownItem(String text) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 12.0),
+      child: Row(
+        children: <Widget>[
+          Icon(Icons.palette, color: Colors.blueGrey[600]),
+          SizedBox(width: 12.0),
+          Text(
+            text,
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 16.0,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ],
