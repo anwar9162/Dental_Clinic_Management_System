@@ -303,7 +303,7 @@ class Diagnosis {
 }
 
 class TreatmentPlan {
-  final List<String> plannedTreatments;
+  final List<Treatment> plannedTreatments;
 
   TreatmentPlan({
     required this.plannedTreatments,
@@ -311,13 +311,37 @@ class TreatmentPlan {
 
   factory TreatmentPlan.fromJson(Map<String, dynamic> json) {
     return TreatmentPlan(
-      plannedTreatments: List<String>.from(json['plannedTreatments']),
+      plannedTreatments: (json['plannedTreatments'] as List<dynamic>?)
+              ?.map((item) => Treatment.fromJson(item as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'plannedTreatments': plannedTreatments,
+      'plannedTreatments':
+          plannedTreatments.map((treatment) => treatment.toJson()).toList(),
+    };
+  }
+}
+
+class Treatment {
+  final String treatment;
+
+  Treatment({
+    required this.treatment,
+  });
+
+  factory Treatment.fromJson(Map<String, dynamic> json) {
+    return Treatment(
+      treatment: json['treatment'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'treatment': treatment,
     };
   }
 }

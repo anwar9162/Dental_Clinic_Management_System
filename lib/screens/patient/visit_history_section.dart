@@ -303,7 +303,7 @@ class VisitHistorySection extends StatelessWidget {
   Widget _buildDetailRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-          vertical: 4.0, horizontal: 8.0), // Reduced padding
+          vertical: 4.0, horizontal: 2.0), // Reduced padding
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -322,7 +322,7 @@ class VisitHistorySection extends StatelessWidget {
           ),
           SizedBox(width: 6),
           Expanded(
-            flex: 4,
+            flex: 3,
             child: Text(
               value,
               style: TextStyle(
@@ -406,7 +406,9 @@ class VisitHistorySection extends StatelessWidget {
     } else if (content is TreatmentPlan) {
       return {
         'Planned Treatments': content.plannedTreatments.isNotEmpty
-            ? content.plannedTreatments.join('\n')
+            ? content.plannedTreatments
+                .map((treatment) => treatment.treatment ?? 'No data available')
+                .join('\n')
             : 'No data available',
       };
     } else if (content is List<TreatmentEntry>) {

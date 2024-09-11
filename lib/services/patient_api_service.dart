@@ -48,12 +48,23 @@ class PatientApiService {
     try {
       final response = await http.get(Uri.parse('$baseUrl/patients/$id'));
 
+      // Log the raw response body
+      print('Response body: ${response.body}');
+
       if (response.statusCode == 200) {
-        return jsonDecode(response.body) as Map<String, dynamic>;
+        // Decode the JSON response
+        final Map<String, dynamic> decodedResponse =
+            jsonDecode(response.body) as Map<String, dynamic>;
+
+        // Log the decoded response
+        print('Decoded response: $decodedResponse');
+
+        return decodedResponse;
       } else {
         throw Exception('Failed to load patient: ${response.reasonPhrase}');
       }
     } catch (e) {
+      // Log errors
       if (kIsWeb) {
         print('Error in getPatientById: $e');
       }
