@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../models/patient_model.dart';
-import 'newvisitscreen.dart';
+import 'newvisitscreen.dart'; // Assuming this contains the dialog for adding new visits
+import 'editvisitscreen.dart'; // Import the screen for editing visits
 
 class VisitHistorySection extends StatelessWidget {
   final List<Visit>? visits;
   final Patient? patient;
+
   VisitHistorySection({this.visits, this.patient});
 
   @override
@@ -53,7 +55,7 @@ class VisitHistorySection extends StatelessWidget {
                 ...reversedVisits.map((visit) => Padding(
                       padding:
                           const EdgeInsets.only(bottom: 8.0), // Reduced space
-                      child: _buildVisitExpansionTile(visit),
+                      child: _buildVisitExpansionTile(context, visit),
                     )),
             ],
           ),
@@ -79,7 +81,7 @@ class VisitHistorySection extends StatelessWidget {
     );
   }
 
-  Widget _buildVisitExpansionTile(Visit visit) {
+  Widget _buildVisitExpansionTile(BuildContext context, Visit visit) {
     return ExpansionTile(
       leading: Icon(Icons.history,
           color: Colors.blueGrey[600], size: 24), // Smaller icon
@@ -97,6 +99,26 @@ class VisitHistorySection extends StatelessWidget {
             color: Colors.grey[600], fontSize: 12), // Reduced font size
       ),
       children: [
+        // Add the Edit button here
+        Padding(
+          padding: const EdgeInsets.all(8.0), // Padding for the button
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                icon: Icon(Icons.edit, color: Colors.blueGrey[600]),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditVisitScreen(visit: visit),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
         if (visit.chiefComplaint != null ||
             visit.historyOfPresentIllness != null)
           _buildCategoryRow(
