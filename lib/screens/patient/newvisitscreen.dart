@@ -239,6 +239,7 @@ class _NewVisitScreenState extends State<NewVisitScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('New Hx'),
+        backgroundColor: Color(0xFF6ABEDC),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
