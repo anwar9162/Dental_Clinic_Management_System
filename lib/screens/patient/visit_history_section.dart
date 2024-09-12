@@ -112,7 +112,8 @@ class VisitHistorySection extends StatelessWidget {
                     context: context,
                     builder: (BuildContext context) {
                       return Dialog(
-                        child: EditVisitScreen(visit: visit),
+                        child: EditVisitScreen(
+                            visit: visit, patientID: patient!.id!),
                       );
                     },
                   );

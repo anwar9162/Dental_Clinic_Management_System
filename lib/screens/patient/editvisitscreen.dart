@@ -4,8 +4,9 @@ import 'package:intl/intl.dart';
 
 class EditVisitScreen extends StatefulWidget {
   final Visit visit;
+  final String patientID;
 
-  EditVisitScreen({required this.visit});
+  EditVisitScreen({required this.visit, required this.patientID});
 
   @override
   _EditVisitScreenState createState() => _EditVisitScreenState();
@@ -101,7 +102,7 @@ class _EditVisitScreenState extends State<EditVisitScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Hx'),
+        title: Text('Edit Hx - patient ID: ${widget.patientID}'),
         backgroundColor: Color(0xFF6ABEDC),
         actions: [
           TextButton(
