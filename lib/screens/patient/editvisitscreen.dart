@@ -91,7 +91,8 @@ class _EditVisitScreenState extends State<EditVisitScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Visit'),
+        title: Text('Edit Hx'),
+        backgroundColor: Color(0xFF6ABEDC),
         actions: [
           TextButton(
             onPressed: _save,

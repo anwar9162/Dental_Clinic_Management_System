@@ -108,11 +108,13 @@ class VisitHistorySection extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.edit, color: Colors.blueGrey[600]),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditVisitScreen(visit: visit),
-                    ),
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: EditVisitScreen(visit: visit),
+                      );
+                    },
                   );
                 },
               ),
