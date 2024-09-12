@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/patient_model.dart';
+import 'package:intl/intl.dart';
 
 class EditVisitScreen extends StatefulWidget {
   final Visit visit;
@@ -14,7 +15,9 @@ class _EditVisitScreenState extends State<EditVisitScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _chiefComplaintController;
   late TextEditingController _historyOfPresentIllnessController;
-  late TextEditingController _physicalExaminationController;
+  late TextEditingController _bloodpressureController;
+  late TextEditingController _temperatureController;
+
   late TextEditingController _generalAppearanceController;
   late TextEditingController _extraOralController;
   late TextEditingController _intraOralController;
@@ -32,8 +35,10 @@ class _EditVisitScreenState extends State<EditVisitScreen> {
         text: widget.visit.chiefComplaint?.description ?? '');
     _historyOfPresentIllnessController = TextEditingController(
         text: widget.visit.historyOfPresentIllness?.Detail ?? '');
-    _physicalExaminationController = TextEditingController(
+    _bloodpressureController = TextEditingController(
         text: widget.visit.physicalExamination?.bloodPressure ?? '');
+    _temperatureController = TextEditingController(
+        text: widget.visit.physicalExamination?.temperature ?? '');
     _generalAppearanceController = TextEditingController(
         text: widget.visit.generalAppearance?.appearance ?? '');
     _extraOralController =
@@ -59,25 +64,13 @@ class _EditVisitScreenState extends State<EditVisitScreen> {
     _progressNoteControllers = (widget.visit.progressNotes ?? [])
         .map((note) => TextEditingController(text: note.note))
         .toList();
-
-    // Initialize controllers for past medical history
-    _pastMedicalHistoryControllers = (widget.visit.pastMedicalHistory ?? [])
-        .map((history) => TextEditingController(
-            text: '${history.fieldName}: ${history.fieldValue}'))
-        .toList();
-
-    // Initialize controllers for past dental history
-    _pastDentalHistoryControllers = (widget.visit.pastDentalHistory ?? [])
-        .map((history) => TextEditingController(
-            text: '${history.fieldName}: ${history.fieldValue}'))
-        .toList();
   }
 
   @override
   void dispose() {
     _chiefComplaintController.dispose();
     _historyOfPresentIllnessController.dispose();
-    _physicalExaminationController.dispose();
+    _bloodpressureController.dispose();
     _generalAppearanceController.dispose();
     _extraOralController.dispose();
     _intraOralController.dispose();
@@ -150,9 +143,8 @@ class _EditVisitScreenState extends State<EditVisitScreen> {
         _buildTextField(
             'Chief Complaint Description', _chiefComplaintController),
         _buildSectionHeader('Physical Examination'),
-        _buildTextField('Blood Pressure', _physicalExaminationController),
-        _buildTextField('Temperature',
-            _physicalExaminationController), // Assuming it's part of the same controller
+        _buildTextField('Blood Pressure', _bloodpressureController),
+        _buildTextField('Temperature', _temperatureController),
         _buildSectionHeader('Extra-Oral Examination'),
         _buildTextField('Findings', _extraOralController),
         _buildSectionHeader('Intra-Oral Examination'),
@@ -178,19 +170,144 @@ class _EditVisitScreenState extends State<EditVisitScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader('Treatment Done'),
-        _buildDynamicTextFields(_treatmentDoneControllers, 'Treatment Done'),
+        _buildTwoColumnFields(
+            widget.visit.treatmentDone ?? [], 'Treatment', 'Completion Date'),
         _buildSectionHeader('Treatment Plan'),
-        _buildDynamicTextFields(
-            _treatmentPlanControllers, 'Planned Treatments'),
+        _buildTreatmentPlanFields(),
         _buildSectionHeader('Progress Notes'),
-        _buildDynamicTextFields(_progressNoteControllers, 'Progress Note'),
+        _buildProgressNoteFields(),
         _buildSectionHeader('Past Medical History'),
         _buildDynamicTextFields(
-            _pastMedicalHistoryControllers, 'Medical History'),
+            widget.visit.pastMedicalHistory
+                    ?.map((history) => {
+                          'fieldName': history.fieldName,
+                          'fieldValue': history.fieldValue
+                        })
+                    .toList() ??
+                [],
+            'Medical History'),
         _buildSectionHeader('Past Dental History'),
         _buildDynamicTextFields(
-            _pastDentalHistoryControllers, 'Dental History'),
+            widget.visit.pastDentalHistory
+                    ?.map((history) => {
+                          'fieldName': history.fieldName,
+                          'fieldValue': history.fieldValue
+                        })
+                    .toList() ??
+                [],
+            'Dental History'),
       ],
+    );
+  }
+
+  Widget _buildTreatmentPlanFields() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(
+        _treatmentPlanControllers.length,
+        (index) => Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: TextFormField(
+            controller: _treatmentPlanControllers[index],
+            decoration: InputDecoration(
+              labelText: 'Planned Treatment ${index + 1}',
+              border: OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.grey[100],
+            ),
+            maxLines: null,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Treatment is required';
+              }
+              return null;
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProgressNoteFields() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(
+        _progressNoteControllers.length,
+        (index) {
+          final progressNote = widget.visit.progressNotes?[index];
+          final createdAt = progressNote?.createdAt ?? DateTime.now();
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Note ${index + 1}',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        SizedBox(height: 4),
+                        TextFormField(
+                          controller: _progressNoteControllers[index],
+                          decoration: InputDecoration(
+                            labelText: 'Progress Note',
+                            border: OutlineInputBorder(),
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                          ),
+                          maxLines: null,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Progress Note is required';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Created At',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      SizedBox(height: 4),
+                      TextFormField(
+                        initialValue:
+                            DateFormat('yyyy-MM-dd HH:mm:ss').format(createdAt),
+                        decoration: InputDecoration(
+                          labelText: 'Creation Date',
+                          border: OutlineInputBorder(),
+                          filled: true,
+                          fillColor: Colors.grey[100],
+                        ),
+                        //    readOnly: true, // Set to true to make it non-editable
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -230,29 +347,85 @@ class _EditVisitScreenState extends State<EditVisitScreen> {
   }
 
   Widget _buildDynamicTextFields(
-      List<TextEditingController> controllers, String label) {
+      List<Map<String, String>> items, String label) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: controllers.asMap().entries.map((entry) {
-        int index = entry.key;
-        TextEditingController controller = entry.value;
+      children: items.map((item) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
-          child: TextFormField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: '$label ${index + 1}',
-              border: OutlineInputBorder(),
-              filled: true,
-              fillColor: Colors.grey[100],
-            ),
-            maxLines: null,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return '$label ${index + 1} is required';
-              }
-              return null;
-            },
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              Expanded(
+                flex: 1, // Field Name takes up 1 part of the available space
+                child: TextFormField(
+                  initialValue: item['fieldName'],
+                  decoration: InputDecoration(
+                    labelText: 'Subject',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                ),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                flex: 3, // Field Value takes up 3 parts of the available space
+                child: TextFormField(
+                  initialValue: item['fieldValue'],
+                  decoration: InputDecoration(
+                    labelText: 'Details',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildTwoColumnFields(
+      List<TreatmentEntry> items, String label1, String label2) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: items.map((item) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              Expanded(
+                flex: 3,
+                child: TextFormField(
+                  initialValue: item.treatment,
+                  decoration: InputDecoration(
+                    labelText: label1,
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                ),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                flex: 1,
+                child: TextFormField(
+                  initialValue: item.completionDate != null
+                      ? DateFormat('yyyy-MM-dd').format(item.completionDate!)
+                      : '',
+                  decoration: InputDecoration(
+                    labelText: label2,
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       }).toList(),
@@ -307,7 +480,7 @@ class _EditVisitScreenState extends State<EditVisitScreen> {
                 child: _buildDropdownItem('Acute Sick-Looking'),
               ),
               DropdownMenuItem<String>(
-                value: 'Well-Looking ',
+                value: 'Well-Looking',
                 child: _buildDropdownItem('Well-Looking'),
               ),
             ],

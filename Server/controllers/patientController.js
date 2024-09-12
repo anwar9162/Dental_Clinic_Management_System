@@ -362,49 +362,43 @@ const addVisitRecord = async (req, res) => {
 const updateVisitRecord = async (req, res) => {
   try {
     const { id, visitId } = req.params;
-    const { progressNote, treatmentPlan, treatmentDone } = req.body;
+    const updatedVisitData = req.body;
 
-    const patient = await Patient.findOne({
-      _id: id,
-      "visitHistory._id": visitId,
-    });
-    if (!patient) return res.status(404).send("Visit record not found.");
+    // Log the request body
+    console.log("Received visit update data:", updatedVisitData);
 
-    const visit = patient.visitHistory.id(visitId);
-
-    // Update progress notes
-    if (progressNote) {
-      visit.progressNotes.push({ note: progressNote });
+    // Find the patient by ID
+    const patient = await Patient.findById(id);
+    if (!patient) {
+      console.log(`Patient with ID ${id} not found`);
+      return res.status(404).json({ message: "Patient not found" });
     }
 
-    // Update treatment plan
-    if (treatmentPlan) {
-      if (Array.isArray(treatmentPlan)) {
-        visit.treatmentPlan.plannedTreatments = [
-          ...new Set([
-            ...visit.treatmentPlan.plannedTreatments,
-            ...treatmentPlan,
-          ]),
-        ];
-      } else {
-        return res.status(400).send("Invalid treatmentPlan format.");
-      }
+    // Find the specific visit record in the visitHistory array
+    const visitIndex = patient.visitHistory.findIndex(visit => visit._id.toString() === visitId);
+    if (visitIndex === -1) {
+      console.log(`Visit record with ID ${visitId} not found`);
+      return res.status(404).json({ message: "Visit record not found" });
     }
 
-    // Update treatment done
-    if (treatmentDone) {
-      visit.treatmentDone.push(...treatmentDone.map(entry => ({
-        treatment: entry.treatment,
-        completionDate: entry.completionDate
-      })));
-    }
+    // Update the visit record
+    patient.visitHistory[visitIndex] = { ...patient.visitHistory[visitIndex]._doc, ...updatedVisitData };
 
-    await patient.save();
-    res.status(200).send(visit);
+    // Save the updated patient document
+    const updatedPatient = await patient.save();
+
+    // Log the successful response
+    console.log("Response:", updatedPatient);
+    res.status(200).json(updatedPatient);
   } catch (error) {
-    res.status(500).send(error.message);
+    // Log the error message
+    console.error("Error updating visit record:", error.message);
+    
+    // Log the error response
+    res.status(500).json({ error: error.message });
   }
 };
+
 
 const updateCardStatus = async (req, res) => {
   try {
