@@ -304,6 +304,27 @@ class PatientApiService {
     }
   }
 
+  // Update a visit record
+  Future<void> updateVisitRecord(String patientId, String visitId,
+      Map<String, dynamic> updatedVisitData) async {
+    // Log the request body for debugging purposes
+    print('Request Body: ${jsonEncode(updatedVisitData)}');
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/patients/$patientId/visit-records/$visitId'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(updatedVisitData),
+    );
+
+    if (response.statusCode != 200) {
+      final errorResponse = json.decode(response.body);
+      throw Exception(
+          'Failed to update visit record: ${errorResponse['message']}');
+    }
+  }
+
   // Add past medical history
   Future<void> addPastMedicalHistory(
       String id, List<Map<String, dynamic>> entries) async {
