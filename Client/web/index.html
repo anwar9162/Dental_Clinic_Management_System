@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="$FLUTTER_BASE_HREF" />
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="description" content="A new Flutter project." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="dental_management_main" />
+    <link rel="apple-touch-icon" href="icons/Icon-192.png" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <title>dental_management_main</title>
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Include Jitsi Meet API -->
+    <script
+      src="https://meet.jit.si/external_api.js"
+      type="application/javascript"
+    ></script>
+
+    <script>
+      const serviceWorkerVersion = null;
+
+      window.addEventListener("load", function () {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("/flutter_service_worker.js");
+        }
+      });
+    </script>
+
+    <script src="flutter.js" defer></script>
+  </head>
+  <body>
+    <div id="jitsi-container" style="height: 600px; width: 100%"></div>
+    <script>
+      window.addEventListener("load", function (ev) {
+        _flutter.loader.loadEntrypoint({
+          serviceWorker: { serviceWorkerVersion: serviceWorkerVersion },
+          onEntrypointLoaded: function (engineInitializer) {
+            engineInitializer.initializeEngine().then(function (appRunner) {
+              appRunner.runApp();
+            });
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
